@@ -85,7 +85,7 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [lesson, initialCompleted]);
+  }, [lesson.id]);
 
   // Execute current query in sandbox
   const handleExecute = useCallback(() => {
@@ -470,19 +470,19 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
               {/* Test Run button */}
               <button
                 onClick={handleExecute}
-                disabled={isExecuting}
-                className="min-h-[40px] px-4 py-2 rounded-xl bg-noir-800 hover:bg-noir-750 text-slate-200 font-semibold text-xs flex items-center space-x-1.5 border border-noir-700 transition-all cursor-pointer active:scale-95"
+                disabled={isExecuting || !isDbReady}
+                className="min-h-[40px] px-4 py-2 rounded-xl bg-noir-800 hover:bg-noir-750 disabled:opacity-50 disabled:cursor-not-allowed text-slate-200 font-semibold text-xs flex items-center space-x-1.5 border border-noir-700 transition-all cursor-pointer active:scale-95"
                 title="Chạy thử câu lệnh SQL để xem dữ liệu"
               >
                 <Play className="w-3.5 h-3.5 text-sky-400 fill-current" />
-                <span>Chạy Thử</span>
+                <span>{isDbReady ? 'Chạy Thử' : 'Đang nạp...'}</span>
               </button>
 
               {/* Submit & Verify button */}
               <button
                 onClick={handleVerify}
-                disabled={isExecuting}
-                className="min-h-[40px] px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-noir-950 font-bold text-xs flex items-center space-x-1.5 shadow-lg shadow-emerald-950/50 transition-all cursor-pointer active:scale-95"
+                disabled={isExecuting || !isDbReady}
+                className="min-h-[40px] px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 disabled:opacity-50 disabled:cursor-not-allowed text-noir-950 font-bold text-xs flex items-center space-x-1.5 shadow-lg shadow-emerald-950/50 transition-all cursor-pointer active:scale-95"
               >
                 <CheckCircle className="w-4 h-4 flex-shrink-0" />
                 <span>Nộp Bài Kiểm Tra</span>

@@ -2,88 +2,84 @@ import { Lesson } from './types';
 
 export const allLessons: Lesson[] = [
   // =========================================================================
-  // GIAI ĐOẠN 1: NHẬP MÔN (BEGINNER)
+  // GIAI ĐOẠN 1: NHẬP MÔN (BEGINNER) - BƯỚC ĐẦU LÀM QUEN VỚI DỮ LIỆU 🚀
   // =========================================================================
   {
     id: 'sql-101',
     order: 1,
     stage: 'beginner',
     stageTitle: 'Giai Đoạn 1: Nhập Môn',
-    title: 'Khám Phá CSDL & Lệnh SELECT, FROM',
-    subtitle: 'Nắm vững câu lệnh khai báo nền tảng đầu tiên trong SQL',
+    title: 'BÀI 1: SELECT & FROM - Lời Chào Sân Với Dữ Liệu 👋',
+    subtitle: 'Nắm vững câu thần chú để gọi tài liệu ra khỏi chiếc tủ hồ sơ CSDL',
     category: 'Truy Vấn Căn Bản',
     timeEstimate: '10 phút',
     xpReward: 50,
     concept: `
-### 1. Cơ sở dữ liệu quan hệ (RDBMS) là gì?
-Cơ sở dữ liệu quan hệ lưu trữ dữ liệu dưới dạng các **bảng (Tables)** gồm:
-- **Hàng (Rows / Records):** Đại diện cho một đối tượng cụ thể (ví dụ: một cuốn sách, một người dùng).
-- **Cột (Columns / Fields):** Đại diện cho các thuộc tính đặc trưng (ví dụ: tên, giá tiền, ngày tạo).
+### 📖 Lý thuyết Cốt lõi
+Hãy tưởng tượng cơ sở dữ liệu của bạn như một file Excel khổng lồ chứa nhiều bảng (Table) khác nhau.
+Để lấy dữ liệu ra, bạn chỉ cần trả lời 2 câu hỏi:
+1. Bạn muốn lấy cột nào? 👉 Dùng **\`SELECT\`**
+2. Từ bảng nào? 👉 Dùng **\`FROM\`**
 
-### 2. Tư duy khai báo của SQL
-SQL là ngôn ngữ khai báo (*Declarative*): Bạn **không cần chỉ định máy tính phải chạy vòng lặp for/while như thế nào**, bạn chỉ cần khai báo **dữ liệu bạn muốn nhận được là gì**:
-\`\`\`sql
-SELECT cot_1, cot_2 FROM ten_bang;
-\`\`\`
-Dấu sao (\`*\`) đại diện cho việc lấy toàn bộ tất cả các cột của bảng.
+💡 **Mẹo nhỏ:** Nếu bạn muốn lấy **TẤT CẢ** các cột trong bảng, hãy dùng dấu sao \`*\`.
     `,
-    syntaxExample: `-- Lấy tất cả thông tin
-SELECT * FROM san_pham;
+    syntaxExample: `-- Lấy tên và tuổi từ bảng users
+SELECT name, age 
+FROM users;
 
--- Chỉ lấy các cột cần thiết (Khuyên dùng để tối ưu hiệu năng)
-SELECT ten_san_pham, gia_niem_yet FROM san_pham;`,
+-- Lấy toàn bộ các cột của bảng
+SELECT * 
+FROM users;`,
     schemas: [
       {
-        name: 'san_pham',
-        description: 'Bảng quản lý danh mục sản phẩm đồ công nghệ',
+        name: 'Movies',
+        description: 'Kho dữ liệu điện ảnh toàn cầu',
         columns: [
-          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã định danh sản phẩm' },
-          { name: 'ten_san_pham', type: 'TEXT', description: 'Tên thương mại sản phẩm' },
-          { name: 'danh_muc', type: 'TEXT', description: 'Phân loại hàng hóa' },
-          { name: 'gia_niem_yet', type: 'INTEGER', description: 'Giá bán đề xuất (VNĐ)' },
-          { name: 'so_luong_kho', type: 'INTEGER', description: 'Số lượng tồn trong kho' },
+          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã phim' },
+          { name: 'title', type: 'TEXT', description: 'Tên bộ phim' },
+          { name: 'director', type: 'TEXT', description: 'Đạo diễn' },
+          { name: 'release_year', type: 'INTEGER', description: 'Năm phát hành' },
+          { name: 'genre', type: 'TEXT', description: 'Thể loại phim' },
+          { name: 'revenue', type: 'INTEGER', description: 'Doanh thu phòng vé ($)' },
         ],
       },
     ],
     seedSql: [
-      `CREATE TABLE san_pham (
+      `CREATE TABLE Movies (
         id INTEGER PRIMARY KEY,
-        ten_san_pham TEXT NOT NULL,
-        danh_muc TEXT NOT NULL,
-        gia_niem_yet INTEGER NOT NULL,
-        so_luong_kho INTEGER NOT NULL
+        title TEXT NOT NULL,
+        director TEXT NOT NULL,
+        release_year INTEGER NOT NULL,
+        genre TEXT NOT NULL,
+        revenue INTEGER NOT NULL
       );`,
-      `INSERT INTO san_pham (id, ten_san_pham, danh_muc, gia_niem_yet, so_luong_kho) VALUES
-        (1, 'Bàn phím cơ Không dây K3', 'Phụ kiện', 1850000, 45),
-        (2, 'Chuột công thái học Master 3S', 'Phụ kiện', 2490000, 30),
-        (3, 'Màn hình UltraSharp 27 inch', 'Màn hình', 11500000, 12),
-        (4, 'Tai nghe Chống ồn WH-1000XM5', 'Âm thanh', 8490000, 20),
-        (5, 'Đèn kẹp màn hình chống cận', 'Phụ kiện', 890000, 60);`,
+      `INSERT INTO Movies VALUES
+        (1, 'Inception', 'Christopher Nolan', 2010, 'Action', 836800000),
+        (2, 'Interstellar', 'Christopher Nolan', 2014, 'Sci-Fi', 701700000),
+        (3, 'Avatar: The Way of Water', 'James Cameron', 2022, 'Action', 2320000000),
+        (4, 'The Dark Knight', 'Christopher Nolan', 2008, 'Action', 1006000000),
+        (5, 'Titanic', 'James Cameron', 1997, 'Romance', 2257000000),
+        (6, 'Oppenheimer', 'Christopher Nolan', 2023, 'Drama', 957000000);`,
     ],
     exercise: {
-      goal: 'Trích xuất tên và giá bán của toàn bộ sản phẩm trong kho hàng',
+      goal: 'Trích xuất danh sách tên phim (title) và năm phát hành (release_year)',
       taskDescription:
-        'Viết câu truy vấn SQL trích xuất danh sách gồm 2 cột: `ten_san_pham` và `gia_niem_yet` từ bảng `san_pham`.',
-      starterQuery: `-- Bài 1.1: Trích xuất tên sản phẩm và giá niêm yết\nSELECT `,
-      expectedQuery: `SELECT ten_san_pham, gia_niem_yet FROM san_pham;`,
+        'Chào mừng bạn đến với kho dữ liệu Điện ảnh toàn cầu! Quản lý muốn bạn trích xuất danh sách gồm 2 cột: tên phim (`title`) và năm phát hành (`release_year`) từ bảng `Movies`.',
+      starterQuery: `-- Viết code của bạn ở đây:\nSELECT title, release_year\nFROM Movies;\n`,
+      expectedQuery: `SELECT title, release_year FROM Movies;`,
       hints: [
-        'Dùng câu lệnh SELECT theo sau là tên 2 cột cách nhau bởi dấu phẩy (,).',
-        'Cú pháp chuẩn: SELECT ten_san_pham, gia_niem_yet FROM san_pham;',
+        'Dùng câu lệnh: SELECT title, release_year FROM Movies;',
+        'Nhớ kết thúc bằng dấu chấm phẩy (;).',
       ],
       explanation:
-        'Chính xác! Lựa chọn chính xác các cột cần lấy thay vì SELECT * giúp giảm thiểu băng thông mạng và tối ưu tốc độ đọc bộ nhớ của CSDL.',
+        'Chính xác! Bạn vừa gọi thành công tài liệu từ chiếc tủ hồ sơ CSDL ra màn hình.',
     },
     quizzes: [
       {
-        question: 'Dấu sao (*) trong câu lệnh "SELECT * FROM nhan_vien;" có ý nghĩa gì?',
-        options: [
-          'Chỉ lấy dòng đầu tiên của bảng',
-          'Lấy tất cả các cột trong bảng',
-          'Đếm tổng số bản ghi trong bảng',
-          'Nhân đôi giá trị của tất cả các cột số',
-        ],
-        answerIndex: 1,
-        explanation: 'Dấu sao (*) trong mệnh đề SELECT là ký tự đại diện (wildcard) chỉ thị việc lấy toàn bộ các cột của bảng dữ liệu.',
+        question: 'Ký tự nào dùng để chọn TẤT CẢ các cột trong SQL?',
+        options: ['Dấu sao (*)', 'Dấu cộng (+)', 'Chữ ALL', 'Dấu chấm (.)'],
+        answerIndex: 0,
+        explanation: 'Dấu sao (*) trong mệnh đề SELECT đại diện cho việc lấy tất cả các cột của bảng.',
       },
     ],
   },
@@ -93,82 +89,74 @@ SELECT ten_san_pham, gia_niem_yet FROM san_pham;`,
     order: 2,
     stage: 'beginner',
     stageTitle: 'Giai Đoạn 1: Nhập Môn',
-    title: 'Lọc Dữ Liệu Có Điều Kiện Với WHERE',
-    subtitle: 'Sử dụng toán tử so sánh để trích xuất chính xác bản ghi mong muốn',
+    title: 'BÀI 2: LỌC DỮ LIỆU (WHERE) - Bộ Lọc Thần Kỳ 🔍',
+    subtitle: 'Lọc ra đúng những dòng dữ liệu bạn cần giống như lọc hàng Shopee',
     category: 'Bộ Lọc Dữ Liệu',
     timeEstimate: '12 phút',
     xpReward: 60,
     concept: `
-### Mệnh đề WHERE lọc bản ghi như thế nào?
-Mệnh đề \`WHERE\` kiểm tra điều kiện logic trên từng hàng dữ liệu:
-- Nếu điều kiện trả về \`TRUE\`: Bản ghi được giữ lại trong kết quả.
-- Nếu trả về \`FALSE\` hoặc \`NULL\`: Bản ghi bị loại bỏ.
+### 📖 Lý thuyết Cốt lõi
+Rất hiếm khi chúng ta cần xem *toàn bộ* hàng ngàn dòng dữ liệu. Bạn sẽ cần "lọc" chúng giống như cách bạn lọc sản phẩm trên Shopee (chỉ xem hàng dưới 100k chẳng hạn).
+Trong SQL, chúng ta dùng từ khóa **\`WHERE\`** (Ở đâu / Nơi mà) để lọc ra các dòng thỏa mãn điều kiện.
 
-### Các toán tử so sánh phổ biến:
-- \`=\`: Bằng nhau.
-- \`<>\` hoặc \`!=\`: Khác nhau.
-- \`>\`, \`<\`, \`>=\`, \`<=\`: So sánh lớn hơn, nhỏ hơn.
-- \`BETWEEN a AND b\`: Nằm trong đoạn từ a đến b (bao gồm cả a và b).
+Các toán tử so sánh cơ bản:
+- \`=\`: Bằng
+- \`>\`: Lớn hơn
+- \`<\`: Nhỏ hơn
+- \`<>\` hoặc \`!=\`: Khác (Không bằng)
     `,
-    syntaxExample: `-- Lấy các đơn hàng có giá trị trên 1 triệu đồng
-SELECT ma_don, tong_tien 
-FROM don_hang 
-WHERE tong_tien >= 1000000;
-
--- Lọc khách hàng trong độ tuổi thanh niên
-SELECT ho_ten, tuoi 
-FROM khach_hang 
-WHERE tuoi BETWEEN 18 AND 25;`,
+    syntaxExample: `-- Tìm tất cả các hóa đơn có giá trị lớn hơn 100$
+SELECT * 
+FROM sales 
+WHERE amount > 100;`,
     schemas: [
       {
-        name: 'don_hang',
-        description: 'Bảng theo dõi giao dịch bán lẻ',
+        name: 'Movies',
+        description: 'Kho dữ liệu điện ảnh',
         columns: [
-          { name: 'ma_don', type: 'TEXT PRIMARY KEY', description: 'Mã đơn hàng duy nhất' },
-          { name: 'khach_hang', type: 'TEXT', description: 'Tên người mua' },
-          { name: 'gia_tri', type: 'INTEGER', description: 'Giá trị đơn hàng (VNĐ)' },
-          { name: 'trang_thai', type: 'TEXT', description: 'Trạng thái thanh toán' },
+          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã phim' },
+          { name: 'title', type: 'TEXT', description: 'Tên bộ phim' },
+          { name: 'director', type: 'TEXT', description: 'Đạo diễn' },
+          { name: 'release_year', type: 'INTEGER', description: 'Năm phát hành' },
+          { name: 'genre', type: 'TEXT', description: 'Thể loại' },
+          { name: 'revenue', type: 'INTEGER', description: 'Doanh thu' },
         ],
       },
     ],
     seedSql: [
-      `CREATE TABLE don_hang (
-        ma_don TEXT PRIMARY KEY,
-        khach_hang TEXT NOT NULL,
-        gia_tri INTEGER NOT NULL,
-        trang_thai TEXT NOT NULL
+      `CREATE TABLE Movies (
+        id INTEGER PRIMARY KEY,
+        title TEXT NOT NULL,
+        director TEXT NOT NULL,
+        release_year INTEGER NOT NULL,
+        genre TEXT NOT NULL,
+        revenue INTEGER NOT NULL
       );`,
-      `INSERT INTO don_hang VALUES
-        ('DH-01', 'Trần Văn An', 450000, 'ĐÃ GIAO'),
-        ('DH-02', 'Lê Thị Bình', 1200000, 'ĐÃ GIAO'),
-        ('DH-03', 'Hoàng Minh Tuấn', 2500000, 'CHỜ XỬ LÝ'),
-        ('DH-04', 'Đặng Thu Thảo', 850000, 'ĐÃ HỦY'),
-        ('DH-05', 'Ngô Quốc Bảo', 3100000, 'ĐÃ GIAO');`,
+      `INSERT INTO Movies VALUES
+        (1, 'Inception', 'Christopher Nolan', 2010, 'Action', 836800000),
+        (2, 'Interstellar', 'Christopher Nolan', 2014, 'Sci-Fi', 701700000),
+        (3, 'Avatar', 'James Cameron', 2009, 'Action', 2923000000),
+        (4, 'The Dark Knight', 'Christopher Nolan', 2008, 'Action', 1006000000),
+        (5, 'Titanic', 'James Cameron', 1997, 'Romance', 2257000000);`,
     ],
     exercise: {
-      goal: 'Lọc các đơn hàng có giá trị từ 1,000,000 VNĐ trở lên',
+      goal: "Lấy ra tất cả các cột của các siêu phẩm đạo diễn bởi 'Christopher Nolan'",
       taskDescription:
-        'Viết câu lệnh SQL trích xuất tất cả các cột (`*`) từ bảng `don_hang` với điều kiện `gia_tri >= 1000000`.',
-      starterQuery: `-- Lọc đơn hàng có giá trị >= 1 triệu VNĐ\nSELECT * FROM don_hang WHERE `,
-      expectedQuery: `SELECT * FROM don_hang WHERE gia_tri >= 1000000;`,
+        "Bạn đang tìm kiếm ý tưởng kịch bản và muốn xem lại các siêu phẩm của đạo diễn lừng danh 'Christopher Nolan'. Hãy lấy ra tất cả các cột (`*`) từ bảng `Movies` nơi mà `director = 'Christopher Nolan'`. (Lưu ý: Chữ trong SQL phải được đặt trong dấu nháy đơn ' ').",
+      starterQuery: `-- Viết code của bạn ở đây:\nSELECT *\nFROM Movies\nWHERE director = 'Christopher Nolan';\n`,
+      expectedQuery: `SELECT * FROM Movies WHERE director = 'Christopher Nolan';`,
       hints: [
-        'Sử dụng toán tử so sánh >= sau cột gia_tri.',
-        'Cú pháp hoàn chỉnh: SELECT * FROM don_hang WHERE gia_tri >= 1000000;',
+        "Cú pháp: SELECT * FROM Movies WHERE director = 'Christopher Nolan';",
       ],
       explanation:
-        'Tuyệt vời! Bạn đã lọc thành công các đơn hàng thỏa mãn điều kiện ngân sách.',
+        'Tuyệt vời! Bạn đã sử dụng bộ lọc thần kỳ WHERE để trích xuất chính xác phim của đạo diễn Christopher Nolan.',
     },
     quizzes: [
       {
-        question: 'Điều kiện "tuoi BETWEEN 20 AND 30" có lấy những người đúng 20 tuổi và 30 tuổi không?',
-        options: [
-          'Có, toán tử BETWEEN bao gồm cả hai mốc giá trị biên',
-          'Không, chỉ lấy từ 21 đến 29',
-          'Chỉ lấy 20 tuổi, không lấy 30 tuổi',
-          'Tùy thuộc vào phiên bản CSDL',
-        ],
+        question: 'Mệnh đề nào dùng để lọc dữ liệu trong SQL?',
+        options: ['WHERE', 'FILTER', 'FIND', 'SEARCH'],
         answerIndex: 0,
-        explanation: 'Toán tử BETWEEN a AND b trong chuẩn ANSI SQL tương đương với điều kiện: val >= a AND val <= b (bao gồm cả hai biên).',
+        explanation: 'Mệnh đề WHERE dùng để áp dụng điều kiện lọc trên từng dòng dữ liệu trong bảng.',
       },
     ],
   },
@@ -178,88 +166,66 @@ WHERE tuoi BETWEEN 18 AND 25;`,
     order: 3,
     stage: 'beginner',
     stageTitle: 'Giai Đoạn 1: Nhập Môn',
-    title: 'Lọc Nâng Cao Với LIKE, IN & IS NULL',
-    subtitle: 'Tìm kiếm chuỗi gần đúng và xử lý giá trị khuyết thiếu trong CSDL',
+    title: 'BÀI 3: AND, OR, NOT - Kết Hợp Điều Kiện 🧩',
+    subtitle: 'Nối các tiêu chí lọc phức tạp cho bài toán thực tế',
     category: 'Bộ Lọc Dữ Liệu',
-    timeEstimate: '15 phút',
-    xpReward: 70,
+    timeEstimate: '12 phút',
+    xpReward: 60,
     concept: `
-### 1. Khớp chuỗi mờ với toán tử LIKE
-- Ký tự \`%\`: Đại diện cho 0, 1 hoặc nhiều ký tự bất kỳ.
-  - \`LIKE 'Nguyễn%'\`: Bắt đầu bằng chữ "Nguyễn".
-  - \`LIKE '%gmail.com'\`: Kết thúc bằng đuôi "gmail.com".
-  - \`LIKE '%VIP%'\`: Chứa chữ "VIP" ở bất kỳ vị trí nào.
-
-### 2. Danh sách lựa chọn với IN
-Thay vì viết chuỗi \`OR\` dài dòng (\`tp = 'HN' OR tp = 'SG' OR tp = 'DN'\`), bạn viết ngắn gọn:
-\`\`\`sql
-WHERE thanh_pho IN ('Hà Nội', 'TP.HCM', 'Đà Nẵng');
-\`\`\`
-
-### 3. Kiểm tra giá trị rỗng NULL
-Trong CSDL quan hệ, \`NULL\` nghĩa là **dữ liệu chưa được ghi nhận**. Không thể so sánh bằng \`= NULL\`, bắt buộc phải dùng:
-\`\`\`sql
-WHERE so_dien_thoai IS NULL;
-WHERE so_dien_thoai IS NOT NULL;
-\`\`\`
+### 📖 Lý thuyết Cốt lõi
+Cuộc sống không phải lúc nào cũng chỉ có 1 điều kiện. Đôi khi bạn muốn mua một chiếc điện thoại "Rẻ" **VÀ** "Đẹp". SQL cung cấp cho bạn 3 công cụ nối điều kiện:
+- **\`AND\` (Và):** Dữ liệu phải thỏa mãn CẢ HAI điều kiện (Rất khắt khe).
+- **\`OR\` (Hoặc):** Dữ liệu chỉ cần thỏa mãn MỘT TRONG HAI điều kiện là được (Dễ dãi).
+- **\`NOT\` (Không):** Lọc ra những dữ liệu KHÔNG thỏa mãn điều kiện đó.
     `,
-    syntaxExample: `-- Tìm khách hàng chưa đăng ký số điện thoại và ở Hà Nội
-SELECT ho_ten, email 
-FROM khach_hang 
-WHERE so_dien_thoai IS NULL 
-  AND thanh_pho = 'Hà Nội';`,
+    syntaxExample: `-- Tìm người dùng trên 18 tuổi VÀ đang hoạt động
+SELECT * 
+FROM users 
+WHERE age > 18 AND status = 'active';`,
     schemas: [
       {
-        name: 'khach_hang',
-        description: 'Bảng quản lý hồ sơ thông tin khách hàng',
+        name: 'employees',
+        description: 'Bảng nhân sự công ty',
         columns: [
-          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã khách hàng' },
-          { name: 'ho_ten', type: 'TEXT', description: 'Họ và tên đầy đủ' },
-          { name: 'email', type: 'TEXT', description: 'Địa chỉ thư điện tử' },
-          { name: 'thanh_pho', type: 'TEXT', description: 'Tỉnh/Thành phố sinh sống' },
-          { name: 'so_dien_thoai', type: 'TEXT', description: 'Số liên hệ (có thể rỗng)' },
+          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã nhân viên' },
+          { name: 'name', type: 'TEXT', description: 'Tên nhân viên' },
+          { name: 'department', type: 'TEXT', description: 'Phòng ban' },
+          { name: 'salary', type: 'INTEGER', description: 'Mức lương ($)' },
         ],
       },
     ],
     seedSql: [
-      `CREATE TABLE khach_hang (
+      `CREATE TABLE employees (
         id INTEGER PRIMARY KEY,
-        ho_ten TEXT NOT NULL,
-        email TEXT NOT NULL,
-        thanh_pho TEXT NOT NULL,
-        so_dien_thoai TEXT
+        name TEXT NOT NULL,
+        department TEXT NOT NULL,
+        salary INTEGER NOT NULL
       );`,
-      `INSERT INTO khach_hang VALUES
-        (1, 'Nguyễn Anh Dũng', 'dung.nguyen@fpt.edu.vn', 'Hà Nội', '0912345678'),
-        (2, 'Trần Thu Hà', 'ha.tran@gmail.com', 'TP.HCM', NULL),
-        (3, 'Nguyễn Thị Mai', 'mai.nguyen@yahoo.com', 'Đà Nẵng', '0987654321'),
-        (4, 'Phạm Quốc Cường', 'cuong.pham@fpt.edu.vn', 'Hà Nội', NULL),
-        (5, 'Đỗ Mỹ Linh', 'linh.do@gmail.com', 'Hải Phòng', '0905123987');`,
+      `INSERT INTO employees VALUES
+        (1, 'Nguyen Van A', 'IT', 2500),
+        (2, 'Tran Thi B', 'HR', 1500),
+        (3, 'Le Van C', 'IT', 1800),
+        (4, 'Pham Thi D', 'Sales', 2200),
+        (5, 'Hoang Van E', 'Marketing', 1900);`,
     ],
     exercise: {
-      goal: 'Tìm khách hàng họ "Nguyễn" và chưa cập nhật số điện thoại',
+      goal: "Tìm nhân viên làm việc tại phòng 'IT' HOẶC có lương trên 2000$",
       taskDescription:
-        "Viết câu lệnh SELECT trích xuất các khách hàng có họ bắt đầu bằng 'Nguyễn%' đồng thời số điện thoại bị rỗng (`so_dien_thoai IS NULL`).",
-      starterQuery: `-- Tìm khách hàng họ Nguyễn chưa có SĐT\nSELECT * FROM khach_hang \nWHERE `,
-      expectedQuery: `SELECT * FROM khach_hang WHERE ho_ten LIKE 'Nguyễn%' AND so_dien_thoai IS NULL;`,
+        "Bộ phận HR cần danh sách để phát thưởng cuối năm. Họ muốn tìm các nhân viên (`employees`) làm việc tại phòng 'IT' HOẶC những người có mức lương (`salary`) trên 2000$ (bất kể phòng ban nào).",
+      starterQuery: `-- Viết code của bạn ở đây:\nSELECT *\nFROM employees\nWHERE department = 'IT' OR salary > 2000;\n`,
+      expectedQuery: `SELECT * FROM employees WHERE department = 'IT' OR salary > 2000;`,
       hints: [
-        "Sử dụng toán tử ho_ten LIKE 'Nguyễn%'",
-        "Kết hợp toán tử AND so_dien_thoai IS NULL (chú ý: không viết = NULL).",
+        "Sử dụng toán tử OR giữa 2 điều kiện: department = 'IT' OR salary > 2000",
       ],
       explanation:
-        'Xuất sắc! Bạn đã hiểu rõ cách phối hợp phép lọc chuỗi ký tự đại diện và xử lý giá trị NULL.',
+        'Chính xác! Toán tử OR giúp bạn gom các nhân viên thỏa mãn ít nhất một trong hai tiêu chí.',
     },
     quizzes: [
       {
-        question: 'Tại sao câu lệnh "WHERE so_dien_thoai = NULL" không bao giờ trả về dữ liệu?',
-        options: [
-          'Vì trong SQL, NULL đại diện cho giá trị chưa biết (unknown), mọi phép so sánh với toán tử = đều trả về UNKNOWN',
-          'Vì SQLite không hỗ trợ giá trị NULL',
-          'Vì từ khóa NULL phải viết trong dấu nháy đơn',
-          'Vì lệnh WHERE chỉ hỗ trợ số nguyên',
-        ],
+        question: 'Nếu muốn lấy dữ liệu thỏa mãn điều kiện A HOẶC điều kiện B, ta dùng từ khóa nào?',
+        options: ['OR', 'AND', 'EITHER', 'ANY'],
         answerIndex: 0,
-        explanation: 'Theo chuẩn SQL ba giá trị logic (Three-valued logic), bất kỳ phép so sánh bằng (=) nào với NULL đều sinh ra UNKNOWN (không phải TRUE), do đó phải dùng IS NULL.',
+        explanation: 'Từ khóa OR kiểm tra nếu một trong hai điều kiện đúng thì bản ghi sẽ được chọn.',
       },
     ],
   },
@@ -269,78 +235,66 @@ WHERE so_dien_thoai IS NULL
     order: 4,
     stage: 'beginner',
     stageTitle: 'Giai Đoạn 1: Nhập Môn',
-    title: 'Sắp Xếp ORDER BY & Phân Trang Với LIMIT, OFFSET',
-    subtitle: 'Sắp xếp dữ liệu theo thứ tự ưu tiên và chia trang hiển thị giao diện',
+    title: 'BÀI 4: ORDER BY & LIMIT - Bảng Vàng Danh Dự 🏆',
+    subtitle: 'Sắp xếp danh sách đẹp mắt và hiển thị Top các giá trị cao/thấp nhất',
     category: 'Sắp Xếp & Phân Trang',
     timeEstimate: '12 phút',
     xpReward: 60,
     concept: `
-### 1. Sắp xếp thứ tự với ORDER BY
-- \`ASC\` (Mặc định): Sắp xếp tăng dần (từ nhỏ đến lớn, A $\\rightarrow$ Z).
-- \`DESC\`: Sắp xếp giảm dần (từ lớn đến nhỏ, Z $\\rightarrow$ A).
-- Có thể sắp xếp trên nhiều cột: \`ORDER BY phong_ban ASC, luong DESC\`.
-
-### 2. Giới hạn số dòng với LIMIT & OFFSET
-- \`LIMIT n\`: Chỉ lấy tối đa $n$ dòng kết quả.
-- \`OFFSET k\`: Bỏ qua $k$ dòng đầu tiên.
-- Ứng dụng phân trang: Trang 1: \`LIMIT 10 OFFSET 0\`, Trang 2: \`LIMIT 10 OFFSET 10\`.
+### 📖 Lý thuyết Cốt lõi
+Sau khi đã lọc được dữ liệu, bạn muốn trình bày nó thật đẹp mắt:
+- **\`ORDER BY\` (Sắp xếp theo):** Dùng để sắp xếp dữ liệu. Mặc định là tăng dần (\`ASC\` - Ascending). Nếu muốn sắp xếp giảm dần (ví dụ: từ lớn nhất đến nhỏ nhất), hãy thêm chữ **\`DESC\`** (Descending).
+- **\`LIMIT\` (Giới hạn):** Nếu bảng có 1000 dòng, nhưng bạn chỉ muốn xem "Top 5", hãy dùng \`LIMIT 5\` ở cuối câu lệnh.
     `,
-    syntaxExample: `-- Lấy top 3 sinh viên có điểm thi cao nhất
-SELECT ho_ten, diem_so 
-FROM sinh_vien 
-ORDER BY diem_so DESC 
-LIMIT 3;`,
+    syntaxExample: `-- Lấy Top 5 sản phẩm có giá cao nhất
+SELECT name, price 
+FROM products 
+ORDER BY price DESC 
+LIMIT 5;`,
     schemas: [
       {
-        name: 'sinh_vien',
-        description: 'Bảng theo dõi thành tích học tập sinh viên',
+        name: 'products',
+        description: 'Bảng sản phẩm cửa hàng',
         columns: [
-          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã số sinh viên' },
-          { name: 'ho_ten', type: 'TEXT', description: 'Họ tên sinh viên' },
-          { name: 'chuyen_nganh', type: 'TEXT', description: 'Ngành học' },
-          { name: 'gpa', type: 'REAL', description: 'Điểm trung bình tích lũy thang điểm 4.0' },
+          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã hàng' },
+          { name: 'name', type: 'TEXT', description: 'Tên sản phẩm' },
+          { name: 'price', type: 'INTEGER', description: 'Giá bán ($)' },
         ],
       },
     ],
     seedSql: [
-      `CREATE TABLE sinh_vien (
+      `CREATE TABLE products (
         id INTEGER PRIMARY KEY,
-        ho_ten TEXT NOT NULL,
-        chuyen_nganh TEXT NOT NULL,
-        gpa REAL NOT NULL
+        name TEXT NOT NULL,
+        price INTEGER NOT NULL
       );`,
-      `INSERT INTO sinh_vien VALUES
-        (101, 'Vũ Hải Nam', 'Khoa học dữ liệu', 3.82),
-        (102, 'Bùi Phương Linh', 'Hệ thống thông tin', 3.91),
-        (103, 'Đỗ Hoàng Quân', 'Khoa học dữ liệu', 3.45),
-        (104, 'Nguyễn Trúc Quỳnh', 'Kỹ thuật phần mềm', 3.75),
-        (105, 'Lê Quốc Hưng', 'Khoa học dữ liệu', 3.65),
-        (106, 'Phạm Mai Anh', 'Hệ thống thông tin', 3.95);`,
+      `INSERT INTO products VALUES
+        (1, 'Bàn phím cơ Pro', 120),
+        (2, 'Chuột không dây Silent', 45),
+        (3, 'Tai nghe Chống ồn', 250),
+        (4, 'Miếng lót chuột Gaming', 15),
+        (5, 'Cáp sạc Type-C siêu bền', 20),
+        (6, 'Giá đỡ Laptop kim loại', 35);`,
     ],
     exercise: {
-      goal: 'Tìm sinh viên có điểm GPA cao nhất ngành Khoa học dữ liệu',
+      goal: 'Lấy ra thông tin Top 3 sản phẩm rẻ nhất (giá tăng dần)',
       taskDescription:
-        "Viết câu lệnh SELECT trích xuất sinh viên thuộc ngành `chuyen_nganh = 'Khoa học dữ liệu'`, sắp xếp GPA giảm dần và lấy duy nhất 1 sinh viên dẫn đầu (`LIMIT 1`).",
-      starterQuery: `-- Top 1 GPA Khoa học dữ liệu\nSELECT ho_ten, gpa FROM sinh_vien\nWHERE chuyen_nganh = 'Khoa học dữ liệu'\nORDER BY `,
-      expectedQuery: `SELECT ho_ten, gpa FROM sinh_vien WHERE chuyen_nganh = 'Khoa học dữ liệu' ORDER BY gpa DESC LIMIT 1;`,
+        'Cửa hàng đang có chương trình khuyến mãi "Giá sốc". Hãy lấy ra danh sách toàn bộ thông tin (`*`) của Top 3 sản phẩm (`products`) rẻ nhất (sắp xếp giá `price` tăng dần `ASC`, `LIMIT 3`).',
+      starterQuery: `-- Viết code của bạn ở đây:\nSELECT *\nFROM products\nORDER BY price ASC\nLIMIT 3;\n`,
+      expectedQuery: `SELECT * FROM products ORDER BY price ASC LIMIT 3;`,
       hints: [
-        'Sắp xếp gpa giảm dần bằng ORDER BY gpa DESC',
-        'Giới hạn kết quả trả về 1 dòng bằng LIMIT 1',
+        'Sắp xếp giá tăng dần: ORDER BY price ASC',
+        'Giới hạn 3 kết quả: LIMIT 3',
       ],
       explanation:
-        'Chính xác! Kết hợp ORDER BY DESC và LIMIT là khuôn mẫu kinh điển để tìm giá trị cực đại (Top-N queries) trong mọi bài toán dữ liệu.',
+        'Rất tốt! Cú pháp ORDER BY ... ASC LIMIT 3 giúp bạn lấy chuẩn xác Top 3 sản phẩm giá mềm nhất.',
     },
     quizzes: [
       {
-        question: 'Câu lệnh "SELECT * FROM bang ORDER BY cot_a ASC, cot_b DESC;" có ý nghĩa gì?',
-        options: [
-          'Sắp xếp cot_a tăng dần, nếu cot_a trùng nhau thì sắp xếp cot_b giảm dần',
-          'Chỉ sắp xếp theo cot_b vì nó nằm sau',
-          'Sắp xếp ngẫu nhiên giữa hai cột',
-          'Gây lỗi cú pháp vì ORDER BY chỉ nhận 1 cột',
-        ],
+        question: 'Lệnh nào dùng để sắp xếp kết quả giảm dần trong SQL?',
+        options: ['DESC', 'ASC', 'DOWN', 'REVERSE'],
         answerIndex: 0,
-        explanation: 'SQL hỗ trợ đa mức sắp xếp (multi-column sort): Cột đứng trước được ưu tiên sắp xếp trước, cột đứng sau dùng để phân định thứ tự khi cột trước có giá trị bằng nhau.',
+        explanation: 'Từ khóa DESC (Descending) dùng để sắp xếp dữ liệu theo thứ tự giảm dần.',
       },
     ],
   },
@@ -350,156 +304,149 @@ LIMIT 3;`,
     order: 5,
     stage: 'beginner',
     stageTitle: 'Giai Đoạn 1: Nhập Môn',
-    title: 'Dự Án Tổng Kết: Quản Lý Nhân Sự & Điểm Danh Doanh Nghiệp',
-    subtitle: 'Thực chiến tổng hợp kiến thức giai đoạn 1 trên CSDL công ty công nghệ',
+    title: '🎬 MINI-PROJECT: "Trợ Lý Cửa Hàng Băng Đĩa"',
+    subtitle: 'Vận dụng toàn bộ kiến thức Chặng 1 để giải cứu quản lý cửa hàng phim',
     category: 'Mini-Project Tổng Kết',
     timeEstimate: '20 phút',
     xpReward: 120,
     isCapstoneProject: true,
     concept: `
-### Thử Thách Dự Án Giai Đoạn 1
-Chúc mừng bạn đã hoàn thành các bài học cốt lõi của Giai đoạn Nhập môn! 
-Bây giờ, bạn đóng vai trò là **Chuyên viên Phân tích Dữ liệu Nội bộ** của công ty TechVN.
+### 🎬 Bối cảnh Dự án
+Chúc mừng! Nhờ kỹ năng SQL xuất sắc, bạn vừa được nhận làm Trợ lý Quản lý Cửa hàng Băng đĩa lớn nhất thành phố. Quản lý cửa hàng đang cần gấp một báo cáo để lên kế hoạch nhập hàng tuần tới.
 
-Ban Giám Đốc yêu cầu bạn lập báo cáo danh sách các nhân viên:
-1. Thuộc phòng ban **Kỹ thuật** hoặc **Dữ liệu**.
-2. Có mức lương từ **18,000,000 VNĐ** trở lên.
-3. Có ngày vào làm việc (\`ngay_vao_lam\`) từ năm 2023 trở lại đây (\`>= '2023-01-01'\`).
-4. Kết quả cần sắp xếp theo **mức lương giảm dần**, nếu lương bằng nhau thì sắp xếp theo **họ tên tăng dần**.
+### 📋 Nhiệm vụ từ Quản lý:
+*"Cậu hãy tìm cho tôi danh sách **10 bộ phim Hành động (Action) phát hành sau năm 2010, có doanh thu cao nhất** nhé. Tôi chỉ cần cậu báo cáo tên phim (\`title\`) và doanh thu (\`revenue\`) thôi."*
+
+### 💡 Hướng dẫn từng bước (Hints):
+1. Chọn cột nào? (\`SELECT title, revenue\`)
+2. Từ đâu? (\`FROM Movies\`)
+3. Điều kiện lọc là gì? Chú ý có 2 điều kiện nhé (\`WHERE genre = 'Action' AND release_year > 2010\`)
+4. Sắp xếp thế nào? Doanh thu cao nhất thì phải xếp giảm dần (\`ORDER BY revenue DESC\`)
+5. Lấy bao nhiêu bộ phim? (\`LIMIT 10\`)
     `,
-    syntaxExample: `-- Cấu trúc gợi ý
-SELECT ho_ten, phong_ban, luong, ngay_vao_lam
-FROM nhan_vien
-WHERE phong_ban IN (...)
-  AND luong >= ...
-  AND ngay_vao_lam >= ...
-ORDER BY luong DESC, ho_ten ASC;`,
+    syntaxExample: `-- Lắp ghép 5 bước thành câu lệnh hoàn chỉnh
+SELECT title, revenue
+FROM Movies
+WHERE genre = 'Action' AND release_year > 2010
+ORDER BY revenue DESC
+LIMIT 10;`,
     schemas: [
       {
-        name: 'nhan_vien',
-        description: 'Hồ sơ nhân viên chính thức công ty TechVN',
+        name: 'Movies',
+        description: 'Bảng quản lý danh mục phim cửa hàng',
         columns: [
-          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã nhân viên' },
-          { name: 'ho_ten', type: 'TEXT', description: 'Họ và tên nhân viên' },
-          { name: 'phong_ban', type: 'TEXT', description: 'Phòng ban làm việc' },
-          { name: 'luong', type: 'INTEGER', description: 'Lương cơ bản tháng (VNĐ)' },
-          { name: 'ngay_vao_lam', type: 'TEXT', description: 'Ngày ký hợp đồng (YYYY-MM-DD)' },
+          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã phim' },
+          { name: 'title', type: 'TEXT', description: 'Tên phim' },
+          { name: 'genre', type: 'TEXT', description: 'Thể loại' },
+          { name: 'release_year', type: 'INTEGER', description: 'Năm phát hành' },
+          { name: 'revenue', type: 'INTEGER', description: 'Doanh thu phòng vé ($)' },
         ],
       },
     ],
     seedSql: [
-      `CREATE TABLE nhan_vien (
+      `CREATE TABLE Movies (
         id INTEGER PRIMARY KEY,
-        ho_ten TEXT NOT NULL,
-        phong_ban TEXT NOT NULL,
-        luong INTEGER NOT NULL,
-        ngay_vao_lam TEXT NOT NULL
+        title TEXT NOT NULL,
+        genre TEXT NOT NULL,
+        release_year INTEGER NOT NULL,
+        revenue INTEGER NOT NULL
       );`,
-      `INSERT INTO nhan_vien VALUES
-        (1, 'Phạm Hoàng Long', 'Kỹ thuật', 22000000, '2023-04-15'),
-        (2, 'Nguyễn Diệu Linh', 'Nhân sự', 16000000, '2022-08-01'),
-        (3, 'Trần Minh Đức', 'Dữ liệu', 25000000, '2023-01-10'),
-        (4, 'Lê Văn Cường', 'Kỹ thuật', 17500000, '2023-06-20'),
-        (5, 'Đặng Mai Phương', 'Dữ liệu', 22000000, '2024-02-01'),
-        (6, 'Vũ Thành Trung', 'Kinh doanh', 24000000, '2023-03-12');`,
+      `INSERT INTO Movies VALUES
+        (1, 'The Dark Knight', 'Action', 2008, 1006000000),
+        (2, 'The Avengers', 'Action', 2012, 1518000000),
+        (3, 'Inception', 'Action', 2010, 836800000),
+        (4, 'Avengers: Endgame', 'Action', 2019, 2797000000),
+        (5, 'Mad Max: Fury Road', 'Action', 2015, 380400000),
+        (6, 'John Wick: Chapter 4', 'Action', 2023, 440100000),
+        (7, 'Titanic', 'Romance', 1997, 2257000000),
+        (8, 'Spider-Man: No Way Home', 'Action', 2021, 1921000000),
+        (9, 'Interstellar', 'Sci-Fi', 2014, 701700000),
+        (10, 'Top Gun: Maverick', 'Action', 2022, 1495000000),
+        (11, 'Black Panther', 'Action', 2018, 1349000000),
+        (12, 'Skyfall', 'Action', 2012, 1108000000),
+        (13, 'Mission: Impossible - Fallout', 'Action', 2018, 791600000);`,
     ],
     exercise: {
-      goal: 'Lập danh sách nhân sự thỏa mãn toàn bộ tiêu chí của Ban Giám Đốc',
+      goal: 'Báo cáo 10 phim Action sau 2010 có doanh thu cao nhất',
       taskDescription:
-        "Trích xuất `ho_ten, phong_ban, luong, ngay_vao_lam` của các nhân viên thuộc phòng 'Kỹ thuật' hoặc 'Dữ liệu', có lương >= 18000000, vào làm từ '2023-01-01', sắp xếp `luong DESC, ho_ten ASC`.",
-      starterQuery: `-- Dự án Giai đoạn 1: Báo cáo nhân sự ưu tú\nSELECT ho_ten, phong_ban, luong, ngay_vao_lam\nFROM nhan_vien\nWHERE `,
-      expectedQuery: `SELECT ho_ten, phong_ban, luong, ngay_vao_lam FROM nhan_vien WHERE phong_ban IN ('Kỹ thuật', 'Dữ liệu') AND luong >= 18000000 AND ngay_vao_lam >= '2023-01-01' ORDER BY luong DESC, ho_ten ASC;`,
+        "Lấy 2 cột `title` và `revenue` từ bảng `Movies` với điều kiện `genre = 'Action' AND release_year > 2010`, sắp xếp `ORDER BY revenue DESC LIMIT 10`.",
+      starterQuery: `-- Hãy lắp ghép 5 bước thành 1 câu lệnh hoàn chỉnh:\nSELECT title, revenue\nFROM Movies\nWHERE genre = 'Action' AND release_year > 2010\nORDER BY revenue DESC\nLIMIT 10;\n`,
+      expectedQuery: `SELECT title, revenue FROM Movies WHERE genre = 'Action' AND release_year > 2010 ORDER BY revenue DESC LIMIT 10;`,
       hints: [
-        "Dùng phong_ban IN ('Kỹ thuật', 'Dữ liệu')",
-        "Kết hợp AND luong >= 18000000 AND ngay_vao_lam >= '2023-01-01'",
-        'Sắp xếp cuối cùng: ORDER BY luong DESC, ho_ten ASC',
+        "SELECT title, revenue FROM Movies WHERE genre = 'Action' AND release_year > 2010 ORDER BY revenue DESC LIMIT 10;",
       ],
       explanation:
-        'XUẤT SẮC! Bạn đã chính thức vượt qua Giai Đoạn 1: Nhập Môn với dự án tổng kết hoàn hảo!',
+        'VINH DANH NGƯỜI GÁC CỔNG DỮ LIỆU! Bạn đã vượt qua toàn bộ thử thách của Giai đoạn 1 một cách ngoạn mục!',
     },
   },
 
   // =========================================================================
-  // GIAI ĐOẠN 2: TRUNG CẤP (INTERMEDIATE)
+  // GIAI ĐOẠN 2: TRUNG CẤP (INTERMEDIATE) - PHÂN TÍCH VÀ KẾT NỐI DỮ LIỆU 🧠
   // =========================================================================
   {
     id: 'sql-201',
     order: 6,
     stage: 'intermediate',
     stageTitle: 'Giai Đoạn 2: Trung Cấp',
-    title: 'Hàm Tổng Hợp Dữ Liệu: COUNT, SUM, AVG, MIN, MAX',
-    subtitle: 'Rút trích các chỉ số thống kê đo lường hiệu quả kinh doanh',
+    title: 'BÀI 1: AGGREGATE FUNCTIONS - "Chiếc Máy Tính Bỏ Túi" Của SQL 🧮',
+    subtitle: 'Nắm vững các hàm tổng hợp tính toán tức thì chỉ số doanh thu',
     category: 'Tổng Hợp Dữ Liệu',
     timeEstimate: '15 phút',
     xpReward: 80,
     concept: `
-### Các hàm tổng hợp cốt lõi (Aggregate Functions)
-- \`COUNT(*)\`: Đếm tổng số lượng hàng được quét.
-- \`COUNT(cot)\`: Đếm số lượng giá trị không bị \`NULL\`.
-- \`SUM(cot_so)\`: Tính tổng các giá trị số.
-- \`AVG(cot_so)\`: Tính giá trị trung bình cộng.
-- \`MIN(cot)\` / \`MAX(cot)\`: Tìm giá trị nhỏ nhất và lớn nhất.
-
-> [!NOTE]
-> Khi sử dụng hàm tổng hợp mà không có \`GROUP BY\`, câu truy vấn sẽ luôn trả về duy nhất **1 dòng kết quả**.
+### 📖 Lý thuyết Cốt lõi
+Nếu sếp hỏi bạn: *"Tháng này chúng ta bán được bao nhiêu tiền?"*, bạn không thể in ra hàng ngàn dòng hóa đơn rồi tự bấm máy tính được. SQL trang bị sẵn cho bạn các **Hàm tổng hợp (Aggregate Functions)** để làm việc đó trong chớp mắt:
+- \`COUNT()\`: Đếm số lượng dòng.
+- \`SUM()\`: Tính tổng.
+- \`AVG()\`: Tính trung bình cộng (Average).
+- \`MAX()\`: Tìm giá trị lớn nhất.
+- \`MIN()\`: Tìm giá trị nhỏ nhất.
     `,
-    syntaxExample: `SELECT 
-  COUNT(*) AS tong_so_sach,
-  AVG(gia_ban) AS gia_trung_binh,
-  MAX(gia_ban) AS sach_dat_nhat
-FROM kho_sach;`,
+    syntaxExample: `-- Tính mức lương trung bình của toàn bộ nhân viên
+SELECT AVG(salary) 
+FROM employees;`,
     schemas: [
       {
-        name: 'kho_sach',
-        description: 'Bảng quản lý tựa sách và tồn kho nhà sách',
+        name: 'Orders',
+        description: 'Bảng theo dõi đơn hàng bán lẻ',
         columns: [
-          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã sách' },
-          { name: 'ten_sach', type: 'TEXT', description: 'Tên tác phẩm' },
-          { name: 'the_loai', type: 'TEXT', description: 'Thể loại sách' },
-          { name: 'gia_ban', type: 'INTEGER', description: 'Giá bán niêm yết (VNĐ)' },
-          { name: 'so_luong', type: 'INTEGER', description: 'Số lượng sách trong kho' },
+          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã đơn' },
+          { name: 'customer_id', type: 'INTEGER', description: 'Mã khách' },
+          { name: 'amount', type: 'INTEGER', description: 'Giá trị đơn ($)' },
         ],
       },
     ],
     seedSql: [
-      `CREATE TABLE kho_sach (
+      `CREATE TABLE Orders (
         id INTEGER PRIMARY KEY,
-        ten_sach TEXT NOT NULL,
-        the_loai TEXT NOT NULL,
-        gia_ban INTEGER NOT NULL,
-        so_luong INTEGER NOT NULL
+        customer_id INTEGER NOT NULL,
+        amount INTEGER NOT NULL
       );`,
-      `INSERT INTO kho_sach VALUES
-        (1, 'Học SQL Thực Chiến', 'Công nghệ', 150000, 80),
-        (2, 'Nhập Môn Khoa Học Dữ Liệu', 'Công nghệ', 220000, 45),
-        (3, 'Tâm Lý Học Về Tiền', 'Kinh tế', 180000, 110),
-        (4, 'Khởi Nghiệp Tinh Gọn', 'Kinh tế', 165000, 60),
-        (5, 'Thiết Kế CSDL Hiện Đại', 'Công nghệ', 280000, 25);`,
+      `INSERT INTO Orders VALUES
+        (1, 101, 150),
+        (2, 102, 320),
+        (3, 101, 450),
+        (4, 103, 80),
+        (5, 102, 600);`,
     ],
     exercise: {
-      goal: 'Tính tổng số lượng sách và giá bán bình quân của thể loại Công nghệ',
+      goal: 'Tính Tổng doanh thu (amount) và Số lượng đơn hàng đã bán ra',
       taskDescription:
-        "Viết câu lệnh SELECT tính `SUM(so_luong) AS tong_kho` và `AVG(gia_ban) AS gia_tb` cho các cuốn sách thuộc `the_loai = 'Công nghệ'`.",
-      starterQuery: `-- Tính tổng kho và giá trung bình sách Công nghệ\nSELECT `,
-      expectedQuery: `SELECT SUM(so_luong) AS tong_kho, AVG(gia_ban) AS gia_tb FROM kho_sach WHERE the_loai = 'Công nghệ';`,
+        'Kế toán trưởng cần chốt sổ tháng. Từ bảng `Orders`, hãy tính Tổng doanh thu (`SUM(amount) AS total_revenue`) và Số lượng đơn hàng (`COUNT(*) AS total_orders`).',
+      starterQuery: `-- Viết code của bạn ở đây:\nSELECT SUM(amount) AS total_revenue, COUNT(*) AS total_orders\nFROM Orders;\n`,
+      expectedQuery: `SELECT SUM(amount) AS total_revenue, COUNT(*) AS total_orders FROM Orders;`,
       hints: [
-        "Sử dụng SUM(so_luong) AS tong_kho, AVG(gia_ban) AS gia_tb",
-        "Lọc điều kiện trước: WHERE the_loai = 'Công nghệ'",
+        'Dùng: SELECT SUM(amount) AS total_revenue, COUNT(*) AS total_orders FROM Orders;',
       ],
       explanation:
-        'Chính xác! Bạn đã nắm chắc kỹ thuật kết hợp mệnh đề WHERE lọc trước khi hàm tổng hợp thực thi.',
+        'Bạn vừa làm công việc của kế toán trong vòng 2 giây! ✅ Pass xuất sắc!',
     },
     quizzes: [
       {
-        question: 'Điều gì xảy ra khi hàm SUM() gặp một giá trị NULL trong cột tính toán?',
-        options: [
-          'Hàm SUM tự động bỏ qua các giá trị NULL và chỉ tính tổng các giá trị hợp lệ',
-          'Trả về lỗi cú pháp',
-          'Toàn bộ kết quả SUM sẽ trở thành NULL',
-          'Coi giá trị NULL là số âm',
-        ],
+        question: 'Hàm nào trong SQL dùng để đếm số lượng dòng dữ liệu?',
+        options: ['COUNT()', 'SUM()', 'NUMBER()', 'TOTAL()'],
         answerIndex: 0,
-        explanation: 'Chuẩn ANSI SQL quy định các hàm tổng hợp như SUM, AVG, MIN, MAX tự động bỏ qua (ignore) các giá trị NULL trong quá trình tính toán.',
+        explanation: 'Hàm COUNT(*) dùng để đếm tổng số lượng bản ghi trả về.',
       },
     ],
   },
@@ -509,76 +456,66 @@ FROM kho_sach;`,
     order: 7,
     stage: 'intermediate',
     stageTitle: 'Giai Đoạn 2: Trung Cấp',
-    title: 'Gom Nhóm GROUP BY & Bộ Lọc Sau Nhóm HAVING',
-    subtitle: 'Phân tích dữ liệu theo từng nhóm danh mục và lọc kết quả tổng hợp',
+    title: 'BÀI 2: GROUP BY & HAVING - Nghệ Thuật Chia Để Trị 📦',
+    subtitle: 'Gom nhóm theo từng thực thể và lọc kết quả sau khi đã tổng hợp',
     category: 'Tổng Hợp Dữ Liệu',
     timeEstimate: '18 phút',
     xpReward: 90,
     concept: `
-### 1. Gom nhóm với GROUP BY
-\`GROUP BY\` chia các hàng thành các nhóm dựa trên giá trị của một hoặc nhiều cột. Sau đó, các hàm tổng hợp (\`COUNT\`, \`SUM\`, \`AVG\`) được áp dụng độc lập cho từng nhóm.
-
-### 2. Sự khác biệt cốt tử giữa WHERE và HAVING:
-| Tiêu chí | Mệnh đề WHERE | Mệnh đề HAVING |
-| :--- | :--- | :--- |
-| **Thời điểm thực thi** | Lọc **trước** khi gom nhóm | Lọc **sau** khi đã gom nhóm |
-| **Dùng với hàm tổng hợp** | ❌ Không được phép (\`WHERE COUNT(*) > 5\` lỗi) | ✅ Được phép (\`HAVING COUNT(*) > 5\`) |
-| **Phạm vi lọc** | Từng dòng dữ liệu cá lẻ | Cả một nhóm dữ liệu |
+### 📖 Lý thuyết Cốt lõi
+Dùng hàm tổng hợp ở Bài 1 sẽ gom *toàn bộ* dữ liệu thành 1 dòng duy nhất. Nhưng nếu sếp muốn biết *"Doanh thu **của từng** phòng ban là bao nhiêu?"* thì sao?
+- **\`GROUP BY\`**: Giúp bạn gom nhóm dữ liệu theo một tiêu chí nào đó (Ví dụ: Gom nhóm theo phòng ban).
+- **\`HAVING\`**: Nếu \`WHERE\` dùng để lọc từng *dòng*, thì \`HAVING\` dùng để lọc các *nhóm* SAU KHI đã dùng \`GROUP BY\`.
     `,
-    syntaxExample: `-- Tìm các phòng ban có lương trung bình trên 20 triệu
-SELECT phong_ban, AVG(luong) AS luong_tb, COUNT(*) AS so_luong
-FROM nhan_vien
-GROUP BY phong_ban
-HAVING AVG(luong) > 20000000;`,
+    syntaxExample: `-- Đếm nhân viên từng phòng ban có trên 5 người
+SELECT department, COUNT(*) 
+FROM employees 
+GROUP BY department 
+HAVING COUNT(*) > 5;`,
     schemas: [
       {
-        name: 'giao_dich',
-        description: 'Chi tiết các giao dịch mua hàng theo khách',
+        name: 'Orders',
+        description: 'Bảng đơn hàng bán buôn',
         columns: [
-          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã giao dịch' },
-          { name: 'khach_hang_id', type: 'INTEGER', description: 'Mã khách hàng' },
-          { name: 'so_tien', type: 'INTEGER', description: 'Giá trị giao dịch (VNĐ)' },
+          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã đơn' },
+          { name: 'customer_id', type: 'INTEGER', description: 'Mã khách' },
+          { name: 'amount', type: 'INTEGER', description: 'Số tiền' },
         ],
       },
     ],
     seedSql: [
-      `CREATE TABLE giao_dich (
+      `CREATE TABLE Orders (
         id INTEGER PRIMARY KEY,
-        khach_hang_id INTEGER NOT NULL,
-        so_tien INTEGER NOT NULL
+        customer_id INTEGER NOT NULL,
+        amount INTEGER NOT NULL
       );`,
-      `INSERT INTO giao_dich VALUES
-        (1, 101, 500000),
-        (2, 102, 1200000),
-        (3, 101, 800000),
-        (4, 103, 2000000),
-        (5, 101, 1500000),
-        (6, 102, 300000);`,
+      `INSERT INTO Orders VALUES
+        (1, 101, 100), (2, 101, 150), (3, 101, 200), (4, 101, 250), (5, 101, 300), (6, 101, 350),
+        (7, 102, 500), (8, 102, 600), (9, 103, 50);`,
     ],
     exercise: {
-      goal: 'Tìm khách hàng đã mua từ 2 đơn trở lên và có tổng chi tiêu trên 2,000,000 VNĐ',
+      goal: 'Tìm các mã khách hàng có tổng số đơn hàng đã mua lớn hơn 5',
       taskDescription:
-        'Viết truy vấn trích xuất `khach_hang_id`, số lượng đơn `COUNT(*) AS tong_don`, và tổng tiền `SUM(so_tien) AS tong_chi_tieu` từ bảng `giao_dich`, gom nhóm theo `khach_hang_id` và lọc với `HAVING COUNT(*) >= 2 AND SUM(so_tien) > 2000000`.',
-      starterQuery: `-- Tìm khách hàng VIP theo tiêu chí HAVING\nSELECT khach_hang_id, COUNT(*) AS tong_don, SUM(so_tien) AS tong_chi_tieu\nFROM giao_dich\nGROUP BY `,
-      expectedQuery: `SELECT khach_hang_id, COUNT(*) AS tong_don, SUM(so_tien) AS tong_chi_tieu FROM giao_dich GROUP BY khach_hang_id HAVING COUNT(*) >= 2 AND SUM(so_tien) > 2000000;`,
+        'Chăm sóc khách hàng muốn tặng quà cho các "khách sộp". Bạn hãy tìm từ bảng `Orders` những mã khách hàng (`customer_id`) có tổng số đơn hàng đã mua lớn hơn 5 (`HAVING COUNT(*) > 5`).',
+      starterQuery: `-- Viết code của bạn ở đây:\nSELECT customer_id, COUNT(*) AS total_orders\nFROM Orders\nGROUP BY customer_id\nHAVING COUNT(*) > 5;\n`,
+      expectedQuery: `SELECT customer_id, COUNT(*) AS total_orders FROM Orders GROUP BY customer_id HAVING COUNT(*) > 5;`,
       hints: [
-        'Gom nhóm: GROUP BY khach_hang_id',
-        'Lọc nhóm: HAVING COUNT(*) >= 2 AND SUM(so_tien) > 2000000',
+        'Cú pháp: GROUP BY customer_id HAVING COUNT(*) > 5',
       ],
       explanation:
-        'Rất xuất sắc! Bạn đã phân biệt và áp dụng chuẩn xác mệnh đề HAVING để lọc kết quả tổng hợp.',
+        'Tuyệt vời! Bạn đã lọc ra chính xác khách hàng 101 với 6 đơn hàng thỏa mãn điều kiện HAVING.',
     },
     quizzes: [
       {
-        question: 'Câu lệnh sau đây bị lỗi ở đâu: "SELECT phong_ban FROM nhan_vien WHERE COUNT(*) > 5 GROUP BY phong_ban;"?',
+        question: 'Điểm khác biệt chính giữa WHERE và HAVING là gì?',
         options: [
-          'Hàm COUNT(*) không được phép đặt trong mệnh đề WHERE; phải dùng HAVING COUNT(*) > 5 đặt sau GROUP BY',
-          'Không được phép GROUP BY trên cột phong_ban',
-          'Phải viết GROUP BY trước WHERE',
-          'Câu lệnh không có lỗi',
+          'WHERE lọc dòng trước khi gom nhóm, HAVING lọc nhóm sau khi GROUP BY',
+          'WHERE chỉ dùng cho số, HAVING chỉ dùng cho chữ',
+          'HAVING chạy nhanh hơn WHERE',
+          'Không có điểm khác nhau nào',
         ],
         answerIndex: 0,
-        explanation: 'Mệnh đề WHERE thực thi trước khi các hàm tổng hợp được tính toán, do đó không thể chứa hàm tổng hợp. Cần chuyển điều kiện sang HAVING sau GROUP BY.',
+        explanation: 'WHERE lọc các bản ghi độc lập trước khi thực hiện gom nhóm; HAVING lọc các nhóm dữ liệu sau khi hàm tổng hợp đã được tính.',
       },
     ],
   },
@@ -588,86 +525,76 @@ HAVING AVG(luong) > 20000000;`,
     order: 8,
     stage: 'intermediate',
     stageTitle: 'Giai Đoạn 2: Trung Cấp',
-    title: 'Kết Nối Bảng Cốt Lõi Với INNER JOIN',
-    subtitle: 'Nối các thực thể dữ liệu bằng khóa ngoại (Foreign Key)',
+    title: 'BÀI 3: INNER & LEFT JOIN - Tuyệt Chiêu Ghép "Lego" 🧩',
+    subtitle: 'Nối các mảnh ghép dữ liệu từ nhiều bảng thành bức tranh hoàn chỉnh',
     category: 'Ghép Bảng (JOINs)',
     timeEstimate: '20 phút',
     xpReward: 90,
     concept: `
-### Tại sao cần tách nhiều bảng & JOIN?
-Để tránh trùng lặp dữ liệu, thông tin khách hàng được lưu ở bảng \`khach_hang\`, còn đơn hàng lưu ở \`don_hang\`. Hai bảng được liên kết với nhau qua **Khóa chính (Primary Key - PK)** và **Khóa ngoại (Foreign Key - FK)**.
-
-### Bản chất của INNER JOIN
-\`INNER JOIN\` chỉ giữ lại những hàng mà điều kiện kết nối (\`ON\`) trả về \`TRUE\` ở **cả hai bảng**. Những hàng ở bảng A không có bản ghi tương ứng ở bảng B sẽ bị loại bỏ.
+### 📖 Lý thuyết Cốt lõi
+Trong thực tế, dữ liệu không bao giờ nằm chung ở một bảng. Tên khách hàng nằm ở bảng \`Customers\`, nhưng tiền mua hàng lại nằm ở bảng \`Orders\`. Để phân tích, ta phải "nối" (JOIN) chúng lại với nhau thông qua một cột chung (thường là \`ID\`).
+- **\`INNER JOIN\`**: Chỉ lấy những dữ liệu **có sự khớp nhau** ở cả 2 bảng (Phần giao nhau).
+- **\`LEFT JOIN\`**: Lấy **tất cả** dữ liệu ở bảng bên trái, và những dữ liệu khớp ở bảng bên phải (Nếu không khớp, dữ liệu bên phải sẽ trả về rỗng - NULL).
     `,
-    syntaxExample: `SELECT dh.ma_don, kh.ho_ten, dh.so_tien
-FROM don_hang dh
-INNER JOIN khach_hang kh ON dh.khach_hang_id = kh.id;`,
+    syntaxExample: `-- Ghép tên khách hàng với ngày mua hàng
+SELECT a.name, b.order_date 
+FROM customers a 
+JOIN orders b ON a.id = b.customer_id;`,
     schemas: [
       {
-        name: 'khach_hang',
-        description: 'Bảng người dùng',
+        name: 'Students',
+        description: 'Bảng học sinh',
         columns: [
-          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã khách hàng' },
-          { name: 'ho_ten', type: 'TEXT', description: 'Tên khách' },
-          { name: 'thanh_pho', type: 'TEXT', description: 'Thành phố' },
+          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã học sinh' },
+          { name: 'student_name', type: 'TEXT', description: 'Tên học sinh' },
         ],
       },
       {
-        name: 'hoa_don',
-        description: 'Bảng hóa đơn bán hàng',
+        name: 'Scores',
+        description: 'Bảng điểm thi',
         columns: [
-          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã hóa đơn' },
-          { name: 'khach_hang_id', type: 'INTEGER', description: 'Mã khách (FK)' },
-          { name: 'tong_tien', type: 'INTEGER', description: 'Giá trị hóa đơn' },
+          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã kết quả' },
+          { name: 'student_id', type: 'INTEGER', description: 'Mã học sinh (FK)' },
+          { name: 'score', type: 'INTEGER', description: 'Điểm số' },
         ],
-        foreignKeys: [{ fromColumn: 'khach_hang_id', toTable: 'khach_hang', toColumn: 'id' }],
       },
     ],
     seedSql: [
-      `CREATE TABLE khach_hang (
+      `CREATE TABLE Students (
         id INTEGER PRIMARY KEY,
-        ho_ten TEXT NOT NULL,
-        thanh_pho TEXT NOT NULL
+        student_name TEXT NOT NULL
       );`,
-      `CREATE TABLE hoa_don (
+      `CREATE TABLE Scores (
         id INTEGER PRIMARY KEY,
-        khach_hang_id INTEGER NOT NULL,
-        tong_tien INTEGER NOT NULL,
-        FOREIGN KEY (khach_hang_id) REFERENCES khach_hang(id)
+        student_id INTEGER NOT NULL,
+        score INTEGER NOT NULL
       );`,
-      `INSERT INTO khach_hang VALUES
-        (1, 'Đặng Thái Sơn', 'Hà Nội'),
-        (2, 'Nguyễn Hồng Nhung', 'Đà Nẵng'),
-        (3, 'Trịnh Công Sơn', 'TP.HCM');`,
-      `INSERT INTO hoa_don VALUES
-        (1001, 1, 450000),
-        (1002, 1, 950000),
-        (1003, 2, 1200000);`,
+      `INSERT INTO Students VALUES
+        (1, 'Nguyen Van An'),
+        (2, 'Tran Thi Binh'),
+        (3, 'Le Van Cuong');`,
+      `INSERT INTO Scores VALUES
+        (101, 1, 95),
+        (102, 2, 88);`,
     ],
     exercise: {
-      goal: 'Ghép bảng hóa đơn và khách hàng để lấy tên người mua cùng tổng tiền',
+      goal: 'Ghép tên sinh viên từ Students A với điểm số từ Scores B bằng INNER JOIN',
       taskDescription:
-        'Sử dụng `INNER JOIN` nối bảng `hoa_don` (đặt bí danh `hd`) với `khach_hang` (đặt bí danh `kh`) trên điều kiện `hd.khach_hang_id = kh.id`. Trích xuất các cột: `hd.id AS ma_hoa_don`, `kh.ho_ten`, `hd.tong_tien`.',
-      starterQuery: `-- Ghép nối bảng hoa_don và khach_hang bằng INNER JOIN\nSELECT hd.id AS ma_hoa_don, kh.ho_ten, hd.tong_tien\nFROM hoa_don hd\nINNER JOIN `,
-      expectedQuery: `SELECT hd.id AS ma_hoa_don, kh.ho_ten, hd.tong_tien FROM hoa_don hd INNER JOIN khach_hang kh ON hd.khach_hang_id = kh.id;`,
+        'Ghép `tên sinh viên` (`A.student_name`) từ bảng `Students` (Bảng A) với `điểm số` (`B.score`) từ bảng `Scores` (Bảng B). Cột chung để nối là `A.id = B.student_id`. Hãy dùng `INNER JOIN`.',
+      starterQuery: `-- Viết code của bạn ở đây:\nSELECT A.student_name, B.score\nFROM Students A\nINNER JOIN Scores B \nON A.id = B.student_id;\n`,
+      expectedQuery: `SELECT A.student_name, B.score FROM Students A INNER JOIN Scores B ON A.id = B.student_id;`,
       hints: [
-        'Cú pháp: INNER JOIN khach_hang kh ON hd.khach_hang_id = kh.id',
+        'INNER JOIN Scores B ON A.id = B.student_id',
       ],
       explanation:
-        'Chính xác! Bạn thấy rằng khách hàng Trịnh Công Sơn (id=3) chưa mua hàng nên không xuất hiện trong kết quả của INNER JOIN.',
+        'Chính xác! Học sinh Le Van Cuong (id=3) chưa có điểm nên không xuất hiện trong kết quả của INNER JOIN.',
     },
     quizzes: [
       {
-        question: 'Nếu Bảng A có 5 dòng và Bảng B có 0 dòng, kết quả INNER JOIN giữa A và B sẽ có bao nhiêu dòng?',
-        options: [
-          '0 dòng',
-          '5 dòng',
-          'NULL dòng',
-          'Báo lỗi runtime',
-        ],
+        question: 'Khi dùng LEFT JOIN, nếu một dòng ở bảng bên trái không có dòng tương ứng ở bảng bên phải, các cột bên phải sẽ có giá trị gì?',
+        options: ['NULL', '0', 'Báo lỗi', 'Bị xóa bỏ'],
         answerIndex: 0,
-        explanation: 'Vì INNER JOIN đòi hỏi điều kiện kết nối phải thỏa mãn ở cả hai phía, nếu một bảng có 0 dòng thì kết quả luôn là 0 dòng.',
+        explanation: 'LEFT JOIN luôn giữ toàn bộ bảng trái; các cột bên phải nếu không khớp sẽ tự động điền NULL.',
       },
     ],
   },
@@ -677,92 +604,62 @@ INNER JOIN khach_hang kh ON dh.khach_hang_id = kh.id;`,
     order: 9,
     stage: 'intermediate',
     stageTitle: 'Giai Đoạn 2: Trung Cấp',
-    title: 'Kết Nối Mở Rộng LEFT JOIN & Phát Hiện Dữ Liệu Rỗng',
-    subtitle: 'Giữ lại toàn bộ dữ liệu bảng chính và truy tìm các bản ghi mồ côi',
-    category: 'Ghép Bảng (JOINs)',
-    timeEstimate: '20 phút',
-    xpReward: 100,
+    title: 'BÀI 4: CASE WHEN - Tạo Quy Luật Của Riêng Bạn 🏷️',
+    subtitle: 'Mệnh đề IF-THEN-ELSE để phân loại dữ liệu theo ý muốn',
+    category: 'Biến Đổi Dữ Liệu',
+    timeEstimate: '18 phút',
+    xpReward: 90,
     concept: `
-### Bản chất của LEFT JOIN
-\`LEFT JOIN\` giữ lại **toàn bộ các dòng của bảng bên trái (Left table)**:
-- Nếu bảng bên phải có dữ liệu khớp: Lấy dữ liệu bình thường.
-- Nếu bảng bên phải không có dữ liệu khớp: Các cột của bảng bên phải tự động điền giá trị \`NULL\`.
-
-### Kỹ thuật thần thánh: "Tìm đối tượng chưa từng hành động"
-\`\`\`sql
--- Tìm khách hàng chưa từng mua bất kỳ đơn hàng nào
-SELECT kh.ho_ten
-FROM khach_hang kh
-LEFT JOIN don_hang dh ON kh.id = dh.khach_hang_id
-WHERE dh.id IS NULL;
-\`\`\`
+### 📖 Lý thuyết Cốt lõi
+Nếu bạn đã từng dùng hàm \`IF\` trong Excel hoặc lập trình, thì **\`CASE WHEN\`** chính là phiên bản SQL của nó. Nó cho phép bạn đánh giá các điều kiện (IF-THEN-ELSE) để tạo ra một cột dữ liệu hoàn toàn mới dựa trên các quy luật do bạn tự định nghĩa.
     `,
-    syntaxExample: `SELECT tg.ten_tac_gia, COUNT(sp.id) AS so_tac_pham
-FROM tac_gia tg
-LEFT JOIN sach sp ON tg.id = sp.tac_gia_id
-GROUP BY tg.id, tg.ten_tac_gia;`,
+    syntaxExample: `SELECT product_name, price,
+  CASE 
+    WHEN price > 100 THEN 'High' 
+    ELSE 'Low' 
+  END AS price_category
+FROM products;`,
     schemas: [
       {
-        name: 'khoa_hoc',
-        description: 'Danh mục khóa học',
+        name: 'Customers',
+        description: 'Bảng khách hàng thành viên',
         columns: [
-          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã khóa học' },
-          { name: 'ten_khoa', type: 'TEXT', description: 'Tên khóa đào tạo' },
-        ],
-      },
-      {
-        name: 'hoc_vien',
-        description: 'Danh sách học viên đăng ký',
-        columns: [
-          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã học viên' },
-          { name: 'ho_ten', type: 'TEXT', description: 'Tên học viên' },
-          { name: 'khoa_hoc_id', type: 'INTEGER', description: 'Mã khóa học đã ghi danh' },
+          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã khách' },
+          { name: 'customer_name', type: 'TEXT', description: 'Tên khách hàng' },
+          { name: 'points', type: 'INTEGER', description: 'Điểm tích lũy' },
         ],
       },
     ],
     seedSql: [
-      `CREATE TABLE khoa_hoc (
+      `CREATE TABLE Customers (
         id INTEGER PRIMARY KEY,
-        ten_khoa TEXT NOT NULL
+        customer_name TEXT NOT NULL,
+        points INTEGER NOT NULL
       );`,
-      `CREATE TABLE hoc_vien (
-        id INTEGER PRIMARY KEY,
-        ho_ten TEXT NOT NULL,
-        khoa_hoc_id INTEGER
-      );`,
-      `INSERT INTO khoa_hoc VALUES
-        (1, 'SQL Nền Tảng'),
-        (2, 'Python Phân Tích Dữ Liệu'),
-        (3, 'Machine Learning Chuyên Sâu');`,
-      `INSERT INTO hoc_vien VALUES
-        (101, 'Vũ Quốc Huy', 1),
-        (102, 'Trần Minh Tâm', 1),
-        (103, 'Đỗ Bích Phương', 2);`,
+      `INSERT INTO Customers VALUES
+        (1, 'Pham Nhat Vuong', 1500),
+        (2, 'Nguyen Thi Thao', 450),
+        (3, 'Tran Dinh Long', -10),
+        (4, 'Do Anh Dung', 2000);`,
     ],
     exercise: {
-      goal: 'Tìm những khóa học chưa có bất kỳ học viên nào đăng ký',
+      goal: 'Tạo cột Segment phân khúc: > 1000: VIP, >= 0: Normal, còn lại: Spam',
       taskDescription:
-        'Sử dụng `LEFT JOIN` nối bảng `khoa_hoc` (kh) với `hoc_vien` (hv) trên điều kiện `kh.id = hv.khoa_hoc_id`. Lọc lấy các khóa học chưa có học viên nào (`WHERE hv.id IS NULL`), hiển thị cột `kh.ten_khoa`.',
-      starterQuery: `-- Tìm khóa học chưa có học viên đăng ký\nSELECT kh.ten_khoa\nFROM khoa_hoc kh\nLEFT JOIN `,
-      expectedQuery: `SELECT kh.ten_khoa FROM khoa_hoc kh LEFT JOIN hoc_vien hv ON kh.id = hv.khoa_hoc_id WHERE hv.id IS NULL;`,
+        "Team Marketing muốn chạy chiến dịch email. Dựa vào cột `points` trong bảng `Customers`, hãy tạo cột mới `Segment`: điểm > 1000: 'VIP', điểm từ 0 đến 1000: 'Normal', điểm < 0: 'Spam'. Trích xuất `customer_name, points, Segment`.",
+      starterQuery: `-- Viết code của bạn ở đây:\nSELECT customer_name, points,\n  CASE\n    WHEN points > 1000 THEN 'VIP'\n    WHEN points >= 0 THEN 'Normal'\n    ELSE 'Spam'\n  END AS Segment\nFROM Customers;\n`,
+      expectedQuery: `SELECT customer_name, points, CASE WHEN points > 1000 THEN 'VIP' WHEN points >= 0 THEN 'Normal' ELSE 'Spam' END AS Segment FROM Customers;`,
       hints: [
-        'LEFT JOIN hoc_vien hv ON kh.id = hv.khoa_hoc_id',
-        'Thêm điều kiện: WHERE hv.id IS NULL',
+        "CASE WHEN points > 1000 THEN 'VIP' WHEN points >= 0 THEN 'Normal' ELSE 'Spam' END AS Segment",
       ],
       explanation:
-        'Tuyệt vời! Khóa học "Machine Learning Chuyên Sâu" chưa có học viên nào và đã được phát hiện chính xác.',
+        'Xuất sắc! Bạn đã làm chủ cấu trúc CASE WHEN để phân loại khách hàng một cách thông minh.',
     },
     quizzes: [
       {
-        question: 'Khi dùng LEFT JOIN, các dòng ở bảng bên phải không khớp với bảng bên trái sẽ hiển thị giá trị gì?',
-        options: [
-          'Giá trị NULL',
-          'Chuỗi rỗng ""',
-          'Số 0',
-          'Bị loại bỏ hoàn toàn',
-        ],
+        question: 'Từ khóa nào dùng để kết thúc một khối CASE WHEN trong SQL?',
+        options: ['END', 'FINISH', 'STOP', 'DONE'],
         answerIndex: 0,
-        explanation: 'Với LEFT JOIN, khi không có hàng nào ở bảng bên phải khớp với bảng bên trái, SQL sẽ lấp đầy các cột của bảng bên phải bằng giá trị NULL.',
+        explanation: 'Mọi biểu thức CASE WHEN bắt buộc phải được đóng bằng từ khóa END.',
       },
     ],
   },
@@ -772,169 +669,165 @@ GROUP BY tg.id, tg.ten_tac_gia;`,
     order: 10,
     stage: 'intermediate',
     stageTitle: 'Giai Đoạn 2: Trung Cấp',
-    title: 'Dự Án Tổng Kết: Phân Tích Doanh Số & Giỏ Hàng Sàn TMĐT',
-    subtitle: 'Tổng hợp sức mạnh JOINs và GROUP BY trên lược đồ CSDL thương mại điện tử thực tế',
+    title: '🎬 MINI-PROJECT: "Báo Cáo Thương Mại Điện Tử (E-Commerce)"',
+    subtitle: 'Thử thách kết hợp TẤT CẢ kỹ năng JOIN, GROUP BY và CASE WHEN',
     category: 'Mini-Project Tổng Kết',
     timeEstimate: '25 phút',
     xpReward: 150,
     isCapstoneProject: true,
     concept: `
-### Thử Thách Dự Án Giai Đoạn 2
-Bạn là **Lead Data Analyst** của sàn thương mại điện tử ShoppyVN.
-Hệ thống gồm 2 bảng:
-- \`danh_muc\`: Danh mục ngành hàng.
-- \`don_hang\`: Chi tiết doanh thu theo danh mục.
+### 🎬 Bối cảnh Dự án
+Sếp lớn vừa giao cho bạn một bài toán kinh điển của dân phân tích dữ liệu: *"Hãy tìm ra cho tôi 5 khách hàng VIP nhất tháng này để gửi quà tri ân!"*
 
-Ban Giám Đốc muốn một báo cáo tổng hợp:
-1. Hiển thị tên danh mục (\`ten_danh_muc\`).
-2. Tổng doanh thu tích lũy (\`SUM(tong_tien) AS doanh_thu\`).
-3. Tổng số lượng đơn đặt (\`COUNT(dh.id) AS so_don\`).
-4. **Phải hiển thị tất cả các danh mục** (danh mục nào chưa có đơn hàng thì số đơn là 0 và doanh thu có thể là NULL hoặc 0).
-5. Chỉ lấy các danh mục có doanh thu từ 5,000,000 VNĐ trở lên hoặc danh mục mới chưa có doanh thu.
+### 📋 Cơ sở dữ liệu: Bạn có 3 bảng:
+1. \`Users\` (\`id\`, \`name\`)
+2. \`Orders\` (\`id\`, \`user_id\`, \`product_id\`)
+3. \`Products\` (\`id\`, \`price\`)
+
+### 🎯 Nhiệm vụ:
+Tính tổng số tiền mà **mỗi người dùng** đã chi tiêu. Sau đó, phân loại họ thành:
+- Chi tiêu > 500$: 'Thành viên Vàng'
+- Chi tiêu > 200$: 'Thành viên Bạc'
+- Còn lại: 'Thành viên Đồng'
+Chỉ xuất ra danh sách **Top 5 người dùng chi tiêu nhiều nhất**.
     `,
-    syntaxExample: `SELECT dm.ten_danh_muc, SUM(dh.tong_tien) AS doanh_thu, COUNT(dh.id) AS so_don
-FROM danh_muc dm
-LEFT JOIN don_hang dh ON dm.id = dh.danh_muc_id
-GROUP BY dm.id, dm.ten_danh_muc;`,
+    syntaxExample: `SELECT 
+    U.name, 
+    SUM(P.price) AS total_spent,
+    CASE
+        WHEN SUM(P.price) > 500 THEN 'Thành viên Vàng'
+        WHEN SUM(P.price) > 200 THEN 'Thành viên Bạc'
+        ELSE 'Thành viên Đồng'
+    END AS membership_tier
+FROM Users U
+JOIN Orders O ON U.id = O.user_id
+JOIN Products P ON O.product_id = P.id
+GROUP BY U.name
+ORDER BY total_spent DESC
+LIMIT 5;`,
     schemas: [
       {
-        name: 'danh_muc',
-        description: 'Bảng danh mục sản phẩm',
+        name: 'Users',
+        description: 'Bảng người dùng',
         columns: [
-          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã danh mục' },
-          { name: 'ten_danh_muc', type: 'TEXT', description: 'Tên danh mục' },
+          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã người dùng' },
+          { name: 'name', type: 'TEXT', description: 'Họ tên' },
         ],
       },
       {
-        name: 'don_hang',
-        description: 'Bảng đơn hàng bán ra',
+        name: 'Orders',
+        description: 'Bảng đơn hàng',
         columns: [
           { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã đơn' },
-          { name: 'danh_muc_id', type: 'INTEGER', description: 'Mã danh mục' },
-          { name: 'tong_tien', type: 'INTEGER', description: 'Doanh số (VNĐ)' },
+          { name: 'user_id', type: 'INTEGER', description: 'Mã người dùng' },
+          { name: 'product_id', type: 'INTEGER', description: 'Mã sản phẩm' },
+        ],
+      },
+      {
+        name: 'Products',
+        description: 'Bảng sản phẩm',
+        columns: [
+          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã sản phẩm' },
+          { name: 'price', type: 'INTEGER', description: 'Giá tiền ($)' },
         ],
       },
     ],
     seedSql: [
-      `CREATE TABLE danh_muc (
-        id INTEGER PRIMARY KEY,
-        ten_danh_muc TEXT NOT NULL
-      );`,
-      `CREATE TABLE don_hang (
-        id INTEGER PRIMARY KEY,
-        danh_muc_id INTEGER NOT NULL,
-        tong_tien INTEGER NOT NULL
-      );`,
-      `INSERT INTO danh_muc VALUES
-        (1, 'Điện Thoại & Phụ Kiện'),
-        (2, 'Thời Trang Nam'),
-        (3, 'Đồ Gia Dụng'),
-        (4, 'Sách & Văn Phòng Phẩm');`,
-      `INSERT INTO don_hang VALUES
-        (101, 1, 15000000),
-        (102, 1, 8500000),
-        (103, 2, 3200000),
-        (104, 3, 6200000);`,
+      `CREATE TABLE Users (id INTEGER PRIMARY KEY, name TEXT NOT NULL);`,
+      `CREATE TABLE Products (id INTEGER PRIMARY KEY, price INTEGER NOT NULL);`,
+      `CREATE TABLE Orders (id INTEGER PRIMARY KEY, user_id INTEGER NOT NULL, product_id INTEGER NOT NULL);`,
+      `INSERT INTO Users VALUES (1, 'Alice'), (2, 'Bob'), (3, 'Charlie'), (4, 'David'), (5, 'Emma'), (6, 'Frank');`,
+      `INSERT INTO Products VALUES (101, 300), (102, 250), (103, 80), (104, 50);`,
+      `INSERT INTO Orders VALUES
+        (1, 1, 101), (2, 1, 102), (3, 1, 103),
+        (4, 2, 101), (5, 2, 103),
+        (6, 3, 101),
+        (7, 4, 104),
+        (8, 5, 102), (9, 5, 101);`,
     ],
     exercise: {
-      goal: 'Báo cáo doanh số và số đơn theo từng danh mục',
+      goal: 'Báo cáo Top 5 khách hàng chi tiêu nhiều nhất và phân loại thành viên',
       taskDescription:
-        'Sử dụng `LEFT JOIN` giữa `danh_muc` (dm) và `don_hang` (dh) trên `dm.id = dh.danh_muc_id`, gom nhóm `dm.ten_danh_muc`, tính `COUNT(dh.id) AS so_don` và `SUM(dh.tong_tien) AS doanh_thu`, sắp xếp `doanh_thu DESC`.',
-      starterQuery: `-- Báo cáo doanh số ShoppyVN\nSELECT dm.ten_danh_muc, COUNT(dh.id) AS so_don, SUM(dh.tong_tien) AS doanh_thu\nFROM danh_muc dm\nLEFT JOIN `,
-      expectedQuery: `SELECT dm.ten_danh_muc, COUNT(dh.id) AS so_don, SUM(dh.tong_tien) AS doanh_thu FROM danh_muc dm LEFT JOIN don_hang dh ON dm.id = dh.danh_muc_id GROUP BY dm.ten_danh_muc ORDER BY doanh_thu DESC;`,
+        'Nối 3 bảng `Users U`, `Orders O`, `Products P`, tính tổng chi tiêu `SUM(P.price) AS total_spent`, phân loại `membership_tier` (Vàng >500, Bạc >200, Đồng còn lại), gom nhóm theo `U.name`, sắp xếp `ORDER BY total_spent DESC LIMIT 5`.',
+      starterQuery: `-- Dự án kết hợp TẤT CẢ kỹ năng bạn đã học:\nSELECT \n    U.name, \n    SUM(P.price) AS total_spent,\n    CASE\n        WHEN SUM(P.price) > 500 THEN 'Thành viên Vàng'\n        WHEN SUM(P.price) > 200 THEN 'Thành viên Bạc'\n        ELSE 'Thành viên Đồng'\n    END AS membership_tier\nFROM Users U\nJOIN Orders O ON U.id = O.user_id\nJOIN Products P ON O.product_id = P.id\nGROUP BY U.name\nORDER BY total_spent DESC\nLIMIT 5;\n`,
+      expectedQuery: `SELECT U.name, SUM(P.price) AS total_spent, CASE WHEN SUM(P.price) > 500 THEN 'Thành viên Vàng' WHEN SUM(P.price) > 200 THEN 'Thành viên Bạc' ELSE 'Thành viên Đồng' END AS membership_tier FROM Users U JOIN Orders O ON U.id = O.user_id JOIN Products P ON O.product_id = P.id GROUP BY U.name ORDER BY total_spent DESC LIMIT 5;`,
       hints: [
-        'LEFT JOIN don_hang dh ON dm.id = dh.danh_muc_id',
-        'GROUP BY dm.ten_danh_muc',
-        'ORDER BY doanh_thu DESC',
+        'JOIN Orders O ON U.id = O.user_id',
+        'JOIN Products P ON O.product_id = P.id',
+        'GROUP BY U.name ORDER BY total_spent DESC LIMIT 5',
       ],
       explanation:
-        'XUẤT SẮC! Bạn đã làm chủ hoàn toàn các kỹ năng tổng hợp và kết nối đa bảng của Giai đoạn 2!',
+        'VINH DANH BẬC THẦY KẾT NỐI! Bạn đã hoàn thành xuất sắc Mini-Project Giai đoạn 2 và sẵn sàng tiến vào Giai đoạn Nâng cao!',
     },
   },
 
   // =========================================================================
-  // GIAI ĐOẠN 3: NÂNG CAO (ADVANCED)
+  // GIAI ĐOẠN 3: NÂNG CAO (ADVANCED) - MỞ KHÓA "SIÊU NĂNG LỰC" SQL 🦸‍♂️
   // =========================================================================
   {
     id: 'sql-301',
     order: 11,
     stage: 'advanced',
     stageTitle: 'Giai Đoạn 3: Nâng Cao',
-    title: 'Hàm Cửa Sổ (Window Functions): ROW_NUMBER & RANK',
-    subtitle: 'Tính toán phân vị xếp hạng mà không làm gộp dòng như GROUP BY',
-    category: 'Window Functions',
+    title: 'BÀI 1: SUBQUERIES & CTES - Nghệ Thuật Viết Code "Sạch" 🧹',
+    subtitle: 'Tạm biệt Spaghetti Code với Common Table Expressions (WITH)',
+    category: 'Biến Đổi Nâng Cao',
     timeEstimate: '20 phút',
     xpReward: 110,
     concept: `
-### Window Function là gì?
-Khác với \`GROUP BY\` gom nhiều dòng thành 1 dòng, **Window Function** tính toán trên một "cửa sổ các dòng liên quan" nhưng **giữ nguyên từng dòng chi tiết**.
-
-### Cú pháp cốt lõi:
-\`\`\`sql
-FUNCTION() OVER (
-  PARTITION BY cot_chia_nhom 
-  ORDER BY cot_sap_xep [ASC|DESC]
-)
-\`\`\`
-
-### So sánh các hàm xếp hạng:
-- \`ROW_NUMBER()\`: Đánh số thứ tự liên tục 1, 2, 3, 4 (luôn duy nhất, không trùng).
-- \`RANK()\`: Khi có điểm bằng nhau thì cùng hạng, nhưng **nhảy cóc** thứ hạng tiếp theo (1, 2, 2, 4).
-- \`DENSE_RANK()\`: Cùng hạng thì chia sẻ thứ hạng, **không nhảy cóc** (1, 2, 2, 3).
+### 📖 Lý thuyết Cốt lõi
+Thỉnh thoảng, bạn cần lấy kết quả của một câu truy vấn này làm đầu vào cho một câu truy vấn khác:
+- **Subquery (Truy vấn lồng):** Là việc nhét một câu \`SELECT\` vào bên trong mệnh đề \`WHERE\` hoặc \`FROM\`. Nếu lồng 3-4 lớp, code sẽ như một mớ bòng bong (Spaghetti code).
+- **CTE (Common Table Expression - \`WITH\`):** Là "vị cứu tinh". Nó giúp bạn định nghĩa một (hoặc nhiều) "bảng tạm thời" ở ngay đầu file. Code sẽ đọc từ trên xuống dưới, cực kỳ rõ ràng, logic và dễ gỡ lỗi (debug).
     `,
-    syntaxExample: `SELECT 
-  ho_ten, phong_ban, luong,
-  DENSE_RANK() OVER (PARTITION BY phong_ban ORDER BY luong DESC) AS hang_luong
-FROM nhan_vien;`,
+    syntaxExample: `WITH TopUsers AS (
+    SELECT id FROM users LIMIT 10
+)
+SELECT * FROM TopUsers;`,
     schemas: [
       {
-        name: 'doanh_so',
-        description: 'Doanh số bán hàng của nhân viên theo tháng',
+        name: 'Customers',
+        description: 'Bảng khách hàng',
         columns: [
-          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'ID' },
-          { name: 'thang', type: 'TEXT', description: 'Tháng giao dịch' },
-          { name: 'nhan_vien', type: 'TEXT', description: 'Tên nhân viên' },
-          { name: 'doanh_thu', type: 'INTEGER', description: 'Doanh thu đạt được' },
+          { name: 'customer_id', type: 'INTEGER PRIMARY KEY', description: 'Mã khách' },
+          { name: 'name', type: 'TEXT', description: 'Tên' },
+          { name: 'city', type: 'TEXT', description: 'Thành phố' },
+        ],
+      },
+      {
+        name: 'Orders',
+        description: 'Bảng đơn hàng',
+        columns: [
+          { name: 'order_id', type: 'INTEGER PRIMARY KEY', description: 'Mã đơn' },
+          { name: 'customer_id', type: 'INTEGER', description: 'Mã khách' },
+          { name: 'amount', type: 'INTEGER', description: 'Số tiền' },
         ],
       },
     ],
     seedSql: [
-      `CREATE TABLE doanh_so (
-        id INTEGER PRIMARY KEY,
-        thang TEXT NOT NULL,
-        nhan_vien TEXT NOT NULL,
-        doanh_thu INTEGER NOT NULL
-      );`,
-      `INSERT INTO doanh_so VALUES
-        (1, '2026-09', 'Nguyễn Văn A', 45000000),
-        (2, '2026-09', 'Trần Thị B', 62000000),
-        (3, '2026-09', 'Lê Văn C', 38000000),
-        (4, '2026-10', 'Nguyễn Văn A', 58000000),
-        (5, '2026-10', 'Trần Thị B', 51000000);`,
+      `CREATE TABLE Customers (customer_id INTEGER PRIMARY KEY, name TEXT NOT NULL, city TEXT NOT NULL);`,
+      `CREATE TABLE Orders (order_id INTEGER PRIMARY KEY, customer_id INTEGER NOT NULL, amount INTEGER NOT NULL);`,
+      `INSERT INTO Customers VALUES (1, 'Nam', 'Hanoi'), (2, 'Hoa', 'Saigon'), (3, 'Tuan', 'Hanoi'), (4, 'Linh', 'Danang');`,
+      `INSERT INTO Orders VALUES (101, 1, 1200), (102, 2, 800), (103, 3, 1500), (104, 4, 300);`,
     ],
     exercise: {
-      goal: 'Xếp hạng nhân viên đạt doanh số cao nhất trong từng tháng',
+      goal: 'Dùng CTE Hanoi_Customers để tìm các đơn hàng của khách hàng ở Hà Nội',
       taskDescription:
-        'Sử dụng hàm `DENSE_RANK() OVER (PARTITION BY thang ORDER BY doanh_thu DESC) AS xep_hang` để xếp hạng các nhân viên theo từng tháng. Trích xuất `thang, nhan_vien, doanh_thu, xep_hang`.',
-      starterQuery: `-- Xếp hạng nhân viên trong từng tháng\nSELECT thang, nhan_vien, doanh_thu,\n       DENSE_RANK() OVER (`,
-      expectedQuery: `SELECT thang, nhan_vien, doanh_thu, DENSE_RANK() OVER (PARTITION BY thang ORDER BY doanh_thu DESC) AS xep_hang FROM doanh_so;`,
+        "Tạo CTE `Hanoi_Customers` lấy `customer_id` của khách hàng có `city = 'Hanoi'`, sau đó truy vấn bảng `Orders` có `customer_id IN (SELECT customer_id FROM Hanoi_Customers)`.",
+      starterQuery: `-- Chuyển đổi đoạn code thành CTE:\nWITH Hanoi_Customers AS (\n    SELECT customer_id \n    FROM Customers \n    WHERE city = 'Hanoi'\n)\nSELECT * \nFROM Orders\nWHERE customer_id IN (SELECT customer_id FROM Hanoi_Customers);\n`,
+      expectedQuery: `WITH Hanoi_Customers AS (SELECT customer_id FROM Customers WHERE city = 'Hanoi') SELECT * FROM Orders WHERE customer_id IN (SELECT customer_id FROM Hanoi_Customers);`,
       hints: [
-        'Cú pháp: DENSE_RANK() OVER (PARTITION BY thang ORDER BY doanh_thu DESC) AS xep_hang',
+        'Dùng: WITH Hanoi_Customers AS (SELECT customer_id FROM Customers WHERE city = \'Hanoi\') SELECT * FROM Orders WHERE customer_id IN (SELECT customer_id FROM Hanoi_Customers);',
       ],
       explanation:
-        'Chính xác! Bạn thấy mỗi tháng (thang) được chia thành một phân vùng (partition) độc lập để xếp hạng.',
+        'Tuyệt vời! CTE giúp code của bạn có cấu trúc module hóa, rõ ràng và dễ bảo trì.',
     },
     quizzes: [
       {
-        question: 'Nếu hai người cùng có điểm cao nhất là 10, người thứ ba được 9 điểm thì hàm RANK() sẽ gán thứ hạng người thứ ba là bao nhiêu?',
-        options: [
-          'Hạng 3 (vì RANK nhảy cóc: 1, 1, 3)',
-          'Hạng 2 (vì RANK không nhảy cóc)',
-          'Hạng 1.5',
-          'Báo lỗi',
-        ],
+        question: 'Từ khóa nào dùng để bắt đầu định nghĩa một CTE trong SQL?',
+        options: ['WITH', 'LET', 'DEFINE', 'TABLE'],
         answerIndex: 0,
-        explanation: 'Hàm RANK() sẽ nhảy cóc vị trí: hai người đầu đồng hạng 1, vị trí hạng 2 bị chiếm giữ, nên người tiếp theo nhận hạng 3.',
+        explanation: 'Từ khóa WITH được chuẩn SQL dùng để khởi tạo một hoặc nhiều Common Table Expression.',
       },
     ],
   },
@@ -944,72 +837,68 @@ FROM nhan_vien;`,
     order: 12,
     stage: 'advanced',
     stageTitle: 'Giai Đoạn 3: Nâng Cao',
-    title: 'Phân Tích Chuỗi Thời Gian: LEAD, LAG & Lũy Kế',
-    subtitle: 'Tính toán tốc độ tăng trưởng doanh thu so với kỳ trước (MoM Growth)',
+    title: 'BÀI 2: WINDOW FUNCTIONS 1 - Bảng Xếp Hạng Thông Minh 🏅',
+    subtitle: 'Thực hiện phép tính xếp hạng trên nhóm dữ liệu mà VẪN GIỮ NGUYÊN từng dòng',
     category: 'Window Functions',
     timeEstimate: '20 phút',
     xpReward: 120,
     concept: `
-### 1. Hàm độ trễ LEAD và LAG
-- \`LAG(cot, n)\`: Lấy giá trị của dòng phía trước ($n$ bước). Mặc định $n=1$. Dùng để so sánh giá trị hôm nay với hôm qua.
-- \`LEAD(cot, n)\`: Lấy giá trị của dòng kế tiếp trong tương lai.
+### 📖 Lý thuyết Cốt lõi
+\`GROUP BY\` rất tốt, nhưng nó có một nhược điểm chí mạng: Nó "nuốt chửng" các dòng chi tiết và gộp chúng lại thành 1 dòng.
+**Window Functions (Hàm Cửa sổ)** cho phép bạn thực hiện các phép tính tổng hợp (như xếp hạng, tính tổng) trên một nhóm dữ liệu, nhưng **VẪN GIỮ NGUYÊN** số lượng dòng ban đầu.
 
-### 2. Tính tổng dồn lũy kế (Running Total)
-\`\`\`sql
-SUM(doanh_thu) OVER (ORDER BY ngay) AS tong_luy_ke
-\`\`\`
-Phép tính này cộng dồn từng dòng từ đầu danh sách cho đến thời điểm dòng hiện tại.
+Các hàm xếp hạng phổ biến:
+- \`ROW_NUMBER()\`: Đánh số thứ tự 1, 2, 3... (Không bao giờ trùng lặp).
+- \`RANK()\`: Xếp hạng, nếu 2 người bằng điểm nhau cùng hạng 1, người tiếp theo sẽ là hạng 3 (nhảy cóc).
+- \`DENSE_RANK()\`: Giống \`RANK\`, nhưng người tiếp theo sẽ là hạng 2 (không nhảy cóc).
     `,
-    syntaxExample: `SELECT 
-  ngay, doanh_thu,
-  SUM(doanh_thu) OVER (ORDER BY ngay) AS luy_ke,
-  LAG(doanh_thu, 1) OVER (ORDER BY ngay) AS doanh_thu_hom_qua
-FROM doanh_thu_ngay;`,
+    syntaxExample: `SELECT name, 
+       RANK() OVER(ORDER BY score DESC) as rank 
+FROM students;`,
     schemas: [
       {
-        name: 'doanh_thu_ngay',
-        description: 'Báo cáo doanh thu từng ngày trong tuần',
+        name: 'Sales',
+        description: 'Doanh số nhân viên phòng kinh doanh',
         columns: [
-          { name: 'ngay', type: 'TEXT PRIMARY KEY', description: 'Ngày ghi nhận' },
-          { name: 'doanh_thu', type: 'INTEGER', description: 'Doanh thu đạt được trong ngày' },
+          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'ID' },
+          { name: 'employee_name', type: 'TEXT', description: 'Tên nhân viên' },
+          { name: 'department', type: 'TEXT', description: 'Phòng ban' },
+          { name: 'revenue', type: 'INTEGER', description: 'Doanh thu đạt được' },
         ],
       },
     ],
     seedSql: [
-      `CREATE TABLE doanh_thu_ngay (
-        ngay TEXT PRIMARY KEY,
-        doanh_thu INTEGER NOT NULL
+      `CREATE TABLE Sales (
+        id INTEGER PRIMARY KEY,
+        employee_name TEXT NOT NULL,
+        department TEXT NOT NULL,
+        revenue INTEGER NOT NULL
       );`,
-      `INSERT INTO doanh_thu_ngay VALUES
-        ('2026-10-01', 12000000),
-        ('2026-10-02', 15000000),
-        ('2026-10-03', 11000000),
-        ('2026-10-04', 18000000),
-        ('2026-10-05', 20000000);`,
+      `INSERT INTO Sales VALUES
+        (1, 'Alice', 'B2B', 80000),
+        (2, 'Bob', 'B2B', 95000),
+        (3, 'Charlie', 'B2C', 60000),
+        (4, 'David', 'B2C', 75000),
+        (5, 'Emma', 'B2B', 95000);`,
     ],
     exercise: {
-      goal: 'Tính tổng lũy kế doanh thu qua từng ngày',
+      goal: 'Xếp hạng nhân viên kinh doanh trong nội bộ từng phòng ban',
       taskDescription:
-        'Trích xuất `ngay`, `doanh_thu` và tính cột `SUM(doanh_thu) OVER (ORDER BY ngay) AS luy_ke` từ bảng `doanh_thu_ngay`.',
-      starterQuery: `-- Tính lũy kế doanh thu theo ngày\nSELECT ngay, doanh_thu,\n       SUM(doanh_thu) OVER (`,
-      expectedQuery: `SELECT ngay, doanh_thu, SUM(doanh_thu) OVER (ORDER BY ngay) AS luy_ke FROM doanh_thu_ngay;`,
+        'Trưởng phòng kinh doanh muốn trao thưởng cho nhân viên Sales xuất sắc nhất của TỪNG phòng ban. Dùng `PARTITION BY department` kết hợp `RANK()` xếp hạng doanh thu (`revenue`) giảm dần.',
+      starterQuery: `-- Viết code của bạn ở đây:\nSELECT employee_name, department, revenue,\n       RANK() OVER(PARTITION BY department ORDER BY revenue DESC) as dept_rank\nFROM Sales;\n`,
+      expectedQuery: `SELECT employee_name, department, revenue, RANK() OVER(PARTITION BY department ORDER BY revenue DESC) as dept_rank FROM Sales;`,
       hints: [
-        'Cú pháp: SUM(doanh_thu) OVER (ORDER BY ngay) AS luy_ke',
+        'Cú pháp: RANK() OVER(PARTITION BY department ORDER BY revenue DESC) as dept_rank',
       ],
       explanation:
-        'Rất tốt! Running Total là một trong những chỉ số quan trọng nhất trong mọi Dashboard phân tích tài chính.',
+        'Chính xác! Cửa sổ phân vùng (PARTITION BY) giúp bạn tính toán độc lập cho từng phòng ban mà không làm gộp dữ liệu.',
     },
     quizzes: [
       {
-        question: 'Dòng đầu tiên khi sử dụng hàm LAG(doanh_thu, 1) sẽ trả về giá trị gì?',
-        options: [
-          'NULL (vì không có dòng nào phía trước nó)',
-          'Số 0',
-          'Báo lỗi out of bounds',
-          'Giá trị của chính dòng đó',
-        ],
+        question: 'Nếu 2 người đồng hạng 1, hàm RANK() sẽ xếp người tiếp theo là hạng mấy?',
+        options: ['Hạng 3', 'Hạng 2', 'Hạng 1', 'Báo lỗi'],
         answerIndex: 0,
-        explanation: 'Do dòng đầu tiên không có bản ghi đứng trước, LAG(..., 1) mặc định trả về NULL.',
+        explanation: 'Hàm RANK() có cơ chế nhảy cóc thứ hạng khi có giá trị trùng lặp, nên người tiếp theo sẽ là hạng 3.',
       },
     ],
   },
@@ -1019,81 +908,61 @@ FROM doanh_thu_ngay;`,
     order: 13,
     stage: 'advanced',
     stageTitle: 'Giai Đoạn 3: Nâng Cao',
-    title: 'Biểu Thức Bảng Phổ Thông WITH CTE & Tái Sử Dụng',
-    subtitle: 'Viết code SQL sạch sẽ, module hóa và dễ bảo trì với Common Table Expressions',
-    category: 'Biến Đổi Nâng Cao',
+    title: 'BÀI 3: WINDOW FUNCTIONS 2 - Du Hành Thời Gian ⏳',
+    subtitle: 'So sánh dữ liệu dòng hiện tại với dòng quá khứ/tương lai cùng LAG và LEAD',
+    category: 'Window Functions',
     timeEstimate: '20 phút',
     xpReward: 120,
     concept: `
-### Tại sao nên dùng CTE thay vì Subquery lồng nhau?
-Subquery lồng nhiều lớp làm câu lệnh SQL trở thành "mớ bòng bong" khó đọc và khó debug. Mệnh đề \`WITH\` định nghĩa một bảng tạm thời có tên rõ ràng:
-\`\`\`sql
-WITH BangTam_A AS (
-  SELECT ...
-),
-BangTam_B AS (
-  SELECT ... FROM BangTam_A
-)
-SELECT * FROM BangTam_B;
-\`\`\`
+### 📖 Lý thuyết Cốt lõi
+Làm sao để so sánh doanh thu tháng này với tháng trước mà không cần phải nhân bản bảng và JOIN phức tạp? Window Functions mang đến cho bạn cỗ máy thời gian:
+- **\`LAG(cột, n)\`**: Lấy giá trị của dòng **trước** đó \`n\` bước (Nhìn về quá khứ).
+- **\`LEAD(cột, n)\`**: Lấy giá trị của dòng **sau** đó \`n\` bước (Nhìn tới tương lai).
     `,
-    syntaxExample: `WITH DoanhThuTungVung AS (
-  SELECT khu_vuc, SUM(doanh_so) AS tong_ds
-  FROM cua_hang
-  GROUP BY khu_vuc
-)
-SELECT khu_vuc, tong_ds
-FROM DoanhThuTungVung
-WHERE tong_ds > 100000000;`,
+    syntaxExample: `SELECT month, 
+       revenue,
+       LAG(revenue, 1) OVER(ORDER BY month) as prev_month_rev
+FROM Monthly_Sales;`,
     schemas: [
       {
-        name: 'nhan_vien',
-        description: 'Bảng nhân viên và mức lương',
+        name: 'Revenue_Data',
+        description: 'Báo cáo doanh thu hàng tháng',
         columns: [
-          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã nhân viên' },
-          { name: 'ho_ten', type: 'TEXT', description: 'Tên' },
-          { name: 'phong_ban', type: 'TEXT', description: 'Phòng ban' },
-          { name: 'luong', type: 'INTEGER', description: 'Lương tháng' },
+          { name: 'month', type: 'TEXT PRIMARY KEY', description: 'Tháng tài chính' },
+          { name: 'revenue', type: 'INTEGER', description: 'Doanh thu ($)' },
         ],
       },
     ],
     seedSql: [
-      `CREATE TABLE nhan_vien (
-        id INTEGER PRIMARY KEY,
-        ho_ten TEXT NOT NULL,
-        phong_ban TEXT NOT NULL,
-        luong INTEGER NOT NULL
+      `CREATE TABLE Revenue_Data (
+        month TEXT PRIMARY KEY,
+        revenue INTEGER NOT NULL
       );`,
-      `INSERT INTO nhan_vien VALUES
-        (1, 'Lê Hồng Quang', 'IT', 28000000),
-        (2, 'Phan Bích Nga', 'IT', 22000000),
-        (3, 'Đỗ Mạnh Thắng', 'Marketing', 19000000),
-        (4, 'Nguyễn Kiều Trang', 'Marketing', 24000000),
-        (5, 'Trần Quốc Tuấn', 'HR', 17000000);`,
+      `INSERT INTO Revenue_Data VALUES
+        ('2026-01', 50000),
+        ('2026-02', 62000),
+        ('2026-03', 58000),
+        ('2026-04', 75000),
+        ('2026-05', 90000);`,
     ],
     exercise: {
-      goal: 'Dùng CTE tính lương trung bình từng phòng, sau đó lọc phòng có lương TB > 20 triệu',
+      goal: 'Tính doanh thu tháng trước và mức tăng trưởng so với tháng trước (MoM Growth)',
       taskDescription:
-        'Tạo CTE `LuongTrungBinh` gồm `phong_ban` và `AVG(luong) AS luong_tb` từ bảng `nhan_vien` (GROUP BY phong_ban). Truy vấn từ CTE này với điều kiện `luong_tb > 20000000`.',
-      starterQuery: `-- Sử dụng CTE WITH để tính toán trung bình\nWITH LuongTrungBinh AS (\n  SELECT phong_ban, AVG(luong) AS luong_tb\n  FROM nhan_vien\n  GROUP BY phong_ban\n)\nSELECT `,
-      expectedQuery: `WITH LuongTrungBinh AS (SELECT phong_ban, AVG(luong) AS luong_tb FROM nhan_vien GROUP BY phong_ban) SELECT phong_ban, luong_tb FROM LuongTrungBinh WHERE luong_tb > 20000000;`,
+        'Tính doanh thu của tháng trước (`LAG(revenue, 1) OVER(ORDER BY month) AS prev_revenue`), sau đó tính mức chênh lệch `revenue - LAG(revenue, 1) OVER(ORDER BY month) AS growth_amount`.',
+      starterQuery: `-- Viết code của bạn ở đây:\nSELECT month, \n       revenue,\n       LAG(revenue, 1) OVER(ORDER BY month) AS prev_revenue,\n       revenue - LAG(revenue, 1) OVER(ORDER BY month) AS growth_amount\nFROM Revenue_Data;\n`,
+      expectedQuery: `SELECT month, revenue, LAG(revenue, 1) OVER(ORDER BY month) AS prev_revenue, revenue - LAG(revenue, 1) OVER(ORDER BY month) AS growth_amount FROM Revenue_Data;`,
       hints: [
-        'Hoàn thiện câu SELECT từ bảng tạm: SELECT phong_ban, luong_tb FROM LuongTrungBinh WHERE luong_tb > 20000000;',
+        'Dùng LAG(revenue, 1) OVER(ORDER BY month)',
       ],
       explanation:
-        'Tuyệt vời! CTE giúp code của bạn có cấu trúc tuần tự từ trên xuống dưới, cực kỳ dễ đọc và mở rộng.',
+        'Rất xuất sắc! Bạn vừa tính toán chỉ số MoM Growth cốt lõi của mọi công ty công nghệ.',
     },
     quizzes: [
       {
-        question: 'Một bảng tạm CTE định nghĩa trong mệnh đề WITH có lưu trữ dữ liệu vĩnh viễn trên ổ cứng không?',
-        options: [
-          'Không, CTE chỉ tồn tại trong phạm vi thực thi của câu truy vấn đó',
-          'Có, nó tạo ra một bảng thật trong CSDL',
-          'Có, nhưng tự xóa sau 24 giờ',
-          'Tùy vào câu lệnh COMMIT',
-        ],
+        question: 'Hàm nào dùng để nhìn về tương lai (lấy giá trị của dòng kế tiếp)?',
+        options: ['LEAD()', 'LAG()', 'NEXT()', 'FUTURE()'],
         answerIndex: 0,
-        explanation: 'CTE là một cấu trúc tạm thời trong bộ nhớ chỉ tồn tại trong vòng đời thực thi của câu lệnh đơn lẻ.',
+        explanation: 'Hàm LEAD(cột, n) lấy giá trị của dòng phía sau (kế tiếp) trong phân vùng cửa sổ.',
       },
     ],
   },
@@ -1103,87 +972,68 @@ WHERE tong_ds > 100000000;`,
     order: 14,
     stage: 'advanced',
     stageTitle: 'Giai Đoạn 3: Nâng Cao',
-    title: 'Rẽ Nhánh Logic Với CASE WHEN & Hàm COALESCE',
-    subtitle: 'Thực thi logic if-else trực tiếp trong câu lệnh SQL',
-    category: 'Biến Đổi Nâng Cao',
+    title: 'BÀI 4: XỬ LÝ CHUỖI & THỜI GIAN - "Gọt Dũa" Dữ Liệu Thô 🛠️',
+    subtitle: 'Sử dụng các dao mổ chuỗi để trích xuất thông tin sạch từ dữ liệu lộn xộn',
+    category: 'Xử Lý Dữ Liệu',
     timeEstimate: '18 phút',
     xpReward: 110,
     concept: `
-### 1. Mệnh đề CASE WHEN ... THEN ... ELSE ... END
-Cho phép bạn phân loại dữ liệu theo điều kiện:
-\`\`\`sql
-SELECT ho_ten,
-  CASE 
-    WHEN tuoi >= 60 THEN 'Người cao tuổi'
-    WHEN tuoi >= 18 THEN 'Người trưởng thành'
-    ELSE 'Chưa thành niên'
-  END AS nhom_tuoi
-FROM dan_cu;
-\`\`\`
-
-### 2. Hàm thay thế giá trị khuyết COALESCE
-\`COALESCE(val1, val2, ...)\` trả về **giá trị đầu tiên khác NULL** trong danh sách đối số.
-\`\`\`sql
-SELECT ho_ten, COALESCE(so_dien_thoai, email, 'Chưa có thông tin liên hệ') AS lien_he
-FROM khach_hang;
-\`\`\`
+### 📖 Lý thuyết Cốt lõi
+Dữ liệu thực tế thường rất lộn xộn. Bạn cần các "dao mổ" sắc bén để trích xuất thông tin:
+- \`SUBSTR(cột, vị_trí_bắt_đầu, độ_dài)\`: Cắt một đoạn chuỗi.
+- \`INSTR(cột, 'ký_tự')\`: Tìm vị trí đầu tiên của một ký tự trong chuỗi (Ví dụ: vị trí dấu \`@\` trong email).
+- Kết hợp \`SUBSTR(email, INSTR(email, '@') + 1)\` để lấy toàn bộ tên miền sau dấu \`@\`.
     `,
-    syntaxExample: `SELECT ten_san_pham, gia,
-  CASE 
-    WHEN gia > 10000000 THEN 'Cao Cấp'
-    WHEN gia >= 3000000 THEN 'Trung Cấp'
-    ELSE 'Phổ Thông'
-  END AS phan_khuc
-FROM san_pham;`,
+    syntaxExample: `-- Trích xuất domain của email trong SQLite
+SELECT email, 
+       SUBSTR(email, INSTR(email, '@') + 1) AS email_domain
+FROM users;`,
     schemas: [
       {
-        name: 'hoi_vien',
-        description: 'Thông tin điểm tích lũy của khách hàng thân thiết',
+        name: 'Users',
+        description: 'Danh sách tài khoản người dùng',
         columns: [
-          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã hội viên' },
-          { name: 'ho_ten', type: 'TEXT', description: 'Tên hội viên' },
-          { name: 'diem_tich_luy', type: 'INTEGER', description: 'Điểm thưởng' },
-          { name: 'so_dien_thoai', type: 'TEXT', description: 'SĐT (có thể rỗng)' },
+          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã người dùng' },
+          { name: 'name', type: 'TEXT', description: 'Tên người dùng' },
+          { name: 'email', type: 'TEXT', description: 'Địa chỉ email' },
         ],
       },
     ],
     seedSql: [
-      `CREATE TABLE hoi_vien (
+      `CREATE TABLE Users (
         id INTEGER PRIMARY KEY,
-        ho_ten TEXT NOT NULL,
-        diem_tich_luy INTEGER NOT NULL,
-        so_dien_thoai TEXT
+        name TEXT NOT NULL,
+        email TEXT NOT NULL
       );`,
-      `INSERT INTO hoi_vien VALUES
-        (1, 'Phạm Nhật Vượng', 5500, '0981112233'),
-        (2, 'Nguyễn Thị Phương Thảo', 2800, NULL),
-        (3, 'Trần Đình Long', 850, '0913334455'),
-        (4, 'Hồ Hùng Anh', 150, NULL);`,
+      `INSERT INTO Users VALUES
+        (1, 'Nguyen Van A', 'nguyenvana@gmail.com'),
+        (2, 'Tran Thi B', 'tranthib@yahoo.com'),
+        (3, 'Le Van C', 'levanc@outlook.com'),
+        (4, 'Pham Thi D', 'phanthid@gmail.com');`,
     ],
     exercise: {
-      goal: 'Phân hạng hội viên: >= 3000: VIP, >= 1000: Vàng, còn lại: Chuẩn',
+      goal: 'Trích xuất tên miền (domain) nằm ngay sau dấu @ từ cột email',
       taskDescription:
-        "Trích xuất `ho_ten`, `diem_tich_luy`, phân loại `hang_the` bằng `CASE WHEN diem_tich_luy >= 3000 THEN 'VIP' WHEN diem_tich_luy >= 1000 THEN 'Vàng' ELSE 'Chuẩn' END AS hang_the` và dùng `COALESCE(so_dien_thoai, 'Chưa có SĐT') AS sdt`.",
-      starterQuery: `-- Phân hạng hội viên với CASE WHEN và COALESCE\nSELECT ho_ten, diem_tich_luy,\n       CASE \n         WHEN `,
-      expectedQuery: `SELECT ho_ten, diem_tich_luy, CASE WHEN diem_tich_luy >= 3000 THEN 'VIP' WHEN diem_tich_luy >= 1000 THEN 'Vàng' ELSE 'Chuẩn' END AS hang_the, COALESCE(so_dien_thoai, 'Chưa có SĐT') AS sdt FROM hoi_vien;`,
+        "Đội Marketing cần phân tích xem người dùng chủ yếu dùng Gmail, Yahoo hay Outlook. Hãy dùng `SUBSTR(email, INSTR(email, '@') + 1) AS email_domain` từ bảng `Users`.",
+      starterQuery: `-- Viết code của bạn ở đây:\nSELECT email,\n       SUBSTR(email, INSTR(email, '@') + 1) AS email_domain\nFROM Users;\n`,
+      expectedQuery: `SELECT email, SUBSTR(email, INSTR(email, '@') + 1) AS email_domain FROM Users;`,
       hints: [
-        "CASE WHEN diem_tich_luy >= 3000 THEN 'VIP' WHEN diem_tich_luy >= 1000 THEN 'Vàng' ELSE 'Chuẩn' END AS hang_the",
-        "COALESCE(so_dien_thoai, 'Chưa có SĐT') AS sdt",
+        "SUBSTR(email, INSTR(email, '@') + 1) AS email_domain",
       ],
       explanation:
-        'Chính xác! Kết hợp CASE WHEN và COALESCE tạo ra các bảng dữ liệu sạch sẽ, thân thiện cho tầng giao diện người dùng.',
+        'Tuyệt vời! Bạn đã gọt giũa dữ liệu chuỗi thô thành các domain sạch sẽ cho đội Marketing.',
     },
     quizzes: [
       {
-        question: 'Nếu tất cả các điều kiện WHEN đều sai và không có mệnh đề ELSE, khối CASE sẽ trả về giá trị gì?',
+        question: 'Đoạn code sau trả về cái gì:\nWITH CTE AS (SELECT user_id, order_date, ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY order_date ASC) as rn FROM Orders) SELECT * FROM CTE WHERE rn = 1;',
         options: [
-          'NULL',
-          'Chuỗi rỗng',
-          'Báo lỗi biên dịch',
-          'Số 0',
+          'Đơn hàng đầu tiên (cũ nhất) của mỗi người dùng',
+          'Đơn hàng mới nhất của mỗi người dùng',
+          'Tất cả đơn hàng của người dùng số 1',
+          'Báo lỗi cú pháp',
         ],
         answerIndex: 0,
-        explanation: 'Nếu không có điều kiện nào thỏa mãn và không khai báo ELSE, biểu thức CASE WHEN mặc định trả về giá trị NULL.',
+        explanation: 'Vì ORDER BY order_date ASC sắp xếp ngày cũ nhất lên đầu, rn = 1 sẽ chọn ra đơn hàng đầu tiên trong lịch sử của từng người dùng.',
       },
     ],
   },
@@ -1193,145 +1043,156 @@ FROM san_pham;`,
     order: 15,
     stage: 'advanced',
     stageTitle: 'Giai Đoạn 3: Nâng Cao',
-    title: 'Dự Án Tổng Kết: Báo Cáo Doanh Thu Định Kỳ SaaS (MRR) & Tăng Trưởng',
-    subtitle: 'Ứng dụng Window Functions và CTEs để tính toán chỉ số tăng trưởng định kỳ doanh nghiệp',
+    title: '🎬 MINI-PROJECT: "Chuyên Gia Phân Tích Chứng Khoán" 📈',
+    subtitle: 'Xây dựng siêu truy vấn tính biến động giá và đường trung bình động 7 ngày (Moving Average)',
     category: 'Mini-Project Tổng Kết',
     timeEstimate: '30 phút',
     xpReward: 180,
     isCapstoneProject: true,
     concept: `
-### Thử Thách Dự Án Giai Đoạn 3
-Bạn là **Senior Analytics Engineer** của một công ty phần mềm SaaS.
-Bảng \`doanh_thu_thang\` ghi nhận doanh thu định kỳ theo tháng (\`thang\`, \`doanh_thu\`).
+### 🎬 Bối cảnh Dự án
+Bạn được tuyển dụng vào một quỹ phòng hộ (Hedge Fund). Sếp giao cho bạn một bảng dữ liệu lịch sử giá cổ phiếu mã "AAPL" (\`Stock_Prices\`) gồm 2 cột: \`trade_date\` (Ngày giao dịch) và \`close_price\` (Giá đóng cửa).
 
-Ban Điều Hành yêu cầu bạn xây dựng truy vấn chuyên nghiệp:
-1. Hiển thị \`thang\` và \`doanh_thu\` hiện tại.
-2. Dùng hàm \`LAG()\` để lấy doanh thu của tháng liền trước (\`doanh_thu_thang_truoc\`).
-3. Tính mức tăng trưởng chênh lệch tuyệt đối: \`doanh_thu - doanh_thu_thang_truoc\` đặt tên là \`chenh_lech\`.
-4. Tính tổng doanh thu tích lũy từ đầu năm đến tháng hiện tại (\`SUM OVER ORDER BY thang\`) đặt tên là \`tong_luy_ke\`.
+### 📋 Nhiệm vụ từ Sếp:
+*"Tôi cần một bảng báo cáo cho thấy biến động giá của từng ngày so với ngày hôm trước. Đặc biệt, hãy tính cho tôi **Đường trung bình động 7 ngày (7-day Moving Average)** để tôi xem xu hướng đang tăng hay giảm!"*
+
+### 💡 Hướng dẫn từng bước (Hints):
+1. Dùng hàm \`LAG()\` để tạo cột \`prev_price\` (giá ngày hôm trước).
+2. Tạo cột \`price_change\` = \`close_price - prev_price\`.
+3. Dùng hàm \`CASE WHEN\` tạo cột \`trend\`: Nếu giá tăng thì 'UP', giảm thì 'DOWN', bằng thì 'FLAT'.
+4. **Boss Level:** Để tính trung bình 7 ngày qua, dùng: \`AVG(close_price) OVER (ORDER BY trade_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS moving_avg_7d\`.
     `,
-    syntaxExample: `WITH DoanhThuWithLag AS (
-  SELECT thang, doanh_thu,
-         LAG(doanh_thu, 1) OVER (ORDER BY thang) AS dt_truoc,
-         SUM(doanh_thu) OVER (ORDER BY thang) AS luy_ke
-  FROM doanh_thu_thang
-)
-SELECT thang, doanh_thu, dt_truoc,
-       (doanh_thu - dt_truoc) AS tang_truong,
-       luy_ke
-FROM DoanhThuWithLag;`,
+    syntaxExample: `SELECT 
+    trade_date,
+    close_price,
+    LAG(close_price) OVER(ORDER BY trade_date) AS prev_price,
+    close_price - LAG(close_price) OVER(ORDER BY trade_date) AS price_change,
+    CASE 
+        WHEN close_price > LAG(close_price) OVER(ORDER BY trade_date) THEN 'UP'
+        WHEN close_price < LAG(close_price) OVER(ORDER BY trade_date) THEN 'DOWN'
+        ELSE 'FLAT'
+    END AS trend,
+    AVG(close_price) OVER(
+        ORDER BY trade_date 
+        ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+    ) AS moving_avg_7d
+FROM Stock_Prices;`,
     schemas: [
       {
-        name: 'doanh_thu_thang',
-        description: 'Báo cáo doanh thu thuê bao SaaS theo tháng',
+        name: 'Stock_Prices',
+        description: 'Lịch sử giá đóng cửa cổ phiếu công nghệ',
         columns: [
-          { name: 'thang', type: 'TEXT PRIMARY KEY', description: 'Tháng tài chính (YYYY-MM)' },
-          { name: 'doanh_thu', type: 'INTEGER', description: 'Tổng doanh thu định kỳ MRR (VNĐ)' },
+          { name: 'trade_date', type: 'TEXT PRIMARY KEY', description: 'Ngày giao dịch' },
+          { name: 'close_price', type: 'INTEGER', description: 'Giá đóng cửa ($)' },
         ],
       },
     ],
     seedSql: [
-      `CREATE TABLE doanh_thu_thang (
-        thang TEXT PRIMARY KEY,
-        doanh_thu INTEGER NOT NULL
+      `CREATE TABLE Stock_Prices (
+        trade_date TEXT PRIMARY KEY,
+        close_price INTEGER NOT NULL
       );`,
-      `INSERT INTO doanh_thu_thang VALUES
-        ('2026-01', 100000000),
-        ('2026-02', 125000000),
-        ('2026-03', 140000000),
-        ('2026-04', 135000000),
-        ('2026-05', 180000000);`,
+      `INSERT INTO Stock_Prices VALUES
+        ('2026-10-01', 150),
+        ('2026-10-02', 155),
+        ('2026-10-03', 153),
+        ('2026-10-04', 160),
+        ('2026-10-05', 162),
+        ('2026-10-06', 158),
+        ('2026-10-07', 165),
+        ('2026-10-08', 170);`,
     ],
     exercise: {
-      goal: 'Lập báo cáo hoàn chỉnh gồm doanh thu, tháng trước, mức tăng trưởng và lũy kế',
+      goal: 'Báo cáo biến động giá, xu hướng và đường trung bình động 7 ngày',
       taskDescription:
-        'Sử dụng CTE để lấy `thang`, `doanh_thu`, `LAG(doanh_thu, 1) OVER (ORDER BY thang) AS doanh_thu_truoc`, `SUM(doanh_thu) OVER (ORDER BY thang) AS luy_ke`, sau đó trích xuất `thang, doanh_thu, doanh_thu_truoc, (doanh_thu - doanh_thu_truoc) AS tang_truong, luy_ke`.',
-      starterQuery: `-- Báo cáo tài chính SaaS MRR\nWITH BaoCaoMRR AS (\n  SELECT thang, doanh_thu,\n         LAG(doanh_thu, 1) OVER (ORDER BY thang) AS doanh_thu_truoc,\n         SUM(doanh_thu) OVER (ORDER BY thang) AS luy_ke\n  FROM doanh_thu_thang\n)\nSELECT `,
-      expectedQuery: `WITH BaoCaoMRR AS (SELECT thang, doanh_thu, LAG(doanh_thu, 1) OVER (ORDER BY thang) AS doanh_thu_truoc, SUM(doanh_thu) OVER (ORDER BY thang) AS luy_ke FROM doanh_thu_thang) SELECT thang, doanh_thu, doanh_thu_truoc, (doanh_thu - doanh_thu_truoc) AS tang_truong, luy_ke FROM BaoCaoMRR;`,
+        'Tính `prev_price`, `price_change`, phân loại `trend` (UP, DOWN, FLAT) và tính trung bình động 7 ngày `moving_avg_7d` bằng cú pháp `AVG(close_price) OVER(ORDER BY trade_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)`.',
+      starterQuery: `-- Viết siêu truy vấn của bạn tại đây:\nSELECT \n    trade_date,\n    close_price,\n    LAG(close_price) OVER(ORDER BY trade_date) AS prev_price,\n    close_price - LAG(close_price) OVER(ORDER BY trade_date) AS price_change,\n    CASE \n        WHEN close_price > LAG(close_price) OVER(ORDER BY trade_date) THEN 'UP'\n        WHEN close_price < LAG(close_price) OVER(ORDER BY trade_date) THEN 'DOWN'\n        ELSE 'FLAT'\n    END AS trend,\n    AVG(close_price) OVER(\n        ORDER BY trade_date \n        ROWS BETWEEN 6 PRECEDING AND CURRENT ROW\n    ) AS moving_avg_7d\nFROM Stock_Prices;\n`,
+      expectedQuery: `SELECT trade_date, close_price, LAG(close_price) OVER(ORDER BY trade_date) AS prev_price, close_price - LAG(close_price) OVER(ORDER BY trade_date) AS price_change, CASE WHEN close_price > LAG(close_price) OVER(ORDER BY trade_date) THEN 'UP' WHEN close_price < LAG(close_price) OVER(ORDER BY trade_date) THEN 'DOWN' ELSE 'FLAT' END AS trend, AVG(close_price) OVER(ORDER BY trade_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS moving_avg_7d FROM Stock_Prices;`,
       hints: [
-        'Truy vấn ngoài: SELECT thang, doanh_thu, doanh_thu_truoc, (doanh_thu - doanh_thu_truoc) AS tang_truong, luy_ke FROM BaoCaoMRR;',
+        'Dùng LAG(close_price) OVER(ORDER BY trade_date)',
+        'Dùng AVG(close_price) OVER(ORDER BY trade_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS moving_avg_7d',
       ],
       explanation:
-        'XUẤT SẮC ĐỈNH CAO! Bạn đã áp dụng thành công những kỹ thuật phân tích dữ liệu nâng cao phức tạp nhất của Giai đoạn 3!',
+        'VINH DANH BẬC THẦY LOGIC! Bạn đã làm chủ siêu năng lực phân tích dữ liệu tài chính đỉnh cao của Giai đoạn 3!',
     },
   },
 
   // =========================================================================
-  // GIAI ĐOẠN 4: CHUYÊN GIA (EXPERT)
+  // GIAI ĐOẠN 4: CHUYÊN GIA (EXPERT) - THIẾT KẾ VÀ TỐI ƯU HÓA HỆ THỐNG ⚙️
   // =========================================================================
   {
     id: 'sql-401',
     order: 16,
     stage: 'expert',
     stageTitle: 'Giai Đoạn 4: Chuyên Gia',
-    title: 'Thiết Kế Lược Đồ CSDL & Chuẩn Hóa 3NF',
-    subtitle: 'Tư duy kiến trúc sư CSDL: Tránh dị thường dữ liệu và loại bỏ trùng lặp dư thừa',
-    category: 'Kiến Trúc & Tối Ưu',
-    timeEstimate: '25 phút',
-    xpReward: 140,
+    title: 'BÀI 1: DML (THAY ĐỔI DỮ LIỆU) - Kẻ Kiến Tạo & Kẻ Hủy Diệt 🛠️',
+    subtitle: 'Thực thi INSERT, UPDATE, DELETE an toàn và nguyên tắc sống còn với WHERE',
+    category: 'Thao Tác Dữ Liệu (DML)',
+    timeEstimate: '20 phút',
+    xpReward: 130,
     concept: `
-### Các cấp độ chuẩn hóa (Normalization)
-1. **1NF (Dạng chuẩn 1):** Mỗi ô dữ liệu là nguyên tử (Atomic), không lưu danh sách mảng nhiều giá trị trong 1 ô.
-2. **2NF (Dạng chuẩn 2):** Đạt 1NF và mọi thuộc tính không khóa phải phụ thuộc hoàn toàn vào toàn bộ khóa chính (áp dụng khi khóa chính gồm nhiều cột).
-3. **3NF (Dạng chuẩn 3):** Đạt 2NF và không có thuộc tính không khóa nào phụ thuộc bắc cầu (\`A -> B -> C\`) vào khóa chính.
-    `,
-    syntaxExample: `-- Tạo bảng chuẩn 3NF có ràng buộc khóa ngoại
-CREATE TABLE khach_hang (
-  id INTEGER PRIMARY KEY,
-  ho_ten TEXT NOT NULL
-);
+### 📖 Lý thuyết Cốt lõi
+DML (Data Manipulation Language) là nhóm các câu lệnh dùng để thao tác với dữ liệu bên trong bảng:
+- **\`INSERT INTO\`**: Thêm dữ liệu mới (Ví dụ: Một người dùng vừa đăng ký tài khoản).
+- **\`UPDATE\`**: Cập nhật dữ liệu cũ (Ví dụ: Đổi mật khẩu, tăng lương).
+- **\`DELETE\`**: Xóa dữ liệu (Ví dụ: Hủy tài khoản).
 
-CREATE TABLE don_hang (
-  id INTEGER PRIMARY KEY,
-  khach_hang_id INTEGER NOT NULL,
-  ngay_tao TEXT DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (khach_hang_id) REFERENCES khach_hang(id) ON DELETE CASCADE
-);`,
+🚨 **Nguyên tắc sống còn:** Luôn luôn, KHÔNG BAO GIỜ được quên mệnh đề \`WHERE\` khi dùng \`UPDATE\` hoặc \`DELETE\`. Nếu quên, bạn sẽ vô tình xóa hoặc sửa TẤT CẢ dữ liệu trong cơ sở dữ liệu của công ty!
+    `,
+    syntaxExample: `-- Cập nhật lương phòng IT tăng 10%
+UPDATE Employees 
+SET salary = salary * 1.1 
+WHERE department = 'IT';
+
+SELECT * FROM Employees;`,
     schemas: [
       {
-        name: 'hoa_don_chuan',
-        description: 'Bảng hóa đơn chuẩn hóa 3NF',
+        name: 'Employees',
+        description: 'Bảng nhân sự công ty',
         columns: [
-          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã hóa đơn' },
-          { name: 'ma_khach', type: 'INTEGER', description: 'Mã khách hàng' },
-          { name: 'tong_tien', type: 'INTEGER', description: 'Số tiền thanh toán' },
+          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'ID' },
+          { name: 'name', type: 'TEXT', description: 'Tên nhân viên' },
+          { name: 'department', type: 'TEXT', description: 'Phòng ban' },
+          { name: 'salary', type: 'INTEGER', description: 'Mức lương ($)' },
         ],
       },
     ],
     seedSql: [
-      `CREATE TABLE hoa_don_chuan (
+      `CREATE TABLE Employees (
         id INTEGER PRIMARY KEY,
-        ma_khach INTEGER NOT NULL,
-        tong_tien INTEGER NOT NULL
+        name TEXT NOT NULL,
+        department TEXT NOT NULL,
+        salary INTEGER NOT NULL
       );`,
-      `INSERT INTO hoa_don_chuan VALUES
-        (1, 101, 1500000),
-        (2, 102, 2400000),
-        (3, 101, 800000);`,
+      `INSERT INTO Employees VALUES
+        (1, 'Alex', 'IT', 2000),
+        (2, 'Sarah', 'HR', 1500),
+        (3, 'David', 'IT', 2500);`,
     ],
     exercise: {
-      goal: 'Truy vấn kiểm tra tính toàn vẹn dữ liệu của các hóa đơn có giá trị lớn hơn mức trung bình',
+      goal: 'Tăng lương 10% cho tất cả nhân viên thuộc phòng IT',
       taskDescription:
-        'Viết câu truy vấn trích xuất `id, ma_khach, tong_tien` từ `hoa_don_chuan` có `tong_tien > (SELECT AVG(tong_tien) FROM hoa_don_chuan)`.',
-      starterQuery: `-- Lọc hóa đơn trên mức trung bình\nSELECT id, ma_khach, tong_tien FROM hoa_don_chuan WHERE tong_tien > `,
-      expectedQuery: `SELECT id, ma_khach, tong_tien FROM hoa_don_chuan WHERE tong_tien > (SELECT AVG(tong_tien) FROM hoa_don_chuan);`,
+        "Công ty vừa làm ăn có lãi. Hãy cập nhật (`UPDATE`) bảng `Employees`, tăng lương (`salary`) thêm 10% cho tất cả nhân viên thuộc phòng 'IT' (`department = 'IT'`), sau đó chạy `SELECT * FROM Employees;` để kiểm tra kết quả.",
+      starterQuery: `-- Viết code của bạn ở đây:\nUPDATE Employees\nSET salary = salary * 1.1\nWHERE department = 'IT';\nSELECT * FROM Employees;\n`,
+      expectedQuery: `UPDATE Employees SET salary = salary * 1.1 WHERE department = 'IT'; SELECT * FROM Employees;`,
       hints: [
-        'Dùng Scalar Subquery: WHERE tong_tien > (SELECT AVG(tong_tien) FROM hoa_don_chuan)',
+        "UPDATE Employees SET salary = salary * 1.1 WHERE department = 'IT';",
+        'Sau đó chạy: SELECT * FROM Employees;',
       ],
       explanation:
-        'Chính xác! Cấu trúc dữ liệu chuẩn hóa giúp các truy vấn tổng hợp chạy tin cậy và không bao giờ bị lệch số liệu do cập nhật dị thường.',
+        'Cảm ơn sếp! Phòng IT đã nhận được lương mới tăng 10% đúng chuẩn DML an toàn!',
     },
     quizzes: [
       {
-        question: 'Dạng chuẩn 3 (3NF) giải quyết vấn đề gì trong cơ sở dữ liệu?',
+        question: 'Điều gì sẽ xảy ra nếu bạn chạy lệnh "DELETE FROM Users;" mà quên mệnh đề WHERE?',
         options: [
-          'Loại bỏ sự phụ thuộc bắc cầu (transitive dependency) giữa các cột không khóa',
-          'Tăng gấp đôi tốc độ truy vấn SELECT',
-          'Tự động mã hóa mật khẩu người dùng',
-          'Xóa toàn bộ các bảng phụ',
+          'Toàn bộ tất cả dữ liệu trong bảng Users sẽ bị xóa sạch vĩnh viễn!',
+          'Hệ thống sẽ tự động hỏi xác nhận',
+          'Không có gì xảy ra vì lệnh bị lỗi cú pháp',
+          'Chỉ xóa dòng đầu tiên',
         ],
         answerIndex: 0,
-        explanation: 'Chuẩn 3NF đảm bảo rằng mọi cột không khóa chỉ phụ thuộc duy nhất vào Khóa chính, không được phụ thuộc gián tiếp qua một cột không khóa khác.',
+        explanation: 'Nếu thiếu WHERE, câu lệnh DELETE sẽ xóa toàn bộ các hàng trong bảng.',
       },
     ],
   },
@@ -1341,73 +1202,70 @@ CREATE TABLE don_hang (
     order: 17,
     stage: 'expert',
     stageTitle: 'Giai Đoạn 4: Chuyên Gia',
-    title: 'Chỉ Mục (INDEX) & Kế Hoạch Thực Thi EXPLAIN QUERY PLAN',
-    subtitle: 'Nắm vững cơ chế B-Tree Index và kỹ thuật viết câu truy vấn SARGable',
-    category: 'Hiệu Năng & Chỉ Mục',
+    title: 'BÀI 2: DDL & CONSTRAINTS - Xây Dựng Nền Móng 🏗️',
+    subtitle: 'Tạo bảng CREATE TABLE, thiết lập khóa chính, khóa ngoại và ràng buộc CASCADE',
+    category: 'Định Nghĩa CSDL (DDL)',
     timeEstimate: '25 phút',
-    xpReward: 150,
+    xpReward: 140,
     concept: `
-### 1. Chỉ mục (Index) tăng tốc truy vấn ra sao?
-Nếu không có Index, CSDL phải quét từng dòng dữ liệu từ đầu đến cuối (**Full Table Scan** - độ phức tạp $\\mathcal{O}(N)$).
-Khi có Index B-Tree, CSDL tra cứu bằng cây nhị phân cân bằng với độ phức tạp $\\mathcal{O}(\\log N)$, nhanh hơn hàng ngàn lần trên bảng triệu dòng!
+### 📖 Lý thuyết Cốt lõi
+DDL (Data Definition Language) dùng để định nghĩa cấu trúc của cơ sở dữ liệu bằng lệnh **\`CREATE TABLE\`**.
+Khi tạo bảng, bạn phải quy định:
+1. **Kiểu dữ liệu:** \`INT\` (số nguyên), \`VARCHAR\` (chuỗi văn bản), \`DATE\` (ngày tháng).
+2. **Ràng buộc (Constraints):**
+   - **Primary Key (Khóa chính - PK):** Cột định danh độc nhất cho mỗi dòng (như số CCCD).
+   - **Foreign Key (Khóa ngoại - FK):** Dùng để liên kết bảng này với bảng kia.
 
-### 2. Kế hoạch thực thi với EXPLAIN QUERY PLAN
-Thêm từ khóa \`EXPLAIN QUERY PLAN\` trước câu lệnh SQL để xem cách Database Engine diễn dịch:
-- \`SCAN TABLE ten_bang\`: Cảnh báo chậm! Quét toàn bộ bảng.
-- \`SEARCH TABLE ten_bang USING INDEX idx_ten\`: Tối ưu! Dùng chỉ mục.
+🔥 **Sức mạnh của \`CASCADE\`:** Nếu một "Tác giả" bị xóa, bạn có muốn tất cả "Sách" của họ tự động bị xóa theo không? Hãy thêm \`ON DELETE CASCADE\` vào Khóa ngoại!
     `,
-    syntaxExample: `-- Tạo chỉ mục trên cột email
-CREATE UNIQUE INDEX idx_kh_email ON khach_hang(email);
+    syntaxExample: `CREATE TABLE Authors (
+    id INT PRIMARY KEY,
+    name VARCHAR(100)
+);
 
--- Xem kế hoạch thực thi
-EXPLAIN QUERY PLAN 
-SELECT * FROM khach_hang WHERE email = 'test@gmail.com';`,
+CREATE TABLE Books (
+    book_id INT PRIMARY KEY,
+    title VARCHAR(200),
+    author_id INT,
+    FOREIGN KEY (author_id) REFERENCES Authors(id) ON DELETE CASCADE
+);`,
     schemas: [
       {
-        name: 'tai_khoan',
-        description: 'Bảng tài khoản người dùng',
+        name: 'Authors',
+        description: 'Bảng tác giả',
         columns: [
-          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã số' },
-          { name: 'email', type: 'TEXT', description: 'Email đăng nhập' },
-          { name: 'so_du', type: 'INTEGER', description: 'Số dư ví' },
+          { name: 'id', type: 'INT PRIMARY KEY', description: 'Mã tác giả' },
+          { name: 'name', type: 'VARCHAR(100)', description: 'Tên tác giả' },
         ],
       },
     ],
     seedSql: [
-      `CREATE TABLE tai_khoan (
-        id INTEGER PRIMARY KEY,
-        email TEXT NOT NULL,
-        so_du INTEGER NOT NULL
-      );`,
-      `CREATE INDEX idx_tk_email ON tai_khoan(email);`,
-      `INSERT INTO tai_khoan VALUES
-        (1, 'alex@tech.vn', 5000000),
-        (2, 'sarah@fin.vn', 12000000),
-        (3, 'david@corp.vn', 8500000);`,
+      `-- Database trống sẵn sàng cho DDL`,
+      `CREATE TABLE SystemInit (id INT PRIMARY KEY);`,
     ],
     exercise: {
-      goal: 'Xem kế hoạch thực thi EXPLAIN QUERY PLAN khi tìm kiếm bằng email',
+      goal: 'Viết Script tạo bảng Authors và Books có ràng buộc ON DELETE CASCADE',
       taskDescription:
-        "Chạy câu lệnh `EXPLAIN QUERY PLAN SELECT * FROM tai_khoan WHERE email = 'alex@tech.vn';` để kiểm tra SQLite có sử dụng chỉ mục `idx_tk_email` hay không.",
-      starterQuery: `-- Xem kế hoạch thực thi EXPLAIN QUERY PLAN\nEXPLAIN QUERY PLAN SELECT * FROM tai_khoan WHERE email = 'alex@tech.vn';`,
-      expectedQuery: `EXPLAIN QUERY PLAN SELECT * FROM tai_khoan WHERE email = 'alex@tech.vn';`,
+        "Tạo bảng `Authors` (`id INT PRIMARY KEY, name VARCHAR(100)`), và bảng `Books` (`book_id INT PRIMARY KEY, title VARCHAR(200), author_id INT, FOREIGN KEY (author_id) REFERENCES Authors(id) ON DELETE CASCADE`), sau đó kiểm tra bằng câu lệnh `SELECT name FROM sqlite_master WHERE type='table' AND name IN ('Authors', 'Books');`.",
+      starterQuery: `-- Viết code của bạn ở đây:\nCREATE TABLE Authors (\n    id INT PRIMARY KEY,\n    name VARCHAR(100)\n);\n\nCREATE TABLE Books (\n    book_id INT PRIMARY KEY,\n    title VARCHAR(200),\n    author_id INT,\n    FOREIGN KEY (author_id) REFERENCES Authors(id) ON DELETE CASCADE\n);\n\nSELECT name FROM sqlite_master WHERE type='table' AND name IN ('Authors', 'Books');\n`,
+      expectedQuery: `CREATE TABLE Authors ( id INT PRIMARY KEY, name VARCHAR(100) ); CREATE TABLE Books ( book_id INT PRIMARY KEY, title VARCHAR(200), author_id INT, FOREIGN KEY (author_id) REFERENCES Authors(id) ON DELETE CASCADE ); SELECT name FROM sqlite_master WHERE type='table' AND name IN ('Authors', 'Books');`,
       hints: [
-        "Chỉ cần chạy câu lệnh: EXPLAIN QUERY PLAN SELECT * FROM tai_khoan WHERE email = 'alex@tech.vn';",
+        'FOREIGN KEY (author_id) REFERENCES Authors(id) ON DELETE CASCADE',
       ],
       explanation:
-        'Tuyệt vời! Kết quả hiển thị "SEARCH TABLE tai_khoan USING INDEX idx_tk_email" chứng minh truy vấn đã tối ưu triệt để nhờ Index.',
+        'Chính xác! Bạn vừa kiến tạo nền móng CSDL vững chắc với toàn vẹn tham chiếu CASCADE.',
     },
     quizzes: [
       {
-        question: 'Tại sao câu lệnh "WHERE UPPER(email) = \'A@B.COM\'" thường không dùng được Index thông thường trên cột email?',
+        question: 'Ràng buộc ON DELETE CASCADE có tác dụng gì?',
         options: [
-          'Vì khi bọc hàm UPPER() lên cột, giá trị bị biến đổi khiến CSDL không thể tra cứu trực tiếp trên cây B-Tree của cột gốc (Non-SARGable)',
-          'Vì hàm UPPER bị cấm trong SQL',
-          'Vì email luôn phải viết thường',
-          'Không có lý do nào, nó vẫn dùng Index bình thường',
+          'Tự động xóa các bản ghi con ở bảng tham chiếu khi bản ghi cha bị xóa',
+          'Ngăn chặn không cho xóa bản ghi cha',
+          'Đổi giá trị khóa ngoại thành số 0',
+          'Nhân đôi số lượng bản ghi',
         ],
         answerIndex: 0,
-        explanation: 'Áp dụng hàm tính toán lên cột tìm kiếm làm mất tính chất SARGable (Search Argument Able), buộc CSDL phải tính hàm cho từng dòng trong bảng.',
+        explanation: 'ON DELETE CASCADE đảm bảo tính toàn vẹn: Khi thực thể cha bị xóa, toàn bộ thực thể con liên quan tự động được dọn dẹp sạch sẽ.',
       },
     ],
   },
@@ -1417,70 +1275,74 @@ SELECT * FROM khach_hang WHERE email = 'test@gmail.com';`,
     order: 18,
     stage: 'expert',
     stageTitle: 'Giai Đoạn 4: Chuyên Gia',
-    title: 'Khung Nhìn VIEW & TRIGGER Ghi Log Kiểm Toán Tự Động',
-    subtitle: 'Bảo mật dữ liệu với VIEW và tự động hóa kiểm soát với TRIGGER',
-    category: 'Tự Động Hóa & Kiểm Soát',
+    title: 'BÀI 3: VIEWS & TRIGGERS - Vệ Sĩ Bảo Mật & Robot Tự Động 🤖',
+    subtitle: 'Tạo bảng ảo VIEW che giấu dữ liệu nhạy cảm và TRIGGER tự động kích hoạt',
+    category: 'Bảo Mật & Tự Động Hóa',
     timeEstimate: '20 phút',
     xpReward: 140,
     concept: `
-### 1. Khung nhìn ảo (VIEW)
-VIEW là một câu truy vấn được lưu lại dưới dạng bảng ảo, giúp:
-- Đơn giản hóa các câu lệnh JOIN phức tạp cho người dùng cuối.
-- Che giấu các cột nhạy cảm (như mật khẩu, số căn cước).
-
-### 2. Bộ kích hoạt tự động (TRIGGER)
-TRIGGER là khối mã tự động chạy khi có sự kiện \`INSERT\`, \`UPDATE\`, hoặc \`DELETE\` xảy ra trên một bảng:
-- \`NEW.cot\`: Truy cập dữ liệu dòng mới vừa thêm/sửa.
-- \`OLD.cot\`: Truy cập dữ liệu dòng cũ trước khi sửa/xóa.
+### 📖 Lý thuyết Cốt lõi
+- **VIEW (Bảng ảo):** Giả sử bảng \`Users\` chứa cả mật khẩu và số thẻ tín dụng. Bạn muốn cho team Marketing xem thông tin người dùng (tên, email) nhưng tuyệt đối không cho xem dữ liệu nhạy cảm. Hãy tạo một **\`VIEW\`**. Nó giống như một tấm gương phản chiếu chỉ những cột bạn cho phép.
+- **TRIGGER (Cò súng/Robot):** Là những đoạn code tự động chạy khi có sự kiện xảy ra. Ví dụ: Trigger tự động ghi log vào bảng kiểm toán mỗi khi có ai đó dùng lệnh \`UPDATE\` lương.
     `,
-    syntaxExample: `-- Tạo view báo cáo
-CREATE VIEW v_nhan_vien_it AS
-SELECT ho_ten, luong FROM nhan_vien WHERE phong_ban = 'IT';
+    syntaxExample: `-- Tạo View bảo mật chỉ lấy thông tin công khai
+CREATE VIEW PublicUsers AS 
+SELECT id, name, email 
+FROM users;
 
--- Xem dữ liệu từ View
-SELECT * FROM v_nhan_vien_it;`,
+-- Truy vấn từ View như một bảng bình thường
+SELECT * FROM PublicUsers;`,
     schemas: [
       {
-        name: 'san_pham_gia',
-        description: 'Bảng giá sản phẩm',
+        name: 'Users',
+        description: 'Bảng người dùng chứa cả dữ liệu nhạy cảm',
         columns: [
-          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã hàng' },
-          { name: 'ten', type: 'TEXT', description: 'Tên hàng' },
-          { name: 'gia', type: 'INTEGER', description: 'Giá tiền' },
+          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'ID' },
+          { name: 'name', type: 'TEXT', description: 'Tên' },
+          { name: 'email', type: 'TEXT', description: 'Email' },
+          { name: 'password_hash', type: 'TEXT', description: 'Mật khẩu mã hóa (NHẠY CẢM)' },
+          { name: 'credit_card', type: 'TEXT', description: 'Số thẻ tín dụng (BÍ MẬT)' },
         ],
       },
     ],
     seedSql: [
-      `CREATE TABLE san_pham_gia (
+      `CREATE TABLE Users (
         id INTEGER PRIMARY KEY,
-        ten TEXT NOT NULL,
-        gia INTEGER NOT NULL
+        name TEXT NOT NULL,
+        email TEXT NOT NULL,
+        password_hash TEXT NOT NULL,
+        credit_card TEXT NOT NULL
       );`,
-      `CREATE TABLE lich_su_gia (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        san_pham_id INTEGER,
-        gia_cu INTEGER,
-        gia_moi INTEGER
-      );`,
-      `CREATE TRIGGER trg_log_gia
-      AFTER UPDATE OF gia ON san_pham_gia
-      BEGIN
-        INSERT INTO lich_su_gia (san_pham_id, gia_cu, gia_moi)
-        VALUES (OLD.id, OLD.gia, NEW.gia);
-      END;`,
-      `INSERT INTO san_pham_gia VALUES (1, 'Bàn Phím Cơ', 1500000);`,
-      `UPDATE san_pham_gia SET gia = 1800000 WHERE id = 1;`,
+      `INSERT INTO Users VALUES
+        (1, 'Alice', 'alice@corp.com', 'hash_secret_123', '4111-2222-3333-4444'),
+        (2, 'Bob', 'bob@corp.com', 'hash_secret_456', '5500-6666-7777-8888');`,
     ],
     exercise: {
-      goal: 'Xem nhật ký kiểm toán giá vừa được Trigger tự động ghi nhận',
+      goal: 'Tạo View PublicUsers chỉ hiển thị id, name, email để bảo vệ dữ liệu khách hàng',
       taskDescription:
-        'Sau khi sản phẩm được cập nhật giá từ 1,500,000 lên 1,800,000 VNĐ, hãy viết câu lệnh `SELECT * FROM lich_su_gia;` để kiểm tra bảng nhật ký tự động.',
-      starterQuery: `-- Kiểm tra log tự động từ Trigger\nSELECT * FROM lich_su_gia;`,
-      expectedQuery: `SELECT * FROM lich_su_gia;`,
-      hints: ['Chỉ cần gõ: SELECT * FROM lich_su_gia;'],
+        'Trưởng phòng Marketing xin quyền truy cập bảng Users. Hãy tạo một View tên là `PublicUsers` chỉ hiển thị 3 cột: `id`, `name`, và `email` từ bảng `Users`, bỏ qua mật khẩu và thẻ tín dụng. Sau đó chạy `SELECT * FROM PublicUsers;`.',
+      starterQuery: `-- Viết code của bạn ở đây:\nCREATE VIEW PublicUsers AS\nSELECT id, name, email\nFROM Users;\n\nSELECT * FROM PublicUsers;\n`,
+      expectedQuery: `CREATE VIEW PublicUsers AS SELECT id, name, email FROM Users; SELECT * FROM PublicUsers;`,
+      hints: [
+        'CREATE VIEW PublicUsers AS SELECT id, name, email FROM Users;',
+        'SELECT * FROM PublicUsers;',
+      ],
       explanation:
-        'Tuyệt vời! Bạn thấy rằng Trigger đã tự động ghi lại giá cũ (1500000) và giá mới (1800000) mà không cần code ứng dụng phải viết 2 câu lệnh!',
+        'Rất xuất sắc! View PublicUsers đã bảo vệ an toàn tuyệt đối các thông tin nhạy cảm của khách hàng.',
     },
+    quizzes: [
+      {
+        question: 'View có lưu trữ một bản sao dữ liệu vật lý riêng trên ổ cứng không?',
+        options: [
+          'Không, View là bảng ảo lưu câu lệnh truy vấn và trích xuất dữ liệu trực tiếp từ bảng gốc',
+          'Có, nó tạo ra một file vật lý riêng',
+          'Có, nhưng bị xóa sau khi tắt máy',
+          'Chỉ lưu các cột số',
+        ],
+        answerIndex: 0,
+        explanation: 'View trong chuẩn SQL là bảng ảo (Virtual Table), không chiếm thêm dung lượng lưu trữ cho dữ liệu bên trong.',
+      },
+    ],
   },
 
   {
@@ -1488,56 +1350,69 @@ SELECT * FROM v_nhan_vien_it;`,
     order: 19,
     stage: 'expert',
     stageTitle: 'Giai Đoạn 4: Chuyên Gia',
-    title: 'Kỹ Thuật Upsert (INSERT ON CONFLICT) & Data Pipelines',
-    subtitle: 'Nền tảng xử lý dữ liệu cho Kỹ sư Dữ liệu (Data Engineer)',
-    category: 'Data Engineering',
+    title: 'BÀI 4: TỐI ƯU HÓA (INDEXING) - Mục Lục Của Dữ Liệu ⚡',
+    subtitle: 'Tăng tốc độ truy vấn từ 10 giây xuống 0.05 giây với cơ chế B-Tree Index',
+    category: 'Tối Ưu & Chỉ Mục',
     timeEstimate: '20 phút',
     xpReward: 150,
     concept: `
-### Kỹ thuật Upsert (Update or Insert)
-Trong các đường ống dẫn dữ liệu (ETL/ELT Pipelines), khi nhận một bản ghi:
-- Nếu bản ghi **chưa tồn tại**: Thêm mới (\`INSERT\`).
-- Nếu bản ghi **đã tồn tại** (trùng khóa chính hoặc UNIQUE): Cập nhật giá trị mới (\`UPDATE\`).
+### 📖 Lý thuyết Cốt lõi
+Thử tưởng tượng bạn tìm từ khóa "SQL" trong một cuốn sách giáo khoa dày 1000 trang không có Mục lục. Bạn sẽ phải lật từng trang một (Full Table Scan). Rất chậm!
+Nếu cuốn sách có trang Mục lục (Index) chứa các từ khóa và số trang tương ứng, bạn sẽ tìm thấy trong 2 giây.
 
-Cú pháp SQLite / PostgreSQL chuẩn:
-\`\`\`sql
-INSERT INTO thong_ke (ngay, luot_xem)
-VALUES ('2026-10-29', 100)
-ON CONFLICT(ngay) DO UPDATE SET 
-  luot_xem = luot_xem + EXCLUDED.luot_xem;
-\`\`\`
+**Index (Chỉ mục)** trong SQL hoạt động y hệt như vậy. Việc đánh Index lên một cột sẽ giúp các truy vấn \`WHERE\`, \`JOIN\` trên cột đó nhanh gấp hàng ngàn lần. 
+
+⚖️ *Đánh đổi: Tạo Index tốn dung lượng ổ cứng và làm chậm quá trình INSERT/UPDATE (vì mỗi lần thêm dữ liệu mới, hệ thống phải cập nhật lại Mục lục).*
     `,
-    syntaxExample: `INSERT INTO diem_so (id, diem) VALUES (1, 95)
-ON CONFLICT(id) DO UPDATE SET diem = EXCLUDED.diem;`,
+    syntaxExample: `-- Tạo Index trên cột email
+CREATE INDEX idx_user_email ON users(email);`,
     schemas: [
       {
-        name: 'kho_tong',
-        description: 'Tồn kho tổng hợp theo mã sản phẩm',
+        name: 'Customers',
+        description: 'Bảng khách hàng triệu dòng',
         columns: [
-          { name: 'sku', type: 'TEXT PRIMARY KEY', description: 'Mã hàng' },
-          { name: 'so_luong', type: 'INTEGER', description: 'Số lượng hàng' },
+          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'ID' },
+          { name: 'name', type: 'TEXT', description: 'Tên' },
+          { name: 'phone', type: 'TEXT', description: 'Số điện thoại' },
         ],
       },
     ],
     seedSql: [
-      `CREATE TABLE kho_tong (
-        sku TEXT PRIMARY KEY,
-        so_luong INTEGER NOT NULL
+      `CREATE TABLE Customers (
+        id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL,
+        phone TEXT NOT NULL
       );`,
-      `INSERT INTO kho_tong VALUES ('SKU-01', 50);`,
+      `INSERT INTO Customers VALUES
+        (1, 'Nguyen Van A', '0912345678'),
+        (2, 'Tran Thi B', '0987654321');`,
     ],
     exercise: {
-      goal: 'Thực hiện phép Upsert cộng dồn tồn kho hàng hóa',
+      goal: 'Tạo một Index tên idx_phone trên cột phone của bảng Customers',
       taskDescription:
-        "Viết câu lệnh INSERT nhập thêm 30 đơn vị cho 'SKU-01', nếu đã có thì cộng dồn: `INSERT INTO kho_tong (sku, so_luong) VALUES ('SKU-01', 30) ON CONFLICT(sku) DO UPDATE SET so_luong = so_luong + EXCLUDED.so_luong;` sau đó chạy `SELECT * FROM kho_tong;`.",
-      starterQuery: `-- Upsert cộng dồn hàng tồn kho\nINSERT INTO kho_tong (sku, so_luong) VALUES ('SKU-01', 30)\nON CONFLICT(sku) DO UPDATE SET so_luong = so_luong + EXCLUDED.so_luong;\nSELECT * FROM kho_tong;`,
-      expectedQuery: `INSERT INTO kho_tong (sku, so_luong) VALUES ('SKU-01', 30) ON CONFLICT(sku) DO UPDATE SET so_luong = so_luong + EXCLUDED.so_luong; SELECT * FROM kho_tong;`,
+        "Hệ thống báo cáo có truy vấn tìm kiếm người dùng theo số điện thoại đang chạy mất 10 giây khiến App bị lag: `SELECT * FROM Customers WHERE phone = '0987654321';`. Hãy tạo một Index tên `idx_phone` trên cột `phone` của bảng `Customers` để giải cứu hệ thống: `CREATE INDEX idx_phone ON Customers(phone);` sau đó chạy `SELECT name FROM sqlite_master WHERE type='index' AND name='idx_phone';`.",
+      starterQuery: `-- Viết lệnh tạo Index ở đây:\nCREATE INDEX idx_phone ON Customers(phone);\nSELECT name FROM sqlite_master WHERE type='index' AND name='idx_phone';\n`,
+      expectedQuery: `CREATE INDEX idx_phone ON Customers(phone); SELECT name FROM sqlite_master WHERE type='index' AND name='idx_phone';`,
       hints: [
-        'Dùng từ khóa ON CONFLICT(sku) DO UPDATE SET so_luong = so_luong + EXCLUDED.so_luong;',
+        'CREATE INDEX idx_phone ON Customers(phone);',
+        "SELECT name FROM sqlite_master WHERE type='index' AND name='idx_phone';",
       ],
       explanation:
-        'Chính xác! Tồn kho đã tăng từ 50 lên 80 một cách an toàn và nhất quán (Idempotent Pipeline).',
+        'Hệ thống đang chạy lại truy vấn... Thời gian phản hồi: 0.05 giây! Chúc mừng bạn đã giải cứu hệ thống thành công! 🚀',
     },
+    quizzes: [
+      {
+        question: 'Bạn được giao thiết kế cột lưu trữ Số CCCD/Passport của người dùng. Kiểu dữ liệu và Ràng buộc (Constraint) nào là phù hợp nhất?',
+        options: [
+          'Kiểu VARCHAR, Ràng buộc UNIQUE',
+          'Kiểu INT, Ràng buộc PRIMARY KEY',
+          'Kiểu VARCHAR, không cần ràng buộc',
+          'Kiểu FLOAT',
+        ],
+        answerIndex: 0,
+        explanation: 'CCCD thường có số 0 ở đầu (001...) nên không dùng INT được. Và người dùng có thể chưa cập nhật CCCD nên nó không bắt buộc là PK, nhưng phải là UNIQUE để tránh trùng lặp.',
+      },
+    ],
   },
 
   {
@@ -1545,66 +1420,76 @@ ON CONFLICT(id) DO UPDATE SET diem = EXCLUDED.diem;`,
     order: 20,
     stage: 'expert',
     stageTitle: 'Giai Đoạn 4: Chuyên Gia',
-    title: 'Dự Án Tốt Nghiệp Chuyên Gia: Hệ Thống Phát Hiện Gian Lận Giao Dịch',
-    subtitle: 'Đỉnh cao kỹ năng phân tích và kỹ thuật dữ liệu giải quyết bài toán tài chính phức tạp',
+    title: '🎬 TỐT NGHIỆP: "Thiết Kế Database Cho App Đặt Xe (Ride-Hailing)" 🚖',
+    subtitle: 'Dựng toàn bộ lược đồ CSDL thực chiến từ con số 0 cho ứng dụng gọi xe công nghệ',
     category: 'Capstone Project Tốt Nghiệp',
     timeEstimate: '40 phút',
     xpReward: 250,
     isCapstoneProject: true,
     concept: `
-### Đồ Án Tốt Nghiệp: Fraud Detection Engine
-Chào mừng bạn đến với thử thách cuối cùng của Lộ trình Chuyên Gia SQL!
-Bạn được giao nhiệm vụ viết thuật toán SQL phát hiện **giao dịch tài chính đáng ngờ (Fraud Transactions)** cho một ngân hàng lớn:
+### 🎬 Bối cảnh Dự án Tốt Nghiệp
+Bạn vừa trúng tuyển vị trí Data Engineer tại một Startup công nghệ gọi xe (giống Grab/Uber). Công ty đang xây dựng tính năng từ con số 0. Sếp đưa cho bạn một bản phác thảo (ERD) và yêu cầu bạn viết script SQL để dựng Database.
 
-**Luật phát hiện gian lận (Fraud Rules):**
-1. Một chủ thẻ thực hiện 2 giao dịch liên tiếp cách nhau **dưới 10 phút** nhưng lại diễn ra ở **2 thành phố khác nhau** (Bất khả thi về mặt di chuyển vật lý).
-2. Hãy dùng hàm \`LAG() OVER (PARTITION BY ma_the ORDER BY thoi_gian)\` để so sánh thành phố và mốc thời gian giữa 2 giao dịch kế cận!
+### 📋 Yêu cầu thiết kế:
+1. Tạo bảng \`Riders\` (Khách hàng): Gồm \`id\` (Khóa chính), \`name\`, \`phone\` (Duy nhất - UNIQUE).
+2. Tạo bảng \`Drivers\` (Tài xế): Gồm \`id\` (Khóa chính), \`name\`, \`license_plate\`.
+3. Tạo bảng \`Rides\` (Chuyến xe): Gồm \`id\` (Khóa chính), \`rider_id\` (Khóa ngoại), \`driver_id\` (Khóa ngoại), \`status\` (VD: 'completed', 'canceled').
+4. Tối ưu hóa: Tạo một **Index** trên cột \`status\` của bảng \`Rides\` vì team vận hành thường xuyên lọc các chuyến xe bị 'canceled'.
+5. Khởi tạo: \`INSERT\` 1 dòng dữ liệu mẫu vào bảng \`Riders\`.
     `,
-    syntaxExample: `WITH GiaoDichTruoc AS (
-  SELECT id, ma_the, thanh_pho, thoi_gian,
-         LAG(thanh_pho) OVER (PARTITION BY ma_the ORDER BY thoi_gian) AS tp_truoc
-  FROM giao_dich
-)
-SELECT * FROM GiaoDichTruoc WHERE thanh_pho <> tp_truoc;`,
+    syntaxExample: `-- Script hoàn chỉnh cho dự án tốt nghiệp:
+CREATE TABLE Riders (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    phone VARCHAR(20) UNIQUE
+);
+
+CREATE TABLE Drivers (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    license_plate VARCHAR(20)
+);
+
+CREATE TABLE Rides (
+    id INT PRIMARY KEY,
+    rider_id INT,
+    driver_id INT,
+    status VARCHAR(50),
+    FOREIGN KEY (rider_id) REFERENCES Riders(id),
+    FOREIGN KEY (driver_id) REFERENCES Drivers(id)
+);
+
+CREATE INDEX idx_rides_status ON Rides(status);
+
+INSERT INTO Riders (id, name, phone) 
+VALUES (1, 'Nguyen Van Khach', '0912345678');
+
+SELECT name FROM sqlite_master WHERE type IN ('table', 'index');`,
     schemas: [
       {
-        name: 'giao_dich_ngan_hang',
-        description: 'Nhật ký các giao dịch thẻ tín dụng thời gian thực',
+        name: 'SandboxRideHailing',
+        description: 'Môi trường CSDL trống sẵn sàng thiết kế',
         columns: [
-          { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã giao dịch' },
-          { name: 'ma_the', type: 'TEXT', description: 'Số thẻ tín dụng' },
-          { name: 'thanh_pho', type: 'TEXT', description: 'Địa điểm phát sinh giao dịch' },
-          { name: 'so_tien', type: 'INTEGER', description: 'Giá trị' },
-          { name: 'thoi_gian', type: 'TEXT', description: 'Thời điểm (YYYY-MM-DD HH:MM:SS)' },
+          { name: 'status', type: 'TEXT', description: 'Trạng thái khởi tạo' },
         ],
       },
     ],
     seedSql: [
-      `CREATE TABLE giao_dich_ngan_hang (
-        id INTEGER PRIMARY KEY,
-        ma_the TEXT NOT NULL,
-        thanh_pho TEXT NOT NULL,
-        so_tien INTEGER NOT NULL,
-        thoi_gian TEXT NOT NULL
-      );`,
-      `INSERT INTO giao_dich_ngan_hang VALUES
-        (1, 'THE-9999', 'Hà Nội', 2000000, '2026-10-29 10:00:00'),
-        (2, 'THE-9999', 'TP.HCM', 15000000, '2026-10-29 10:05:00'),
-        (3, 'THE-8888', 'Đà Nẵng', 500000, '2026-10-29 11:00:00'),
-        (4, 'THE-8888', 'Đà Nẵng', 700000, '2026-10-29 11:30:00'),
-        (5, 'THE-7777', 'Hải Phòng', 3500000, '2026-10-29 12:00:00');`,
+      `CREATE TABLE InitApp (id INT PRIMARY KEY);`,
     ],
     exercise: {
-      goal: 'Lập danh sách các giao dịch gian lận do thay đổi thành phố bất thường',
+      goal: 'Dựng toàn bộ lược đồ CSDL App Đặt xe theo đúng 5 yêu cầu kỹ thuật',
       taskDescription:
-        'Sử dụng CTE `TruyVet` với `LAG(thanh_pho) OVER (PARTITION BY ma_the ORDER BY thoi_gian) AS tp_truoc`, sau đó lọc ra các giao dịch có `tp_truoc IS NOT NULL AND thanh_pho <> tp_truoc`. Trích xuất `id, ma_the, thanh_pho, tp_truoc, so_tien, thoi_gian`.',
-      starterQuery: `-- Đồ án Tốt nghiệp: Phát hiện gian lận thẻ\nWITH TruyVet AS (\n  SELECT id, ma_the, thanh_pho, so_tien, thoi_gian,\n         LAG(thanh_pho) OVER (PARTITION BY ma_the ORDER BY thoi_gian) AS tp_truoc\n  FROM giao_dich_ngan_hang\n)\nSELECT `,
-      expectedQuery: `WITH TruyVet AS (SELECT id, ma_the, thanh_pho, so_tien, thoi_gian, LAG(thanh_pho) OVER (PARTITION BY ma_the ORDER BY thoi_gian) AS tp_truoc FROM giao_dich_ngan_hang) SELECT id, ma_the, thanh_pho, tp_truoc, so_tien, thoi_gian FROM TruyVet WHERE tp_truoc IS NOT NULL AND thanh_pho <> tp_truoc;`,
+        'Viết toàn bộ script DDL tạo bảng `Riders`, `Drivers`, `Rides` (có 2 khóa ngoại), tạo Index `idx_rides_status ON Rides(status)`, chèn 1 dòng mẫu vào `Riders`, và kiểm tra qua `SELECT name FROM sqlite_master WHERE type IN (\'table\', \'index\');`.',
+      starterQuery: `-- Bàn làm việc của Chuyên gia Data Engineer:\n-- 1. Tạo bảng Riders\nCREATE TABLE Riders (\n    id INT PRIMARY KEY,\n    name VARCHAR(100),\n    phone VARCHAR(20) UNIQUE\n);\n\n-- 2. Tạo bảng Drivers\nCREATE TABLE Drivers (\n    id INT PRIMARY KEY,\n    name VARCHAR(100),\n    license_plate VARCHAR(20)\n);\n\n-- 3. Tạo bảng Rides (Chú ý Khóa ngoại)\nCREATE TABLE Rides (\n    id INT PRIMARY KEY,\n    rider_id INT,\n    driver_id INT,\n    status VARCHAR(50),\n    FOREIGN KEY (rider_id) REFERENCES Riders(id),\n    FOREIGN KEY (driver_id) REFERENCES Drivers(id)\n);\n\n-- 4. Tạo Index cho cột status để lọc nhanh\nCREATE INDEX idx_rides_status ON Rides(status);\n\n-- 5. Thêm dữ liệu mẫu vào bảng Riders\nINSERT INTO Riders (id, name, phone) \nVALUES (1, 'Nguyen Van Khach', '0912345678');\n\nSELECT name FROM sqlite_master WHERE type IN ('table', 'index');\n`,
+      expectedQuery: `CREATE TABLE Riders ( id INT PRIMARY KEY, name VARCHAR(100), phone VARCHAR(20) UNIQUE ); CREATE TABLE Drivers ( id INT PRIMARY KEY, name VARCHAR(100), license_plate VARCHAR(20) ); CREATE TABLE Rides ( id INT PRIMARY KEY, rider_id INT, driver_id INT, status VARCHAR(50), FOREIGN KEY (rider_id) REFERENCES Riders(id), FOREIGN KEY (driver_id) REFERENCES Drivers(id) ); CREATE INDEX idx_rides_status ON Rides(status); INSERT INTO Riders (id, name, phone) VALUES (1, 'Nguyen Van Khach', '0912345678'); SELECT name FROM sqlite_master WHERE type IN ('table', 'index');`,
       hints: [
-        'Lọc điều kiện: WHERE tp_truoc IS NOT NULL AND thanh_pho <> tp_truoc',
+        'FOREIGN KEY (rider_id) REFERENCES Riders(id)',
+        'FOREIGN KEY (driver_id) REFERENCES Drivers(id)',
+        'CREATE INDEX idx_rides_status ON Rides(status);',
       ],
       explanation:
-        'VINH DANH CHUYÊN GIA DỮ LIỆU! Bạn đã hoàn thành xuất sắc đồ án Capstone và làm chủ toàn diện ngôn ngữ SQL từ Nhập môn đến Chuyên gia cấp cao!',
+        'VINH DANH CHỨNG NHẬN SQL MASTER! Bạn đã kiến tạo thành công toàn bộ hệ thống cơ sở dữ liệu thực chiến và hoàn thành trọn vẹn lộ trình 4 giai đoạn!',
     },
   },
 ];
