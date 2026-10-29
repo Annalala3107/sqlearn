@@ -176,7 +176,7 @@ export const SchemaDiagram: React.FC<SchemaDiagramProps> = ({
   }, [schemas, getTableCount, onSelectTableQuery, setNodes, setEdges]);
 
   return (
-    <div className="w-full h-[480px] bg-noir-950 border border-noir-800 rounded-xl overflow-hidden relative shadow-inner cursor-grab active:cursor-grabbing">
+    <div className="w-full h-[380px] sm:h-[480px] bg-noir-950 border border-noir-800 rounded-xl overflow-hidden relative shadow-inner cursor-grab active:cursor-grabbing">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -202,18 +202,18 @@ export const SchemaDiagram: React.FC<SchemaDiagramProps> = ({
       </ReactFlow>
 
       {/* Helper Legend Overlay - Top Left */}
-      <div className="absolute top-3 left-3 bg-noir-900/90 border border-noir-800/90 rounded-lg px-3 py-1.5 flex flex-wrap items-center gap-3 text-[11px] text-slate-300 backdrop-blur pointer-events-none shadow-md">
+      <div className="absolute top-2.5 left-2.5 bg-noir-900/90 border border-noir-800/90 rounded-lg px-2.5 py-1.5 flex flex-wrap items-center gap-2 sm:gap-3 text-[10px] sm:text-[11px] text-slate-300 backdrop-blur pointer-events-none shadow-md max-w-[calc(100%-20px)]">
         <div className="flex items-center space-x-1">
-          <KeyRound className="w-3.5 h-3.5 text-noir-gold" />
-          <span>Khóa chính (PK)</span>
+          <KeyRound className="w-3 h-3 text-noir-gold" />
+          <span>PK</span>
         </div>
         <div className="flex items-center space-x-1">
-          <LinkIcon className="w-3.5 h-3.5 text-sky-400" />
-          <span>Khóa ngoại (FK)</span>
+          <LinkIcon className="w-3 h-3 text-sky-400" />
+          <span>FK</span>
         </div>
         <div className="flex items-center space-x-1 text-slate-400">
-          <Move className="w-3.5 h-3.5 text-noir-accent" />
-          <span>Kéo nền để di chuyển • Kéo từng bảng để sắp xếp</span>
+          <Move className="w-3 h-3 text-noir-accent" />
+          <span>Kéo để di chuyển bảng</span>
         </div>
       </div>
     </div>

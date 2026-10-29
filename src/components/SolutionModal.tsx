@@ -63,15 +63,16 @@ export const SolutionModal: React.FC<SolutionModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-noir-950/80 backdrop-blur-sm animate-fade-in">
-      <div className="bg-noir-900 border border-noir-700 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-noir-950/85 backdrop-blur-sm animate-fade-in overflow-y-auto">
+      <div className="bg-noir-900 border border-noir-700 rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl relative overflow-hidden my-auto max-h-[92vh] overflow-y-auto">
         {/* Decorative background glow */}
         <div className="absolute top-0 right-0 w-48 h-48 bg-noir-accent/10 rounded-full blur-3xl pointer-events-none" />
 
-        {/* Close Button */}
+        {/* Close Button with 44x44 touch area */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-100 hover:bg-noir-800 rounded-full transition-colors"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-100 hover:bg-noir-800 rounded-full transition-colors active:scale-95"
+          aria-label="Đóng bảng giải"
         >
           <X className="w-5 h-5" />
         </button>
@@ -163,7 +164,7 @@ export const SolutionModal: React.FC<SolutionModalProps> = ({
                     if (isWrong) setIsWrong(false);
                   }}
                   placeholder="Ví dụ: Trần Mạnh Long"
-                  className="w-full px-4 py-3 bg-noir-950 border border-noir-700 rounded-xl text-slate-100 placeholder-slate-600 focus:outline-none focus:border-noir-accent font-sans text-sm"
+                  className="w-full px-4 py-3 bg-noir-950 border border-noir-700 rounded-xl text-slate-100 placeholder-slate-600 focus:outline-none focus:border-noir-accent font-sans text-base sm:text-sm"
                   autoFocus
                 />
               </div>

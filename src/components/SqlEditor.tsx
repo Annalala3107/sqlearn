@@ -259,49 +259,49 @@ export const SqlEditor: React.FC<SqlEditorProps> = ({
       </div>
 
       {/* Snippet Quick Bar */}
-      <div className="px-4 py-2 bg-noir-950/80 border-b border-noir-800/80 flex items-center space-x-2 overflow-x-auto text-xs">
+      <div className="px-4 py-2 bg-noir-950/80 border-b border-noir-800/80 flex items-center space-x-2 overflow-x-auto text-xs no-scrollbar">
         <span className="text-slate-500 font-semibold flex items-center flex-shrink-0 text-[11px]">
           <Sparkles className="w-3.5 h-3.5 mr-1 text-noir-accent" /> Chèn nhanh:
         </span>
         <button
           onClick={() => insertSnippet('SELECT * FROM ')}
-          className="px-2.5 py-1 rounded-md bg-noir-850 hover:bg-noir-800 text-amber-300 font-mono font-medium border border-noir-750 flex-shrink-0 transition-colors"
+          className="min-h-[36px] px-3 py-1.5 rounded-lg bg-noir-850 hover:bg-noir-800 text-amber-300 font-mono font-medium border border-noir-750 flex-shrink-0 transition-colors active:scale-95"
         >
           SELECT *
         </button>
         <button
           onClick={() => insertSnippet("WHERE ... LIKE '%...%'")}
-          className="px-2.5 py-1 rounded-md bg-noir-850 hover:bg-noir-800 text-emerald-300 font-mono font-medium border border-noir-750 flex-shrink-0 transition-colors"
+          className="min-h-[36px] px-3 py-1.5 rounded-lg bg-noir-850 hover:bg-noir-800 text-emerald-300 font-mono font-medium border border-noir-750 flex-shrink-0 transition-colors active:scale-95"
         >
           WHERE LIKE
         </button>
         <button
           onClick={() => insertSnippet('JOIN ... ON ... = ...')}
-          className="px-2.5 py-1 rounded-md bg-noir-850 hover:bg-noir-800 text-sky-300 font-mono font-medium border border-noir-750 flex-shrink-0 transition-colors"
+          className="min-h-[36px] px-3 py-1.5 rounded-lg bg-noir-850 hover:bg-noir-800 text-sky-300 font-mono font-medium border border-noir-750 flex-shrink-0 transition-colors active:scale-95"
         >
           JOIN ON
         </button>
         <button
           onClick={() => insertSnippet('GROUP BY ... HAVING ...')}
-          className="px-2.5 py-1 rounded-md bg-noir-850 hover:bg-noir-800 text-purple-300 font-mono font-medium border border-noir-750 flex-shrink-0 transition-colors"
+          className="min-h-[36px] px-3 py-1.5 rounded-lg bg-noir-850 hover:bg-noir-800 text-purple-300 font-mono font-medium border border-noir-750 flex-shrink-0 transition-colors active:scale-95"
         >
           GROUP BY
         </button>
         <button
           onClick={() => insertSnippet('ORDER BY ... DESC')}
-          className="px-2.5 py-1 rounded-md bg-noir-850 hover:bg-noir-800 text-rose-300 font-mono font-medium border border-noir-750 flex-shrink-0 transition-colors"
+          className="min-h-[36px] px-3 py-1.5 rounded-lg bg-noir-850 hover:bg-noir-800 text-rose-300 font-mono font-medium border border-noir-750 flex-shrink-0 transition-colors active:scale-95"
         >
           ORDER BY
         </button>
       </div>
 
       {/* Editor Container with Overlay Syntax Highlighting */}
-      <div className="relative bg-noir-950 min-h-[180px] flex-1">
+      <div className="relative bg-noir-950 min-h-[160px] sm:min-h-[180px] flex-1">
         {/* Layer 1: Colored Syntax Highlighted Backdrop */}
         <div
           ref={highlightRef}
           aria-hidden="true"
-          className="absolute inset-0 p-4 font-mono text-sm leading-[22px] whitespace-pre-wrap break-words overflow-auto pointer-events-none select-none"
+          className="absolute inset-0 p-3.5 sm:p-4 font-mono text-base sm:text-sm leading-[24px] sm:leading-[22px] whitespace-pre-wrap break-words overflow-auto pointer-events-none select-none"
         >
           {query ? (
             tokens.map((tok, idx) => {
@@ -365,13 +365,13 @@ export const SqlEditor: React.FC<SqlEditorProps> = ({
           onKeyDown={handleKeyDown}
           onScroll={handleScroll}
           spellCheck={false}
-          className="relative z-10 w-full h-full min-h-[180px] p-4 bg-transparent text-transparent caret-amber-400 font-mono text-sm leading-[22px] whitespace-pre-wrap break-words resize-y focus:outline-none placeholder-transparent"
+          className="relative z-10 w-full h-full min-h-[160px] sm:min-h-[180px] p-3.5 sm:p-4 bg-transparent text-transparent caret-amber-400 font-mono text-base sm:text-sm leading-[24px] sm:leading-[22px] whitespace-pre-wrap break-words resize-y focus:outline-none placeholder-transparent"
           style={{ caretColor: '#f59e0b' }}
         />
       </div>
 
       {/* Action Footer */}
-      <div className="px-4 py-3 bg-noir-850 border-t border-noir-800 flex items-center justify-between gap-3">
+      <div className="px-3.5 sm:px-4 py-2.5 sm:py-3 bg-noir-850 border-t border-noir-800 flex flex-col sm:flex-row items-center justify-between gap-2.5">
         <div className="text-xs text-slate-400 font-mono hidden sm:flex items-center space-x-1.5">
           <span>Phím tắt:</span>
           <kbd className="px-1.5 py-0.5 bg-noir-800 rounded border border-noir-700 text-noir-gold font-bold">Ctrl</kbd>
@@ -383,10 +383,15 @@ export const SqlEditor: React.FC<SqlEditorProps> = ({
         <button
           onClick={onExecute}
           disabled={isLoading}
-          className="w-full sm:w-auto min-h-[44px] px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-noir-accent to-amber-600 hover:from-amber-400 hover:to-amber-500 text-noir-950 font-bold text-sm flex items-center justify-center space-x-2 shadow-lg shadow-amber-950/40 hover:shadow-noir-accent/30 transition-all disabled:opacity-50 active:scale-[0.98] cursor-pointer"
+          className="w-full sm:w-auto min-h-[48px] px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-noir-accent to-amber-600 hover:from-amber-400 hover:to-amber-500 text-noir-950 font-bold text-sm flex items-center justify-center space-x-2 shadow-lg shadow-amber-950/40 hover:shadow-noir-accent/30 transition-all disabled:opacity-50 active:scale-[0.98] cursor-pointer"
         >
           <Play className="w-4 h-4 fill-current flex-shrink-0" />
-          <span>{isLoading ? 'Đang thực thi...' : 'Chạy Truy Vấn (Ctrl + Enter)'}</span>
+          <span>
+            {isLoading
+              ? 'Đang thực thi...'
+              : 'Chạy Truy Vấn'}
+            <span className="hidden sm:inline"> (Ctrl + Enter)</span>
+          </span>
         </button>
       </div>
     </div>

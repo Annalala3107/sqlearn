@@ -98,11 +98,11 @@ export const QueryResultTable: React.FC<QueryResultTableProps> = ({
       </div>
 
       {/* Table Data */}
-      <div className="overflow-x-auto max-h-[380px] overflow-y-auto">
+      <div className="overflow-x-auto max-h-[380px] overflow-y-auto relative no-scrollbar sm:scroll-auto">
         <table className="w-full text-left border-collapse text-xs">
-          <thead className="bg-noir-950 sticky top-0 z-10 border-b border-noir-800">
+          <thead className="bg-noir-950 sticky top-0 z-20 border-b border-noir-800">
             <tr>
-              <th className="p-3 font-mono font-bold text-slate-400 w-12 text-center border-r border-noir-800/60">
+              <th className="p-3 font-mono font-bold text-slate-400 w-12 text-center border-r border-noir-800/80 sticky left-0 bg-noir-950 z-30 shadow-[1px_0_0_rgba(255,255,255,0.06)]">
                 #
               </th>
               {result.columns.map((col, idx) => (
@@ -121,7 +121,7 @@ export const QueryResultTable: React.FC<QueryResultTableProps> = ({
                 key={rowIdx}
                 className="hover:bg-noir-800/50 transition-colors font-mono even:bg-noir-950/40"
               >
-                <td className="p-3 text-slate-500 text-center border-r border-noir-800/40 select-none">
+                <td className="p-3 text-slate-500 text-center border-r border-noir-800/80 select-none sticky left-0 bg-noir-900 even:bg-noir-950 z-10 shadow-[1px_0_0_rgba(255,255,255,0.06)]">
                   {rowIdx + 1}
                 </td>
                 {row.map((val, colIdx) => (
@@ -141,6 +141,12 @@ export const QueryResultTable: React.FC<QueryResultTableProps> = ({
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Swipe Affordance */}
+      <div className="px-3 py-1.5 bg-noir-950 border-t border-noir-800/60 flex items-center justify-between text-[11px] text-slate-500 sm:hidden">
+        <span>{result.rowCount} kết quả</span>
+        <span className="text-slate-400 italic">← Vuốt ngang xem đủ cột →</span>
       </div>
     </div>
   );

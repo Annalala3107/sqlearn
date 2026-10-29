@@ -48,23 +48,23 @@ export const DetectiveNotes: React.FC<DetectiveNotesProps> = ({ caseId }) => {
         </div>
       </div>
 
-      <div className="flex items-center space-x-2 text-xs text-slate-400 overflow-x-auto pb-1">
+      <div className="flex items-center space-x-2 text-xs text-slate-400 overflow-x-auto pb-1 no-scrollbar">
         <span className="text-slate-500 font-semibold flex-shrink-0">Mẫu ghi chép:</span>
         <button
           onClick={() => addTemplate('- Nghi phạm chính: ')}
-          className="px-2 py-0.5 rounded bg-noir-850 hover:bg-noir-800 text-slate-300 border border-noir-750 flex-shrink-0"
+          className="min-h-[36px] px-3 py-1.5 rounded-lg bg-noir-850 hover:bg-noir-800 text-slate-300 border border-noir-750 flex-shrink-0 transition-colors active:scale-95"
         >
           + Nghi phạm
         </button>
         <button
           onClick={() => addTemplate('- Bằng chứng ngoại phạm: ')}
-          className="px-2 py-0.5 rounded bg-noir-850 hover:bg-noir-800 text-slate-300 border border-noir-750 flex-shrink-0"
+          className="min-h-[36px] px-3 py-1.5 rounded-lg bg-noir-850 hover:bg-noir-800 text-slate-300 border border-noir-750 flex-shrink-0 transition-colors active:scale-95"
         >
           + Bằng chứng
         </button>
         <button
           onClick={() => addTemplate('- Khung giờ gây án: ')}
-          className="px-2 py-0.5 rounded bg-noir-850 hover:bg-noir-800 text-slate-300 border border-noir-750 flex-shrink-0"
+          className="min-h-[36px] px-3 py-1.5 rounded-lg bg-noir-850 hover:bg-noir-800 text-slate-300 border border-noir-750 flex-shrink-0 transition-colors active:scale-95"
         >
           + Khung giờ
         </button>
@@ -74,7 +74,7 @@ export const DetectiveNotes: React.FC<DetectiveNotesProps> = ({ caseId }) => {
         value={note}
         onChange={(e) => handleChange(e.target.value)}
         placeholder="Ghi chép các giả thuyết, tên nghi phạm, mốc thời gian hoặc manh mối bạn phát hiện từ các truy vấn SQL tại đây..."
-        className="w-full h-44 p-3 bg-noir-950/70 border border-noir-800 rounded-lg text-slate-200 text-sm font-sans placeholder-slate-600 focus:outline-none focus:border-noir-accent/60 leading-relaxed resize-y"
+        className="w-full h-48 sm:h-44 p-3.5 sm:p-3 bg-noir-950/70 border border-noir-800 rounded-xl text-slate-200 text-base sm:text-sm font-sans placeholder-slate-600 focus:outline-none focus:border-noir-accent/60 leading-relaxed resize-y"
       />
     </div>
   );

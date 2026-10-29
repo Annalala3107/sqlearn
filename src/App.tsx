@@ -6,6 +6,7 @@ import { Navbar } from './components/Navbar';
 import { CaseList } from './components/CaseList';
 import { CaseSolver } from './components/CaseSolver';
 import { Shield, Heart } from 'lucide-react';
+import { startViewTransition } from './utils/transition';
 
 export function App() {
   const [stats, setStats] = useState<UserStats>(() => progressService.getStats());
@@ -17,13 +18,17 @@ export function App() {
   }, []);
 
   const handleSelectCase = (c: DetectiveCase) => {
-    setActiveCase(c);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    startViewTransition(() => {
+      setActiveCase(c);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   };
 
   const handleBackToCases = () => {
-    setActiveCase(null);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    startViewTransition(() => {
+      setActiveCase(null);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   };
 
   const handleCaseSolved = (caseId: string, xpReward: number) => {
@@ -35,10 +40,14 @@ export function App() {
     if (!activeCase) return;
     const currentIndex = allCases.findIndex((c) => c.id === activeCase.id);
     if (currentIndex >= 0 && currentIndex < allCases.length - 1) {
-      setActiveCase(allCases[currentIndex + 1]);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      startViewTransition(() => {
+        setActiveCase(allCases[currentIndex + 1]);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
     } else {
-      setActiveCase(null);
+      startViewTransition(() => {
+        setActiveCase(null);
+      });
     }
   };
 
@@ -81,7 +90,7 @@ export function App() {
       </div>
 
       {/* Footer */}
-      <footer className="mt-16 border-t border-noir-800 bg-noir-900/60 py-8 text-center text-xs text-slate-500">
+      <footer className="mt-12 sm:mt-16 border-t border-noir-800 bg-noir-900/60 py-8 text-center text-xs text-slate-500 pb-[calc(2rem+env(safe-area-inset-bottom,0px))]">
         <div className="max-w-7xl mx-auto px-4 space-y-2">
           <div className="flex items-center justify-center space-x-2 text-slate-400 font-cinzel">
             <Shield className="w-4 h-4 text-noir-accent" />
