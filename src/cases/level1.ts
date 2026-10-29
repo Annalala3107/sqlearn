@@ -40,8 +40,8 @@ Nhiệm vụ của bạn: Tra cứu hiện trường vụ án, truy quét danh s
       },
       {
         id: 3,
-        text: 'Xem `loi_khai` của nghi phạm khớp nhất để xác nhận hành vi trộm cắp.',
-        hint: "SELECT * FROM loi_khai WHERE nghi_pham_id = 4;"
+        text: 'Truy vấn bảng `loi_khai` tìm nghi phạm tự "lạy ông tôi ở bụi này" nhắc đến \'cặp da\' (`WHERE noi_dung_loi_khai LIKE \'%cặp da%\'`).',
+        hint: "SELECT * FROM loi_khai WHERE noi_dung_loi_khai LIKE '%cặp da%';"
       }
     ],
     schemas: [

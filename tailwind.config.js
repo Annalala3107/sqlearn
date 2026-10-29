@@ -26,9 +26,11 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['"Be Vietnam Pro"', 'system-ui', 'sans-serif'],
+        sans: ['"Be Vietnam Pro"', 'system-ui', '-apple-system', 'sans-serif'],
+        serif: ['"Merriweather"', 'Georgia', 'Cambria', 'serif'],
         mono: ['"JetBrains Mono"', 'Consolas', 'monospace'],
-        cinzel: ['"Be Vietnam Pro"', 'system-ui', 'sans-serif']
+        typewriter: ['"Courier Prime"', 'Courier', 'monospace'],
+        cinzel: ['"Merriweather"', 'serif']
       }
     },
   },

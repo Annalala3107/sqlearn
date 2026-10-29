@@ -291,7 +291,7 @@ export const CaseList: React.FC<CaseListProps> = ({
               >
                 {/* Completed Stamp / Badge */}
                 {isCompleted && (
-                  <div className="absolute top-4 right-4 flex items-center space-x-1 text-xs px-2.5 py-1 rounded-full bg-emerald-950/90 border border-emerald-600 text-emerald-300 font-bold font-mono shadow-md z-10">
+                  <div className="absolute top-4 right-4 flex items-center space-x-1.5 text-xs px-3 py-1 rounded-full bg-emerald-950/90 border border-emerald-600/90 text-emerald-300 font-bold font-typewriter shadow-md z-10">
                     <CheckCircle className="w-3.5 h-3.5" />
                     <span>ĐÃ PHÁ ÁN</span>
                   </div>
@@ -320,12 +320,12 @@ export const CaseList: React.FC<CaseListProps> = ({
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-base sm:text-lg font-bold text-slate-100 group-hover:text-noir-gold transition-colors leading-snug">
+                  <h3 className="font-serif text-base sm:text-lg font-bold text-slate-100 group-hover:text-noir-gold transition-colors leading-snug">
                     {c.title}
                   </h3>
 
                   {/* Meta details */}
-                  <div className="space-y-1.5 text-xs text-slate-400 border-y border-noir-800/80 py-2.5">
+                  <div className="space-y-1.5 text-xs text-slate-300 border-y border-noir-800/80 py-2.5">
                     <div className="flex items-center space-x-2">
                       <Calendar className="w-3.5 h-3.5 text-noir-accent flex-shrink-0" />
                       <span>Thời gian: {c.date}</span>
@@ -341,7 +341,7 @@ export const CaseList: React.FC<CaseListProps> = ({
                   </div>
 
                   {/* Brief Preview */}
-                  <p className="text-xs text-slate-300 line-clamp-3 leading-relaxed font-sans">
+                  <p className="text-xs text-slate-300 line-clamp-3 leading-relaxed font-sans text-pretty">
                     {c.brief}
                   </p>
                 </div>

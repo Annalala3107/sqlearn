@@ -22,10 +22,36 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
+    text-rendering: optimizeLegibility;
+    line-height: 1.6;
   }
 
-  code, pre, .font-mono {
+  /* Typography: Chống từ mồ côi (widows/orphans) & căn chữ tự nhiên trong tiếng Việt */
+  p, h1, h2, h3, h4, h5, h6, .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* Chuẩn hóa Inline Code gióng hàng theo baseline tiếng Việt */
+  p code, span code, li code, td code, .inline-code {
+    font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    font-size: 0.86em;
+    padding: 0.12em 0.4em;
+    vertical-align: baseline;
+    border-radius: 0.375rem;
+    background-color: rgba(24, 27, 34, 0.85);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    line-height: inherit;
+    font-weight: 500;
+  }
+
+  pre code {
     font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+
+  /* Khắc phục lỗi tracking-widest làm lệch dấu thanh kép tiếng Việt */
+  .uppercase {
+    letter-spacing: 0.035em;
   }
 }
 

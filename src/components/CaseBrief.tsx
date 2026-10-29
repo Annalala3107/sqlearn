@@ -24,6 +24,23 @@ interface CaseBriefProps {
   onNavigateToLesson?: (lessonId: string) => void;
 }
 
+// Utility to format inline backtick code snippets with baseline-aligned typography
+const formatTextWithCode = (text: string) => {
+  if (!text) return null;
+  const parts = text.split(/(`[^`]+`)/g);
+  return parts.map((part, idx) => {
+    if (part.startsWith('`') && part.endsWith('`')) {
+      const code = part.slice(1, -1);
+      return (
+        <code key={idx} className="inline-code font-mono text-sky-300 font-semibold mx-0.5">
+          {code}
+        </code>
+      );
+    }
+    return <span key={idx}>{part}</span>;
+  });
+};
+
 export const CaseBrief: React.FC<CaseBriefProps> = ({
   caseData,
   isCompleted,
@@ -73,7 +90,7 @@ export const CaseBrief: React.FC<CaseBriefProps> = ({
           </div>
         </div>
 
-        <h1 className="text-xl sm:text-2xl font-bold text-slate-100 mb-3 tracking-wide leading-snug">
+        <h1 className="font-serif text-xl sm:text-2xl font-bold text-slate-100 mb-3 tracking-normal leading-snug">
           {caseData.title}
         </h1>
 
@@ -97,9 +114,9 @@ export const CaseBrief: React.FC<CaseBriefProps> = ({
       <div className="bg-noir-900 border border-noir-800 rounded-xl p-5 shadow-md">
         <div className="flex items-center space-x-2 mb-3 text-noir-gold font-bold text-sm">
           <FileText className="w-4 h-4 text-noir-accent" />
-          <h2>Hồ Sơ & Lời Khai Sơ Bộ</h2>
+          <h2 className="font-serif">Hồ Sơ & Lời Khai Sơ Bộ</h2>
         </div>
-        <div className="text-slate-200 text-sm leading-relaxed whitespace-pre-line bg-noir-950/70 p-4 rounded-xl border border-noir-800/90 font-sans">
+        <div className="text-slate-200 text-sm leading-relaxed whitespace-pre-line bg-noir-950/70 p-4 rounded-xl border border-noir-800/90 font-sans text-pretty">
           {caseData.brief}
         </div>
       </div>
@@ -108,18 +125,18 @@ export const CaseBrief: React.FC<CaseBriefProps> = ({
       <div className="bg-noir-900 border border-noir-800 rounded-xl p-5 shadow-md">
         <div className="flex items-center space-x-2 mb-3 text-noir-gold font-bold text-sm">
           <Lightbulb className="w-4 h-4 text-noir-accent" />
-          <h2>Manh Mối Ban Đầu Từ Hiện Trường</h2>
+          <h2 className="font-serif">Manh Mối Ban Đầu Từ Hiện Trường</h2>
         </div>
         <ul className="space-y-2.5">
           {caseData.clues.map((clue, idx) => (
             <li
               key={idx}
-              className="flex items-start space-x-3 text-xs sm:text-sm text-slate-300 bg-noir-850/80 p-3 rounded-xl border border-noir-800"
+              className="flex items-start space-x-3 text-xs sm:text-sm text-slate-200 bg-noir-850/80 p-3 rounded-xl border border-noir-800 text-pretty"
             >
               <span className="flex-shrink-0 w-6 h-6 rounded-full bg-noir-accent/20 text-noir-gold border border-noir-accent/40 flex items-center justify-center text-xs font-mono font-bold">
                 {idx + 1}
               </span>
-              <span className="leading-relaxed">{clue}</span>
+              <span className="leading-relaxed">{formatTextWithCode(clue)}</span>
             </li>
           ))}
         </ul>
@@ -130,7 +147,7 @@ export const CaseBrief: React.FC<CaseBriefProps> = ({
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2 text-noir-gold font-bold text-sm">
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <h2>Mục Tiêu Điều Tra Cần Hoàn Thành</h2>
+            <h2 className="font-serif">Mục Tiêu Điều Tra Cần Hoàn Thành</h2>
           </div>
           <span className="text-[11px] text-slate-400">Bấm để xem gợi ý tư duy</span>
         </div>
@@ -149,8 +166,8 @@ export const CaseBrief: React.FC<CaseBriefProps> = ({
                   <div className="mt-0.5 w-5 h-5 rounded-md border border-noir-accent/40 bg-noir-900 flex items-center justify-center flex-shrink-0 text-noir-accent font-mono text-xs font-bold">
                     {obj.id}
                   </div>
-                  <span className="text-xs sm:text-sm text-slate-200 font-medium leading-relaxed">
-                    {obj.text}
+                  <span className="text-xs sm:text-sm text-slate-200 font-medium leading-relaxed text-pretty">
+                    {formatTextWithCode(obj.text)}
                   </span>
                 </div>
                 <div className="flex items-center text-xs text-slate-400 flex-shrink-0">
@@ -170,7 +187,7 @@ export const CaseBrief: React.FC<CaseBriefProps> = ({
                     <span className="font-semibold text-noir-gold block mb-1">
                       💡 Hướng dẫn tư duy suy luận:
                     </span>
-                    <span className="text-slate-300 font-sans text-xs">
+                    <span className="text-slate-300 font-mono text-xs bg-noir-900 px-2.5 py-1.5 rounded-lg border border-noir-800 block mt-1">
                       {obj.hint}
                     </span>
                   </div>

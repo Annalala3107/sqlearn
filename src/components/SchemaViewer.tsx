@@ -14,7 +14,13 @@ export const SchemaViewer: React.FC<SchemaViewerProps> = ({
   onQuickQuery,
   getTableCount,
 }) => {
-  const [viewMode, setViewMode] = useState<'diagram' | 'list'>('diagram');
+  // On mobile screens (< 768px), default to structured list view to prevent canvas swipe traps
+  const [viewMode, setViewMode] = useState<'diagram' | 'list'>(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      return 'list';
+    }
+    return 'diagram';
+  });
   const [expandedTables, setExpandedTables] = useState<Record<string, boolean>>(() => {
     const initial: Record<string, boolean> = {};
     if (schemas.length > 0) {
