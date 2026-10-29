@@ -14,7 +14,7 @@ export interface ForeignKeyInfo {
 
 export interface TableSchema {
   name: string;
-  description: string;
+  description?: string;
   columns: ColumnInfo[];
   foreignKeys?: ForeignKeyInfo[];
 }
