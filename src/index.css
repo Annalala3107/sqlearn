@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #0b0c10;
+    color: #e2e8f0;
+    font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+  }
+
+  .font-cinzel {
+    font-family: 'Cinzel', serif, Georgia;
+  }
+
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #13151b;
+}
+::-webkit-scrollbar-thumb {
+  background: #2c3240;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #e5a93c;
+}
