@@ -154,6 +154,9 @@ Kẻ sát nhân dùng tên giả để thuê phòng trọ gần đó. Bạn cầ
         columns: [
           { name: 'cmnd', type: 'TEXT PRIMARY KEY', description: 'Số CMND' },
           { name: 'do_khop', type: 'REAL', description: 'Độ trùng khớp (%)' }
+        ],
+        foreignKeys: [
+          { fromColumn: 'cmnd', toTable: 'ho_so_y_te', toColumn: 'cmnd' }
         ]
       },
       {
@@ -483,6 +486,9 @@ Hãy giải mã bức điện và tra cứu mã số tội phạm nguy hiểm n�
           { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã điện tín' },
           { name: 'ma_van_don', type: 'TEXT', description: 'Mã vận đơn đính kèm' },
           { name: 'noi_dung', type: 'TEXT', description: 'Nội dung chứa ký tự nhiễu #' }
+        ],
+        foreignKeys: [
+          { fromColumn: 'ma_van_don', toTable: 'ho_so_toi_pham', toColumn: 'ma_ho_so' }
         ]
       },
       {
@@ -652,6 +658,9 @@ Hồ sơ bị xóa trái phép là hồ sơ CÓ mã trong 'audit_log' nhưng 'NO
           { name: 'hanh_dong', type: 'TEXT', description: 'INSERT / UPDATE / DELETE' },
           { name: 'can_bo_thao_tac', type: 'TEXT', description: 'Tên cán bộ thực hiện' },
           { name: 'thoi_gian', type: 'TEXT', description: 'Thời gian thao tác' }
+        ],
+        foreignKeys: [
+          { fromColumn: 'ma_ho_so', toTable: 'ho_so_hinh_su', toColumn: 'ma_ho_so' }
         ]
       }
     ],
@@ -734,6 +743,9 @@ Tài khoản ban đầu của vụ cướp là 'TK_CUOP_01'. Bạn cần sử d�
           { name: 'tk_nguon', type: 'TEXT', description: 'Tài khoản chuyển' },
           { name: 'tk_dich', type: 'TEXT', description: 'Tài khoản nhận' },
           { name: 'so_vang', type: 'INTEGER', description: 'Lượng vàng' }
+        ],
+        foreignKeys: [
+          { fromColumn: 'tk_dich', toTable: 'tai_khoan', toColumn: 'so_tk' }
         ]
       },
       {
@@ -841,6 +853,9 @@ Hãy viết câu lệnh SQL tối thượng kết hợp toàn bộ kỹ năng đ
           { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã giao dịch' },
           { name: 'nguoi_nhan_id', type: 'INTEGER', description: 'ID người nhận tiền' },
           { name: 'so_tien', type: 'INTEGER', description: 'Số tiền giao dịch (USD)' }
+        ],
+        foreignKeys: [
+          { fromColumn: 'nguoi_nhan_id', toTable: 'danh_ba_cong_dan', toColumn: 'id' }
         ]
       },
       {
@@ -849,6 +864,9 @@ Hãy viết câu lệnh SQL tối thượng kết hợp toàn bộ kỹ năng đ
           { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã cuộc gọi' },
           { name: 'nguoi_goi_id', type: 'INTEGER', description: 'ID người thực hiện cuộc gọi' },
           { name: 'so_nhan', type: 'TEXT', description: 'Số điện thoại đàn em' }
+        ],
+        foreignKeys: [
+          { fromColumn: 'nguoi_goi_id', toTable: 'danh_ba_cong_dan', toColumn: 'id' }
         ]
       },
       {

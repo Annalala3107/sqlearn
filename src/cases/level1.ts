@@ -181,10 +181,14 @@ Bảo vệ khách sạn phát hiện cửa sổ ban công bị cạy và có cam
         description: 'Danh sách khách lưu trú khả nghi',
         columns: [
           { name: 'id', type: 'INTEGER PRIMARY KEY', description: 'Mã nghi phạm' },
+          { name: 'hien_truong_id', type: 'INTEGER', description: 'Mã vụ án hiện trường' },
           { name: 'ho_ten', type: 'TEXT', description: 'Tên đối tượng' },
           { name: 'gioi_tinh', type: 'TEXT', description: 'Giới tính' },
           { name: 'chieu_cao', type: 'INTEGER', description: 'Chiều cao (cm)' },
           { name: 'phong_o', type: 'TEXT', description: 'Số phòng lưu trú' }
+        ],
+        foreignKeys: [
+          { fromColumn: 'hien_truong_id', toTable: 'hien_truong', toColumn: 'id' }
         ]
       }
     ],
@@ -201,17 +205,18 @@ SELECT * FROM hien_truong WHERE ngay = '1988-11-18';`,
         (1, '1988-11-18', 'Khách sạn Caravelle', 'Mất một vòng ngọc bích trong phòng VIP 304. Camera sảnh lầu 3 thấy một phụ nữ dáng cao trên 1m68 lén vào ban công.');`,
       `CREATE TABLE nghi_pham (
         id INTEGER PRIMARY KEY,
+        hien_truong_id INTEGER,
         ho_ten TEXT,
         gioi_tinh TEXT,
         chieu_cao INTEGER,
         phong_o TEXT
       );`,
       `INSERT INTO nghi_pham VALUES
-        (1, 'Lý Tiểu Lan', 'Nữ', 160, 'Phòng 301'),
-        (2, 'Trương Thúy Nga', 'Nữ', 172, 'Phòng 306'),
-        (3, 'Đỗ Mạnh Cường', 'Nam', 175, 'Phòng 308'),
-        (4, 'Phạm Kim Chi', 'Nữ', 165, 'Phòng 302'),
-        (5, 'Hoàng Nhật Minh', 'Nam', 180, 'Phòng 305');`
+        (1, 1, 'Lý Tiểu Lan', 'Nữ', 160, 'Phòng 301'),
+        (2, 1, 'Trương Thúy Nga', 'Nữ', 172, 'Phòng 306'),
+        (3, 1, 'Đỗ Mạnh Cường', 'Nam', 175, 'Phòng 308'),
+        (4, 1, 'Phạm Kim Chi', 'Nữ', 165, 'Phòng 302'),
+        (5, 1, 'Hoàng Nhật Minh', 'Nam', 180, 'Phòng 305');`
     ],
     solution: {
       culprit: 'Trương Thúy Nga',

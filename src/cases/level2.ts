@@ -153,6 +153,9 @@ Tuy nhiên, hệ thống cửa soát vé rạp Rex có lưu lại mã vé của 
           { name: 'ten_khan_gia', type: 'TEXT', description: 'Tên người mua vé' },
           { name: 'phim', type: 'TEXT', description: 'Tên phim' },
           { name: 'suat_chieu', type: 'TEXT', description: 'Giờ chiếu' }
+        ],
+        foreignKeys: [
+          { fromColumn: 'ten_khan_gia', toTable: 'nghi_pham', toColumn: 'ho_ten' }
         ]
       }
     ],
@@ -237,6 +240,9 @@ Cảnh sát đã trích xuất nhật ký viễn thông toàn bộ các cuộc g
           { name: 'so_nhan', type: 'TEXT', description: 'Số người nhận' },
           { name: 'thoi_gian', type: 'TEXT', description: 'Giờ gọi' },
           { name: 'thoi_luong_giay', type: 'INTEGER', description: 'Thời lượng (giây)' }
+        ],
+        foreignKeys: [
+          { fromColumn: 'so_nguoi_goi', toTable: 'danh_ba_thue_bao', toColumn: 'so_dien_thoai' }
         ]
       },
       {
@@ -332,6 +338,9 @@ Hãy gom nhóm các giao dịch đổi phỉnh theo 'khach_id', tính tổng s�
           { name: 'khach_id', type: 'INTEGER', description: 'Mã khách' },
           { name: 'so_tien', type: 'INTEGER', description: 'Số tiền quy đổi (USD)' },
           { name: 'hinh_thuc', type: 'TEXT', description: 'Tiền mặt sang Séc / Phỉnh' }
+        ],
+        foreignKeys: [
+          { fromColumn: 'khach_id', toTable: 'khach_choi', toColumn: 'id' }
         ]
       },
       {
@@ -625,6 +634,9 @@ Ban chuyên án nhận định: Kẻ gây án là kẻ duy nhất xuất hiện 
           { name: 'so_cmnd', type: 'TEXT', description: 'Số CMND' },
           { name: 'ho_ten', type: 'TEXT', description: 'Họ tên' },
           { name: 'gio_thay', type: 'TEXT', description: 'Giờ phát hiện' }
+        ],
+        foreignKeys: [
+          { fromColumn: 'so_cmnd', toTable: 'nhan_chung_q1', toColumn: 'so_cmnd' }
         ]
       }
     ],

@@ -557,6 +557,9 @@ JOIN orders b ON a.id = b.customer_id;`,
           { name: 'student_id', type: 'INTEGER', description: 'Mã học sinh (FK)' },
           { name: 'score', type: 'INTEGER', description: 'Điểm số' },
         ],
+        foreignKeys: [
+          { fromColumn: 'student_id', toTable: 'Students', toColumn: 'id' },
+        ],
       },
     ],
     seedSql: [
@@ -722,6 +725,10 @@ LIMIT 5;`,
           { name: 'user_id', type: 'INTEGER', description: 'Mã người dùng' },
           { name: 'product_id', type: 'INTEGER', description: 'Mã sản phẩm' },
         ],
+        foreignKeys: [
+          { fromColumn: 'user_id', toTable: 'Users', toColumn: 'id' },
+          { fromColumn: 'product_id', toTable: 'Products', toColumn: 'id' },
+        ],
       },
       {
         name: 'Products',
@@ -801,6 +808,9 @@ SELECT * FROM TopUsers;`,
           { name: 'order_id', type: 'INTEGER PRIMARY KEY', description: 'Mã đơn' },
           { name: 'customer_id', type: 'INTEGER', description: 'Mã khách' },
           { name: 'amount', type: 'INTEGER', description: 'Số tiền' },
+        ],
+        foreignKeys: [
+          { fromColumn: 'customer_id', toTable: 'Customers', toColumn: 'customer_id' },
         ],
       },
     ],
@@ -1238,6 +1248,18 @@ CREATE TABLE Books (
           { name: 'name', type: 'VARCHAR(100)', description: 'Tên tác giả' },
         ],
       },
+      {
+        name: 'Books',
+        description: 'Bảng đầu sách phát hành',
+        columns: [
+          { name: 'book_id', type: 'INT PRIMARY KEY', description: 'Mã sách' },
+          { name: 'title', type: 'VARCHAR(200)', description: 'Tựa sách' },
+          { name: 'author_id', type: 'INT', description: 'Mã tác giả (FK CASCADE)' },
+        ],
+        foreignKeys: [
+          { fromColumn: 'author_id', toTable: 'Authors', toColumn: 'id' },
+        ],
+      },
     ],
     seedSql: [
       `-- Database trống sẵn sàng cho DDL`,
@@ -1467,10 +1489,35 @@ VALUES (1, 'Nguyen Van Khach', '0912345678');
 SELECT name FROM sqlite_master WHERE type IN ('table', 'index');`,
     schemas: [
       {
-        name: 'SandboxRideHailing',
-        description: 'Môi trường CSDL trống sẵn sàng thiết kế',
+        name: 'Riders',
+        description: 'Bảng khách hàng đặt chuyến',
         columns: [
-          { name: 'status', type: 'TEXT', description: 'Trạng thái khởi tạo' },
+          { name: 'id', type: 'INT PRIMARY KEY', description: 'Mã khách hàng' },
+          { name: 'name', type: 'VARCHAR(100)', description: 'Tên khách' },
+          { name: 'phone', type: 'VARCHAR(20) UNIQUE', description: 'Số điện thoại' },
+        ],
+      },
+      {
+        name: 'Drivers',
+        description: 'Bảng tài xế công nghệ',
+        columns: [
+          { name: 'id', type: 'INT PRIMARY KEY', description: 'Mã tài xế' },
+          { name: 'name', type: 'VARCHAR(100)', description: 'Tên tài xế' },
+          { name: 'license_plate', type: 'VARCHAR(20)', description: 'Biển số xe' },
+        ],
+      },
+      {
+        name: 'Rides',
+        description: 'Bảng theo dõi chuyến xe',
+        columns: [
+          { name: 'id', type: 'INT PRIMARY KEY', description: 'Mã chuyến xe' },
+          { name: 'rider_id', type: 'INT', description: 'Mã khách hàng (FK)' },
+          { name: 'driver_id', type: 'INT', description: 'Mã tài xế (FK)' },
+          { name: 'status', type: 'VARCHAR(50)', description: 'Trạng thái chuyến' },
+        ],
+        foreignKeys: [
+          { fromColumn: 'rider_id', toTable: 'Riders', toColumn: 'id' },
+          { fromColumn: 'driver_id', toTable: 'Drivers', toColumn: 'id' },
         ],
       },
     ],
