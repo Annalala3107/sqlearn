@@ -9,6 +9,7 @@ import { CaseList } from './components/CaseList';
 import { CaseSolver } from './components/CaseSolver';
 import { AcademyLessonList } from './components/AcademyLessonList';
 import { AcademyLessonPlayer } from './components/AcademyLessonPlayer';
+import { GuideModal } from './components/GuideModal';
 import { Shield, Heart } from 'lucide-react';
 import { startViewTransition } from './utils/transition';
 
@@ -17,11 +18,25 @@ export function App() {
   const [currentMode, setCurrentMode] = useState<'cases' | 'academy'>('cases');
   const [activeCase, setActiveCase] = useState<DetectiveCase | null>(null);
   const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
 
   useEffect(() => {
     // Keep stats in sync
     setStats(progressService.getStats());
+
+    // Auto-open guide for first-time visitors
+    const hasSeenGuide = localStorage.getItem('sqlearn_guide_seen');
+    if (!hasSeenGuide) {
+      const timer = setTimeout(() => {
+        setIsGuideOpen(true);
+        localStorage.setItem('sqlearn_guide_seen', 'true');
+      }, 700);
+      return () => clearTimeout(timer);
+    }
   }, []);
+
+  const handleOpenGuide = () => setIsGuideOpen(true);
+  const handleCloseGuide = () => setIsGuideOpen(false);
 
   const handleChangeMode = (mode: 'cases' | 'academy') => {
     startViewTransition(() => {
@@ -128,6 +143,7 @@ export function App() {
           currentLessonTitle={activeLesson ? activeLesson.title : undefined}
           onBackToHome={handleBackToHome}
           onResetStats={handleResetStats}
+          onOpenGuide={handleOpenGuide}
         />
 
         <main>
@@ -149,6 +165,8 @@ export function App() {
                 cases={allCases}
                 stats={stats}
                 onSelectCase={handleSelectCase}
+                onNavigateToAcademy={() => handleChangeMode('academy')}
+                onOpenGuide={handleOpenGuide}
               />
             )
           ) : activeLesson ? (
@@ -167,10 +185,19 @@ export function App() {
             <AcademyLessonList
               stats={stats}
               onSelectLesson={handleSelectLesson}
+              onOpenGuide={handleOpenGuide}
             />
           )}
         </main>
       </div>
+
+      {/* Beginner Onboarding & User Guide Modal */}
+      <GuideModal
+        isOpen={isGuideOpen}
+        onClose={handleCloseGuide}
+        onNavigateToAcademy={() => handleChangeMode('academy')}
+        onNavigateToCases={() => handleChangeMode('cases')}
+      />
 
       {/* Footer */}
       <footer className="mt-12 sm:mt-16 border-t border-noir-800 bg-noir-900/60 py-8 text-center text-xs text-slate-500 pb-[calc(2rem+env(safe-area-inset-bottom,0px))]">

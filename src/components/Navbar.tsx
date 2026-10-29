@@ -6,6 +6,7 @@ import {
   RotateCcw,
   GraduationCap,
   Briefcase,
+  BookOpen,
 } from 'lucide-react';
 import { UserStats } from '../cases/types';
 import { getRankFromXp } from '../cases';
@@ -18,6 +19,7 @@ interface NavbarProps {
   currentLessonTitle?: string;
   onBackToHome: () => void;
   onResetStats: () => void;
+  onOpenGuide: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -28,6 +30,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   currentLessonTitle,
   onBackToHome,
   onResetStats,
+  onOpenGuide,
 }) => {
   const rank = getRankFromXp(stats.xp);
   const activeTitle = currentMode === 'cases' ? currentCaseTitle : currentLessonTitle;
@@ -104,8 +107,23 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
         </div>
 
-        {/* Right: Detective Rank & Stats */}
-        <div className="flex items-center space-x-1.5 sm:space-x-3 flex-shrink-0">
+        {/* Right: Guide Button & Detective Rank & Stats */}
+        <div className="flex items-center space-x-1.5 sm:space-x-2.5 flex-shrink-0">
+          {/* Guide / Field Manual Button */}
+          <button
+            onClick={onOpenGuide}
+            className="min-h-[36px] px-2 sm:px-3 py-1.5 rounded-xl bg-noir-850 hover:bg-noir-800 text-slate-300 hover:text-noir-gold border border-noir-750 transition-all flex items-center space-x-1.5 text-xs font-semibold cursor-pointer relative shadow-sm active:scale-95"
+            title="Mở Sổ tay tân thủ & Hướng dẫn sử dụng"
+            aria-label="Mở Sổ tay tân thủ & Hướng dẫn sử dụng"
+          >
+            <BookOpen className="w-3.5 h-3.5 text-noir-accent flex-shrink-0" />
+            <span className="hidden sm:inline">Hướng Dẫn</span>
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-noir-accent opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-noir-gold"></span>
+            </span>
+          </button>
+
           {/* XP & Rank pill */}
           <div className="flex items-center bg-noir-850 border border-noir-700/80 rounded-full px-2 sm:px-3 py-1 shadow-sm space-x-1.5">
             <div className="flex items-center space-x-1 text-noir-gold">

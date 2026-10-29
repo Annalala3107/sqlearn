@@ -8,6 +8,7 @@ import {
   ArrowRight,
   Filter,
   Trophy,
+  BookOpen,
 } from 'lucide-react';
 import { Lesson, StageId } from '../academy/types';
 import { allLessons, ACADEMY_STAGES } from '../academy';
@@ -16,11 +17,13 @@ import { UserStats } from '../cases/types';
 interface AcademyLessonListProps {
   stats: UserStats;
   onSelectLesson: (lesson: Lesson) => void;
+  onOpenGuide?: () => void;
 }
 
 export const AcademyLessonList: React.FC<AcademyLessonListProps> = ({
   stats,
   onSelectLesson,
+  onOpenGuide,
 }) => {
   const [selectedStage, setSelectedStage] = useState<StageId | 'all'>('all');
 
@@ -41,9 +44,20 @@ export const AcademyLessonList: React.FC<AcademyLessonListProps> = ({
         <div className="absolute top-0 right-0 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-3xl space-y-3.5 sm:space-y-4 relative z-10">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-sky-500/15 border border-sky-500/30 text-sky-400 text-[11px] sm:text-xs font-mono font-semibold">
-            <GraduationCap className="w-4 h-4 text-sky-400 flex-shrink-0" />
-            <span>HỌC VIỆN SQL TƯƠNG TÁC (INTERACTIVE SQL ACADEMY)</span>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-sky-500/15 border border-sky-500/30 text-sky-400 text-[11px] sm:text-xs font-mono font-semibold">
+              <GraduationCap className="w-4 h-4 text-sky-400 flex-shrink-0" />
+              <span>HỌC VIỆN SQL TƯƠNG TÁC (INTERACTIVE SQL ACADEMY)</span>
+            </div>
+            {onOpenGuide && (
+              <button
+                onClick={onOpenGuide}
+                className="px-3 py-1 rounded-full bg-noir-850 hover:bg-noir-800 text-slate-300 hover:text-noir-gold border border-noir-700 text-xs font-medium flex items-center space-x-1.5 transition-colors cursor-pointer"
+              >
+                <BookOpen className="w-3.5 h-3.5 text-noir-accent" />
+                <span>Sổ Tay Hướng Dẫn</span>
+              </button>
+            )}
           </div>
 
           <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-100 tracking-tight leading-tight">

@@ -9,6 +9,8 @@ import {
   ArrowRight,
   Shield,
   Sparkles,
+  GraduationCap,
+  BookOpen,
 } from 'lucide-react';
 import { DetectiveCase, UserStats } from '../cases/types';
 
@@ -16,12 +18,16 @@ interface CaseListProps {
   cases: DetectiveCase[];
   stats: UserStats;
   onSelectCase: (c: DetectiveCase) => void;
+  onNavigateToAcademy?: () => void;
+  onOpenGuide?: () => void;
 }
 
 export const CaseList: React.FC<CaseListProps> = ({
   cases,
   stats,
   onSelectCase,
+  onNavigateToAcademy,
+  onOpenGuide,
 }) => {
   const getDifficultyColor = (diff: string) => {
     switch (diff) {
@@ -70,6 +76,50 @@ export const CaseList: React.FC<CaseListProps> = ({
               <span>Tự động lưu tiến độ vào máy</span>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Beginner Welcome / Roadmap Gateway Callout */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-sky-950/40 via-noir-900 to-amber-950/30 border border-sky-800/40 shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-start space-x-3.5">
+          <div className="w-10 h-10 rounded-xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-400 flex-shrink-0 mt-0.5">
+            <GraduationCap className="w-5 h-5" />
+          </div>
+          <div className="space-y-1">
+            <div className="flex items-center space-x-2">
+              <h3 className="text-sm font-bold text-slate-100">
+                Bạn mới bắt đầu học SQL? Hãy khởi đầu vững chắc!
+              </h3>
+              <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-300 border border-sky-500/30 font-semibold">
+                Khuyên dùng
+              </span>
+            </div>
+            <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
+              Các vụ án yêu cầu bạn tự viết truy vấn để tìm manh mối. Nếu chưa quen với các câu lệnh <code className="text-sky-300 bg-noir-950 px-1 py-0.5 rounded">SELECT</code>, <code className="text-sky-300 bg-noir-950 px-1 py-0.5 rounded">WHERE</code> hoặc <code className="text-sky-300 bg-noir-950 px-1 py-0.5 rounded">JOIN</code>, hãy ghé thăm <strong>Học Viện SQL</strong> (20 bài học tương tác) hoặc mở <strong>Sổ Tay Tân Thủ</strong> để nắm bí kíp nhé!
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-2.5 flex-shrink-0">
+          {onOpenGuide && (
+            <button
+              onClick={onOpenGuide}
+              className="px-3.5 py-2 rounded-xl bg-noir-850 hover:bg-noir-800 text-slate-200 border border-noir-700 text-xs font-semibold flex items-center space-x-1.5 transition-all cursor-pointer active:scale-95"
+            >
+              <BookOpen className="w-4 h-4 text-noir-accent" />
+              <span>Sổ Tay Hướng Dẫn</span>
+            </button>
+          )}
+
+          {onNavigateToAcademy && (
+            <button
+              onClick={onNavigateToAcademy}
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-teal-500 hover:from-sky-400 hover:to-teal-400 text-noir-950 font-bold text-xs flex items-center space-x-1.5 shadow-md shadow-sky-950/50 transition-all cursor-pointer active:scale-95"
+            >
+              <GraduationCap className="w-4 h-4" />
+              <span>Đến Học Viện SQL</span>
+            </button>
+          )}
         </div>
       </div>
 
