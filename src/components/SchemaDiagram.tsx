@@ -153,6 +153,9 @@ export const SchemaDiagram: React.FC<SchemaDiagramProps> = ({
       // Generate foreign key edges
       if (table.foreignKeys) {
         table.foreignKeys.forEach((fk, fkIdx) => {
+          const targetExists = schemas.some((s) => s.name === fk.toTable);
+          if (!targetExists) return;
+
           generatedEdges.push({
             id: `edge-${table.name}-${fk.fromColumn}-${fk.toTable}-${fkIdx}`,
             source: table.name,

@@ -18,6 +18,8 @@ import {
   ChevronDown,
   ChevronUp,
   Briefcase,
+  AlertTriangle,
+  RotateCcw,
 } from 'lucide-react';
 import { Lesson } from '../academy/types';
 import { databaseService, QueryExecutionResult } from '../services/databaseService';
@@ -60,11 +62,14 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
   const [showHintIndex, setShowHintIndex] = useState<number | null>(null);
   const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({});
   const [isCompleted, setIsCompleted] = useState(initialCompleted);
+  const [dbError, setDbError] = useState<string | null>(null);
+  const [retryTrigger, setRetryTrigger] = useState(0);
 
   // Initialize SQLite database for this lesson
   useEffect(() => {
     let isMounted = true;
     setIsDbReady(false);
+    setDbError(null);
     setVerificationFeedback({ status: 'idle', message: '' });
     setShowHintIndex(null);
     setQuizAnswers({});
@@ -77,20 +82,30 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
         if (isMounted) {
           setIsDbReady(true);
           // Run preview query on the primary table
-          const previewSql = `SELECT * FROM ${lesson.schemas[0]?.name} LIMIT 5;`;
-          const res = databaseService.runQuery(previewSql);
-          setQueryResult(res);
-          setLastExecutedQuery(previewSql);
+          const primaryTable = lesson.schemas[0]?.name;
+          if (primaryTable) {
+            try {
+              const previewSql = `SELECT * FROM ${primaryTable} LIMIT 5;`;
+              const res = databaseService.runQuery(previewSql);
+              setQueryResult(res);
+              setLastExecutedQuery(previewSql);
+            } catch (e) {
+              console.warn('Lỗi chạy truy vấn xem trước bài học:', e);
+            }
+          }
         }
       })
-      .catch((err) => {
+      .catch((err: any) => {
         console.error('Lỗi nạp database bài học:', err);
+        if (isMounted) {
+          setDbError(err?.message || 'Không thể khởi tạo sandbox SQLite cho bài học này.');
+        }
       });
 
     return () => {
       isMounted = false;
     };
-  }, [lesson.id]);
+  }, [lesson.id, retryTrigger]);
 
   // Execute current query in sandbox
   const handleExecute = useCallback(() => {
@@ -154,6 +169,34 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   };
+
+  if (dbError) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center space-y-4 px-4 text-center">
+        <div className="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
+          <AlertTriangle className="w-7 h-7" />
+        </div>
+        <div className="max-w-md">
+          <h3 className="text-lg font-bold text-slate-100">
+            Không Thể Thiết Lập Môi Trường Thực Hành
+          </h3>
+          <p className="text-xs text-rose-400 font-mono mt-1.5 p-3 rounded-xl bg-noir-900 border border-noir-800 break-words">
+            {dbError}
+          </p>
+        </div>
+        <button
+          onClick={() => {
+            setDbError(null);
+            setRetryTrigger((prev) => prev + 1);
+          }}
+          className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-noir-950 font-bold text-sm shadow-lg shadow-sky-500/20 transition-all cursor-pointer"
+        >
+          <RotateCcw className="w-4 h-4" />
+          <span>Thử Tải Lại Ngay</span>
+        </button>
+      </div>
+    );
+  }
 
   if (!isDbReady) {
     return (

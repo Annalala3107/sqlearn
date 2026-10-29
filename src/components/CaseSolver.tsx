@@ -8,6 +8,8 @@ import {
   Loader2,
   Crosshair,
   Code2,
+  AlertTriangle,
+  RotateCcw,
 } from 'lucide-react';
 import { DetectiveCase, CaseProgress } from '../cases/types';
 import { databaseService, QueryExecutionResult } from '../services/databaseService';
@@ -48,33 +50,42 @@ export const CaseSolver: React.FC<CaseSolverProps> = ({
   const [mobileTab, setMobileTab] = useState<'brief' | 'schema' | 'sql' | 'notes'>('brief');
   const [isSolutionModalOpen, setIsSolutionModalOpen] = useState(false);
   const [isSideBySide, setIsSideBySide] = useState(true);
+  const [dbError, setDbError] = useState<string | null>(null);
+  const [retryTrigger, setRetryTrigger] = useState(0);
 
   // Initialize and seed database whenever caseData changes
   useEffect(() => {
     let isMounted = true;
     setIsDbReady(false);
+    setDbError(null);
 
     databaseService
       .loadCase(caseData)
       .then(() => {
         if (isMounted) {
           setIsDbReady(true);
-          const starter = caseData.starterQuery || `SELECT * FROM ${caseData.schemas[0]?.name};`;
+          const starter = caseData.starterQuery || `SELECT * FROM ${caseData.schemas[0]?.name || 'hien_truong'};`;
           setQuery(starter);
-          // Run neutral table survey without giving away answers
-          const initialRes = databaseService.runQuery(starter);
-          setQueryResult(initialRes);
-          setLastExecutedQuery(starter);
+          try {
+            const initialRes = databaseService.runQuery(starter);
+            setQueryResult(initialRes);
+            setLastExecutedQuery(starter);
+          } catch (e) {
+            console.warn('Lỗi chạy query khởi đầu:', e);
+          }
         }
       })
-      .catch((err) => {
+      .catch((err: any) => {
         console.error('Lỗi khi nạp cơ sở dữ liệu vụ án:', err);
+        if (isMounted) {
+          setDbError(err?.message || 'Không thể khởi tạo cơ sở dữ liệu SQLite WebAssembly.');
+        }
       });
 
     return () => {
       isMounted = false;
     };
-  }, [caseData]);
+  }, [caseData, retryTrigger]);
 
   // Execute query handler
   const handleExecuteQuery = useCallback(() => {
@@ -118,6 +129,34 @@ export const CaseSolver: React.FC<CaseSolverProps> = ({
   };
 
   const isCompleted = !!progress?.completed;
+
+  if (dbError) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center space-y-4 px-4 text-center">
+        <div className="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
+          <AlertTriangle className="w-7 h-7" />
+        </div>
+        <div className="max-w-md">
+          <h3 className="text-lg font-bold text-slate-100">
+            Không Thể Thiết Lập Hiện Trường Vụ Án
+          </h3>
+          <p className="text-xs text-rose-400 font-mono mt-1.5 p-3 rounded-xl bg-noir-900 border border-noir-800 break-words">
+            {dbError}
+          </p>
+        </div>
+        <button
+          onClick={() => {
+            setDbError(null);
+            setRetryTrigger((prev) => prev + 1);
+          }}
+          className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-noir-accent hover:bg-amber-400 text-noir-950 font-bold text-sm shadow-lg shadow-noir-accent/20 transition-all cursor-pointer"
+        >
+          <RotateCcw className="w-4 h-4" />
+          <span>Thử Tải Lại Ngay</span>
+        </button>
+      </div>
+    );
+  }
 
   if (!isDbReady) {
     return (

@@ -39,6 +39,59 @@ export class DatabaseService {
     return this.currentCaseId;
   }
 
+  private ensureSqlJsScript(): Promise<void> {
+    if (typeof window !== 'undefined' && window.initSqlJs) {
+      return Promise.resolve();
+    }
+
+    return new Promise<void>((resolve, reject) => {
+      if (typeof window === 'undefined') {
+        return resolve();
+      }
+
+      // Check if script is already present in document
+      const existing = document.querySelector('script[src*="sql-wasm"]');
+      if (existing) {
+        if (window.initSqlJs) return resolve();
+        existing.addEventListener('load', () => resolve());
+        existing.addEventListener('error', () => {
+          // If existing script errored, attempt CDN fallback
+          this.loadCdnScript().then(resolve).catch(reject);
+        });
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = '/sql-wasm.js';
+      script.async = true;
+      script.onload = () => {
+        if (window.initSqlJs) {
+          resolve();
+        } else {
+          this.loadCdnScript().then(resolve).catch(reject);
+        }
+      };
+      script.onerror = () => {
+        this.loadCdnScript().then(resolve).catch(reject);
+      };
+      document.head.appendChild(script);
+    });
+  }
+
+  private loadCdnScript(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      const cdnScript = document.createElement('script');
+      cdnScript.src = 'https://sql.js.org/dist/sql-wasm.js';
+      cdnScript.async = true;
+      cdnScript.onload = () => {
+        if (window.initSqlJs) resolve();
+        else reject(new Error('Đã tải sql-wasm từ CDN nhưng window.initSqlJs không tồn tại.'));
+      };
+      cdnScript.onerror = () => reject(new Error('Không thể tải sql-wasm.js từ local lẫn CDN.'));
+      document.head.appendChild(cdnScript);
+    });
+  }
+
   public async init(): Promise<void> {
     if (this.SQL) return;
     if (this.isInitializing && this.initPromise) {
@@ -47,19 +100,38 @@ export class DatabaseService {
 
     this.isInitializing = true;
     this.initPromise = new Promise(async (resolve, reject) => {
+      const timeoutId = setTimeout(() => {
+        this.isInitializing = false;
+        this.initPromise = null;
+        reject(new Error('Quá thời gian tải SQLite WebAssembly (Timeout 10s). Vui lòng thử lại.'));
+      }, 10000);
+
       try {
+        await this.ensureSqlJsScript();
+
         if (!window.initSqlJs) {
-          throw new Error('Thư viện sql.js chưa được tải vào trang.');
+          throw new Error('Thư viện SQLite WebAssembly (sql.js) chưa được khởi tạo.');
         }
 
-        this.SQL = await window.initSqlJs({
-          locateFile: (file: string) => `https://sql.js.org/dist/${file}`,
-        });
+        // Ưu tiên nạp file wasm nội bộ /sql-wasm.wasm
+        try {
+          this.SQL = await window.initSqlJs({
+            locateFile: (file: string) => `/${file}`,
+          });
+        } catch (localWasmErr) {
+          console.warn('Không thể nạp file wasm nội bộ, chuyển sang CDN dự phòng:', localWasmErr);
+          this.SQL = await window.initSqlJs({
+            locateFile: (file: string) => `https://sql.js.org/dist/${file}`,
+          });
+        }
 
+        clearTimeout(timeoutId);
         this.isInitializing = false;
         resolve();
       } catch (err) {
+        clearTimeout(timeoutId);
         this.isInitializing = false;
+        this.initPromise = null; // Reset để cho phép thử lại
         console.error('Không thể khởi tạo SQLite WebAssembly:', err);
         reject(err);
       }
