@@ -43,11 +43,17 @@ export const QueryResultTable: React.FC<QueryResultTableProps> = ({
         </div>
 
         {result.vietnameseHelp && (
-          <div className="flex items-start space-x-2 text-xs text-amber-300 bg-amber-950/30 p-3 rounded-lg border border-amber-900/40">
+          <div className="flex items-start space-x-2.5 text-xs text-amber-200 bg-amber-950/40 p-3.5 rounded-xl border border-amber-800/60 shadow-sm">
             <Info className="w-4 h-4 text-noir-accent flex-shrink-0 mt-0.5" />
-            <div>
-              <span className="font-bold text-noir-gold block mb-0.5">Lời khuyên cho Thám tử:</span>
-              <span>{result.vietnameseHelp}</span>
+            <div className="space-y-1">
+              <span className="font-bold text-noir-gold block">
+                Phân tích Sư phạm: {result.vietnameseHelp}
+              </span>
+              {result.smartCoachAdvice && (
+                <div className="text-amber-300 font-medium pt-1 border-t border-amber-900/40">
+                  {result.smartCoachAdvice}
+                </div>
+              )}
             </div>
           </div>
         )}

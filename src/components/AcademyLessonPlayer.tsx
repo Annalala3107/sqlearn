@@ -17,9 +17,11 @@ import {
   Check,
   ChevronDown,
   ChevronUp,
+  Briefcase,
 } from 'lucide-react';
 import { Lesson } from '../academy/types';
 import { databaseService, QueryExecutionResult } from '../services/databaseService';
+import { BridgeService } from '../services/bridgeService';
 import { SqlEditor } from './SqlEditor';
 import { QueryResultTable } from './QueryResultTable';
 import { startViewTransition } from '../utils/transition';
@@ -30,6 +32,7 @@ interface AcademyLessonPlayerProps {
   onBack: () => void;
   onLessonCompleted: (lessonId: string, xpReward: number) => void;
   onNextLesson?: () => void;
+  onNavigateToCase?: (caseId: string) => void;
 }
 
 export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
@@ -38,8 +41,10 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
   onBack,
   onLessonCompleted,
   onNextLesson,
+  onNavigateToCase,
 }) => {
   const [isDbReady, setIsDbReady] = useState(false);
+  const relatedCase = BridgeService.getRelatedCaseForLesson(lesson.id);
   const [query, setQuery] = useState(lesson.exercise.starterQuery);
   const [queryHistory, setQueryHistory] = useState<string[]>([]);
   const [queryResult, setQueryResult] = useState<QueryExecutionResult | null>(null);
@@ -517,6 +522,38 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
                   </p>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* NHÓM 3: CẦU NỐI PHÁ ÁN THỰC CHIẾN (DUAL-TRACK CASE BRIDGE) */}
+          {relatedCase && onNavigateToCase && (
+            <div className="bg-gradient-to-r from-noir-900 via-amber-950/30 to-noir-900 border border-noir-accent/50 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 rounded-xl bg-noir-accent/15 border border-noir-accent/40 flex items-center justify-center text-noir-gold flex-shrink-0 mt-0.5">
+                  <Briefcase className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-noir-accent/20 text-noir-gold border border-noir-accent/40 font-mono">
+                      Cầu Nối Phá Án • {relatedCase.skillName}
+                    </span>
+                  </div>
+                  <h4 className="text-xs font-semibold text-slate-200 mt-1">
+                    {relatedCase.casePitch}
+                  </h4>
+                  <p className="text-[11px] text-slate-400 font-cinzel mt-0.5">
+                    🎯 {relatedCase.caseTitle}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => onNavigateToCase(relatedCase.caseId)}
+                className="w-full sm:w-auto px-4 py-2 rounded-xl bg-gradient-to-r from-noir-accent to-amber-500 hover:opacity-90 text-noir-950 font-bold text-xs flex items-center justify-center space-x-1.5 transition-all shadow-md active:scale-95 flex-shrink-0 cursor-pointer"
+              >
+                <span>Vào Phá Án Ngay</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
             </div>
           )}
 

@@ -11,6 +11,7 @@ import {
   Cloud,
   ShieldAlert,
   ChevronDown,
+  HardDriveDownload,
 } from 'lucide-react';
 import { UserStats } from '../cases/types';
 import { getRankFromXp } from '../cases';
@@ -29,6 +30,7 @@ interface NavbarProps {
   onOpenAuth: () => void;
   onLogout: () => void;
   onSyncCloud: () => void;
+  onOpenBackupRestore: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -44,6 +46,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenAuth,
   onLogout,
   onSyncCloud,
+  onOpenBackupRestore,
 }) => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -285,6 +288,16 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="hidden xs:inline">Đăng Nhập</span>
             </button>
           )}
+
+          {/* Backup & Restore JSON button (Nhóm 4) */}
+          <button
+            onClick={onOpenBackupRestore}
+            className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-slate-400 hover:text-sky-300 hover:bg-noir-800 rounded-xl transition-colors active:scale-95 cursor-pointer"
+            title="Sao lưu & Khôi phục dữ liệu học tập (JSON)"
+            aria-label="Sao lưu & Khôi phục dữ liệu học tập"
+          >
+            <HardDriveDownload className="w-4 h-4" />
+          </button>
 
           {/* Reset progress button */}
           <button

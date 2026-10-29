@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { DetectiveCase, UserStats } from './cases/types';
 import { allCases } from './cases';
 import { Lesson } from './academy/types';
@@ -10,11 +10,22 @@ import { CaseList } from './components/CaseList';
 import { CaseSolver } from './components/CaseSolver';
 import { AcademyLessonList } from './components/AcademyLessonList';
 import { AcademyLessonPlayer } from './components/AcademyLessonPlayer';
-import { GuideModal } from './components/GuideModal';
-import { AuthModal } from './components/AuthModal';
-import { AdminDashboard } from './components/AdminDashboard';
 import { Shield, Heart, CheckCircle2 } from 'lucide-react';
 import { startViewTransition } from './utils/transition';
+
+// NHÓM 4: CODE-SPLITTING BẰNG REACT.LAZY ĐỂ GIẢM KÍCH THƯỚC BUNDLE CHÍNH
+const AdminDashboard = lazy(() =>
+  import('./components/AdminDashboard').then((m) => ({ default: m.AdminDashboard }))
+);
+const AuthModal = lazy(() =>
+  import('./components/AuthModal').then((m) => ({ default: m.AuthModal }))
+);
+const GuideModal = lazy(() =>
+  import('./components/GuideModal').then((m) => ({ default: m.GuideModal }))
+);
+const BackupRestoreModal = lazy(() =>
+  import('./components/BackupRestoreModal').then((m) => ({ default: m.BackupRestoreModal }))
+);
 
 export function App() {
   const [stats, setStats] = useState<UserStats>(() => progressService.getStats());
@@ -23,6 +34,7 @@ export function App() {
   const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => authService.getCurrentUser());
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -66,6 +78,38 @@ export function App() {
     });
   };
 
+  // ----------------------------------------------------
+  // NHÓM 3: CẦU NỐI ĐIỀU HƯỚNG LIÊN MÔN (DUAL-TRACK BRIDGES)
+  // ----------------------------------------------------
+  const handleNavigateToCase = (caseId: string) => {
+    const found = allCases.find((c) => c.id === caseId);
+    if (found) {
+      startViewTransition(() => {
+        setActiveLesson(null);
+        setActiveCase(found);
+        setCurrentMode('cases');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      showToast(`Đã chuyển sang ${found.title}! 🕵️`);
+    }
+  };
+
+  const handleNavigateToLesson = (lessonId: string) => {
+    const found = allLessons.find((l) => l.id === lessonId);
+    if (found) {
+      startViewTransition(() => {
+        setActiveCase(null);
+        setActiveLesson(found);
+        setCurrentMode('academy');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      showToast(`Đã mở bài học: ${found.title}! 🎓`);
+    }
+  };
+
+  // ----------------------------------------------------
+  // AUTH & PROGRESS HANDLERS
+  // ----------------------------------------------------
   const handleLoginSuccess = (user: AuthUser) => {
     setCurrentUser(user);
     showToast(`Xin chào ${user.name}! Đăng nhập Google thành công.`);
@@ -92,6 +136,11 @@ export function App() {
     if (res.success) {
       showToast('Tiến trình học tập đã được đồng bộ an toàn lên Cloud!');
     }
+  };
+
+  const handleStatsRestored = (newStats: UserStats) => {
+    setStats(newStats);
+    showToast(`Khôi phục thành công! Điểm hiện tại: ${newStats.xp} XP`);
   };
 
   // ----------------------------------------------------
@@ -194,25 +243,27 @@ export function App() {
   if (currentMode === 'admin') {
     return (
       <div className="min-h-screen bg-noir-950">
-        <AdminDashboard
-          currentUser={currentUser}
-          onBackToApp={() => handleChangeMode('cases')}
-          onLogout={handleLogout}
-          onSelectCase={(caseId) => {
-            const found = allCases.find((c) => c.id === caseId);
-            if (found) {
-              handleSelectCase(found);
-              handleChangeMode('cases');
-            }
-          }}
-          onSelectLesson={(lessonId) => {
-            const found = allLessons.find((l) => l.id === lessonId);
-            if (found) {
-              handleSelectLesson(found);
-              handleChangeMode('academy');
-            }
-          }}
-        />
+        <Suspense fallback={<div className="p-12 text-center text-slate-400 font-mono text-sm">Đang tải Cổng Quản Trị...</div>}>
+          <AdminDashboard
+            currentUser={currentUser}
+            onBackToApp={() => handleChangeMode('cases')}
+            onLogout={handleLogout}
+            onSelectCase={(caseId) => {
+              const found = allCases.find((c) => c.id === caseId);
+              if (found) {
+                handleSelectCase(found);
+                handleChangeMode('cases');
+              }
+            }}
+            onSelectLesson={(lessonId) => {
+              const found = allLessons.find((l) => l.id === lessonId);
+              if (found) {
+                handleSelectLesson(found);
+                handleChangeMode('academy');
+              }
+            }}
+          />
+        </Suspense>
       </div>
     );
   }
@@ -234,6 +285,7 @@ export function App() {
           onOpenAuth={() => setIsAuthModalOpen(true)}
           onLogout={handleLogout}
           onSyncCloud={handleSyncCloud}
+          onOpenBackupRestore={() => setIsBackupModalOpen(true)}
         />
 
         <main>
@@ -244,6 +296,7 @@ export function App() {
                 progress={stats.completedCases[activeCase.id]}
                 onBack={handleBackToCases}
                 onCaseSolved={handleCaseSolved}
+                onNavigateToLesson={handleNavigateToLesson}
                 onNextCase={
                   allCases.findIndex((c) => c.id === activeCase.id) < allCases.length - 1
                     ? handleNextCase
@@ -265,6 +318,7 @@ export function App() {
               isCompleted={!!stats.completedLessons?.[activeLesson.id]?.completed}
               onBack={handleBackFromLesson}
               onLessonCompleted={handleLessonCompleted}
+              onNavigateToCase={handleNavigateToCase}
               onNextLesson={
                 allLessons.findIndex((l) => l.id === activeLesson.id) < allLessons.length - 1
                   ? handleNextLesson
@@ -281,20 +335,30 @@ export function App() {
         </main>
       </div>
 
-      {/* Auth Modal with Mobile-First Google SSO (Bước 1 & Bước 3) */}
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        onLoginSuccess={handleLoginSuccess}
-      />
+      {/* Lazy Modals with Suspense (Nhóm 4 Code-Splitting) */}
+      <Suspense fallback={null}>
+        {/* Auth Modal with Mobile-First Google SSO */}
+        <AuthModal
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+          onLoginSuccess={handleLoginSuccess}
+        />
 
-      {/* Beginner Onboarding & User Guide Modal */}
-      <GuideModal
-        isOpen={isGuideOpen}
-        onClose={handleCloseGuide}
-        onNavigateToAcademy={() => handleChangeMode('academy')}
-        onNavigateToCases={() => handleChangeMode('cases')}
-      />
+        {/* Beginner Onboarding & User Guide Modal */}
+        <GuideModal
+          isOpen={isGuideOpen}
+          onClose={handleCloseGuide}
+          onNavigateToAcademy={() => handleChangeMode('academy')}
+          onNavigateToCases={() => handleChangeMode('cases')}
+        />
+
+        {/* NHÓM 4: Backup & Restore JSON Modal */}
+        <BackupRestoreModal
+          isOpen={isBackupModalOpen}
+          onClose={() => setIsBackupModalOpen(false)}
+          onStatsRestored={handleStatsRestored}
+        />
+      </Suspense>
 
       {/* Global Toast Notification */}
       {toastMessage && (

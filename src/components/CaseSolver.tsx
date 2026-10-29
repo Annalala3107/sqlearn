@@ -25,6 +25,7 @@ interface CaseSolverProps {
   onBack: () => void;
   onCaseSolved: (caseId: string, xpReward: number) => void;
   onNextCase?: () => void;
+  onNavigateToLesson?: (lessonId: string) => void;
 }
 
 export const CaseSolver: React.FC<CaseSolverProps> = ({
@@ -33,6 +34,7 @@ export const CaseSolver: React.FC<CaseSolverProps> = ({
   onBack,
   onCaseSolved,
   onNextCase,
+  onNavigateToLesson,
 }) => {
   const [isDbReady, setIsDbReady] = useState(false);
   const [isExecuting, setIsExecuting] = useState(false);
@@ -178,6 +180,7 @@ export const CaseSolver: React.FC<CaseSolverProps> = ({
               caseData={caseData}
               isCompleted={isCompleted}
               onOpenSolutionModal={() => setIsSolutionModalOpen(true)}
+              onNavigateToLesson={onNavigateToLesson}
             />
           </div>
         )}
@@ -270,6 +273,7 @@ export const CaseSolver: React.FC<CaseSolverProps> = ({
                 caseData={caseData}
                 isCompleted={isCompleted}
                 onOpenSolutionModal={() => setIsSolutionModalOpen(true)}
+                onNavigateToLesson={onNavigateToLesson}
               />
             )}
             {activeTab === 'schema' && (

@@ -11,21 +11,27 @@ import {
   Lightbulb,
   Crosshair,
   HelpCircle,
+  GraduationCap,
+  ExternalLink,
 } from 'lucide-react';
 import { DetectiveCase } from '../cases/types';
+import { BridgeService } from '../services/bridgeService';
 
 interface CaseBriefProps {
   caseData: DetectiveCase;
   isCompleted: boolean;
   onOpenSolutionModal: () => void;
+  onNavigateToLesson?: (lessonId: string) => void;
 }
 
 export const CaseBrief: React.FC<CaseBriefProps> = ({
   caseData,
   isCompleted,
   onOpenSolutionModal,
+  onNavigateToLesson,
 }) => {
   const [openHintId, setOpenHintId] = useState<number | null>(null);
+  const relatedLesson = BridgeService.getRelatedLessonForCase(caseData.id);
 
   const toggleHint = (id: number) => {
     setOpenHintId(openHintId === id ? null : id);
@@ -174,6 +180,38 @@ export const CaseBrief: React.FC<CaseBriefProps> = ({
           ))}
         </div>
       </div>
+
+      {/* NHÓM 3: CẦU NỐI HỌC VIỆN (DUAL-TRACK BRIDGE) */}
+      {relatedLesson && onNavigateToLesson && (
+        <div className="bg-gradient-to-r from-sky-950/40 via-noir-900 to-sky-950/30 border border-sky-800/50 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md">
+          <div className="flex items-start space-x-3">
+            <div className="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 flex-shrink-0 mt-0.5">
+              <GraduationCap className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="flex items-center space-x-2">
+                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30 font-mono">
+                  Học Viện SQL • {relatedLesson.skillName}
+                </span>
+              </div>
+              <h4 className="text-xs font-semibold text-slate-200 mt-1">
+                {relatedLesson.lessonPitch}
+              </h4>
+              <p className="text-[11px] text-slate-400 font-sans truncate max-w-md">
+                📖 {relatedLesson.lessonTitle}
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => onNavigateToLesson(relatedLesson.lessonId)}
+            className="w-full sm:w-auto px-3.5 py-1.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs flex items-center justify-center space-x-1.5 transition-all shadow-md active:scale-95 flex-shrink-0 cursor-pointer"
+          >
+            <span>Ôn Lại Lý Thuyết</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Action to accuse/submit */}
       <div className="pt-2">

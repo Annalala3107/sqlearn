@@ -92,4 +92,52 @@ export const progressService = {
       console.warn(e);
     }
   },
+
+  /**
+   * NHÓM 4: BẢO TOÀN DỮ LIỆU - Xuất file sao lưu JSON
+   */
+  exportProgressJson(): string {
+    const stats = this.getStats();
+    const backup = {
+      version: '2.0',
+      exportedAt: new Date().toISOString(),
+      appName: 'SQL Thám Tử / SQLearn VN',
+      stats,
+    };
+    return JSON.stringify(backup, null, 2);
+  },
+
+  /**
+   * NHÓM 4: BẢO TOÀN DỮ LIỆU - Nạp khôi phục từ file JSON
+   */
+  importProgressJson(jsonStr: string): { success: boolean; message: string; updatedStats?: UserStats } {
+    try {
+      const parsed = JSON.parse(jsonStr);
+      const incomingStats: UserStats = parsed.stats || parsed;
+
+      if (typeof incomingStats.xp !== 'number' || typeof incomingStats.completedCases !== 'object') {
+        return {
+          success: false,
+          message: 'Tệp tin không đúng định dạng sao lưu của SQL Thám Tử.',
+        };
+      }
+
+      const merged: UserStats = {
+        ...DEFAULT_STATS,
+        ...incomingStats,
+      };
+
+      this.saveStats(merged);
+      return {
+        success: true,
+        message: `Đã khôi phục thành công! (${merged.xp} XP, ${Object.keys(merged.completedCases).length} vụ án, ${Object.keys(merged.completedLessons || {}).length} bài học).`,
+        updatedStats: merged,
+      };
+    } catch (err: any) {
+      return {
+        success: false,
+        message: `Lỗi đọc file JSON: ${err?.message || 'Tệp tin bị hỏng'}`,
+      };
+    }
+  },
 };
