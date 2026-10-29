@@ -47,11 +47,11 @@ class DatabaseService {
     return this.isInitializing;
   }
 
-  public async loadCase(detectiveCase: DetectiveCase): Promise<void> {
+  public async loadDatabase(id: string, seedSql: string[]): Promise<void> {
     await this.initSql();
 
-    if (this.currentCaseId === detectiveCase.id && this.db) {
-      return; // Case is already loaded
+    if (this.currentCaseId === id && this.db) {
+      return;
     }
 
     if (this.db) {
@@ -66,16 +66,94 @@ class DatabaseService {
     this.db = new this.SQL.Database();
 
     try {
-      for (const statement of detectiveCase.seedSql) {
+      for (const statement of seedSql) {
         if (statement.trim()) {
           this.db!.run(statement);
         }
       }
-      this.currentCaseId = detectiveCase.id;
+      this.currentCaseId = id;
     } catch (err) {
-      console.error('Lỗi khi nạp dữ liệu vụ án:', err);
+      console.error('Lỗi khi nạp dữ liệu CSDL:', err);
       throw err;
     }
+  }
+
+  public async loadCase(detectiveCase: DetectiveCase): Promise<void> {
+    return this.loadDatabase(detectiveCase.id, detectiveCase.seedSql);
+  }
+
+  public verifyQuery(
+    userSql: string,
+    expectedSql: string
+  ): {
+    isCorrect: boolean;
+    userResult: QueryExecutionResult;
+    expectedResult: QueryExecutionResult;
+    feedback: string;
+  } {
+    const userResult = this.runQuery(userSql);
+    const expectedResult = this.runQuery(expectedSql);
+
+    if (!userResult.success) {
+      return {
+        isCorrect: false,
+        userResult,
+        expectedResult,
+        feedback: `Lỗi truy vấn SQL: ${userResult.error || 'Câu lệnh chưa hợp lệ.'}`,
+      };
+    }
+
+    if (!expectedResult.success) {
+      return {
+        isCorrect: false,
+        userResult,
+        expectedResult,
+        feedback: 'Không thể đối chiếu đáp án kỳ vọng. Vui lòng thử lại.',
+      };
+    }
+
+    if (userResult.rowCount !== expectedResult.rowCount) {
+      return {
+        isCorrect: false,
+        userResult,
+        expectedResult,
+        feedback: `Kết quả trả về ${userResult.rowCount} dòng, nhưng đáp án kỳ vọng là ${expectedResult.rowCount} dòng. Hãy kiểm tra lại điều kiện lọc WHERE.`,
+      };
+    }
+
+    if (userResult.columns.length !== expectedResult.columns.length) {
+      return {
+        isCorrect: false,
+        userResult,
+        expectedResult,
+        feedback: `Số lượng cột trả về chưa chính xác (trả về ${userResult.columns.length} cột, kỳ vọng ${expectedResult.columns.length} cột).`,
+      };
+    }
+
+    const normalizeCell = (v: any) =>
+      v === null || v === undefined ? 'null' : String(v).trim().toLowerCase();
+
+    for (let r = 0; r < userResult.values.length; r++) {
+      const uRow = userResult.values[r];
+      const eRow = expectedResult.values[r];
+      for (let c = 0; c < uRow.length; c++) {
+        if (normalizeCell(uRow[c]) !== normalizeCell(eRow[c])) {
+          return {
+            isCorrect: false,
+            userResult,
+            expectedResult,
+            feedback: `Dữ liệu tại dòng ${r + 1}, cột '${userResult.columns[c]}' chưa khớp (Nhận được: "${uRow[c]}", Kỳ vọng: "${eRow[c]}"). Kiểm tra lại điều kiện lọc hoặc thứ tự sắp xếp.`,
+          };
+        }
+      }
+    }
+
+    return {
+      isCorrect: true,
+      userResult,
+      expectedResult,
+      feedback: 'Chính xác hoàn toàn! Bạn đã giải quyết xuất sắc thử thách này.',
+    };
   }
 
   public runQuery(sql: string): QueryExecutionResult {

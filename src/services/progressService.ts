@@ -52,6 +52,28 @@ export const progressService = {
     return updated;
   },
 
+  recordLessonCompletion(lessonId: string, xpReward: number): UserStats {
+    const current = this.getStats();
+    const alreadyCompleted = !!current.completedLessons?.[lessonId]?.completed;
+
+    const newXp = alreadyCompleted ? current.xp : current.xp + xpReward;
+
+    const updated: UserStats = {
+      ...current,
+      xp: newXp,
+      completedLessons: {
+        ...(current.completedLessons || {}),
+        [lessonId]: {
+          completed: true,
+          completedAt: new Date().toISOString(),
+        },
+      },
+    };
+
+    this.saveStats(updated);
+    return updated;
+  },
+
   saveCaseNote(caseId: string, note: string): void {
     const current = this.getStats();
     current.notes[caseId] = note;

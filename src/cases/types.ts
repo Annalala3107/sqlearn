@@ -63,5 +63,6 @@ export interface UserStats {
   xp: number;
   rank: string;
   completedCases: Record<string, CaseProgress>;
+  completedLessons?: Record<string, { completed: boolean; completedAt: string }>;
   notes: Record<string, string>;
 }

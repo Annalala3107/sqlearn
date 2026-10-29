@@ -1,22 +1,38 @@
 import { useState, useEffect } from 'react';
 import { DetectiveCase, UserStats } from './cases/types';
 import { allCases } from './cases';
+import { Lesson } from './academy/types';
+import { allLessons } from './academy';
 import { progressService } from './services/progressService';
 import { Navbar } from './components/Navbar';
 import { CaseList } from './components/CaseList';
 import { CaseSolver } from './components/CaseSolver';
+import { AcademyLessonList } from './components/AcademyLessonList';
+import { AcademyLessonPlayer } from './components/AcademyLessonPlayer';
 import { Shield, Heart } from 'lucide-react';
 import { startViewTransition } from './utils/transition';
 
 export function App() {
   const [stats, setStats] = useState<UserStats>(() => progressService.getStats());
+  const [currentMode, setCurrentMode] = useState<'cases' | 'academy'>('cases');
   const [activeCase, setActiveCase] = useState<DetectiveCase | null>(null);
+  const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
 
   useEffect(() => {
     // Keep stats in sync
     setStats(progressService.getStats());
   }, []);
 
+  const handleChangeMode = (mode: 'cases' | 'academy') => {
+    startViewTransition(() => {
+      setCurrentMode(mode);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  };
+
+  // ----------------------------------------------------
+  // CASE SOLVER HANDLERS
+  // ----------------------------------------------------
   const handleSelectCase = (c: DetectiveCase) => {
     startViewTransition(() => {
       setActiveCase(c);
@@ -51,9 +67,54 @@ export function App() {
     }
   };
 
+  // ----------------------------------------------------
+  // ACADEMY LESSON HANDLERS
+  // ----------------------------------------------------
+  const handleSelectLesson = (l: Lesson) => {
+    startViewTransition(() => {
+      setActiveLesson(l);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  };
+
+  const handleBackFromLesson = () => {
+    startViewTransition(() => {
+      setActiveLesson(null);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  };
+
+  const handleLessonCompleted = (lessonId: string, xpReward: number) => {
+    const updatedStats = progressService.recordLessonCompletion(lessonId, xpReward);
+    setStats(updatedStats);
+  };
+
+  const handleNextLesson = () => {
+    if (!activeLesson) return;
+    const currentIndex = allLessons.findIndex((l) => l.id === activeLesson.id);
+    if (currentIndex >= 0 && currentIndex < allLessons.length - 1) {
+      startViewTransition(() => {
+        setActiveLesson(allLessons[currentIndex + 1]);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    } else {
+      startViewTransition(() => {
+        setActiveLesson(null);
+      });
+    }
+  };
+
   const handleResetStats = () => {
     progressService.resetProgress();
     setStats(progressService.getStats());
+  };
+
+  const handleBackToHome = () => {
+    startViewTransition(() => {
+      setActiveCase(null);
+      setActiveLesson(null);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   };
 
   return (
@@ -61,29 +122,51 @@ export function App() {
       <div>
         <Navbar
           stats={stats}
+          currentMode={currentMode}
+          onChangeMode={handleChangeMode}
           currentCaseTitle={activeCase ? activeCase.title : undefined}
-          onBackToCases={handleBackToCases}
+          currentLessonTitle={activeLesson ? activeLesson.title : undefined}
+          onBackToHome={handleBackToHome}
           onResetStats={handleResetStats}
         />
 
         <main>
-          {activeCase ? (
-            <CaseSolver
-              caseData={activeCase}
-              progress={stats.completedCases[activeCase.id]}
-              onBack={handleBackToCases}
-              onCaseSolved={handleCaseSolved}
-              onNextCase={
-                allCases.findIndex((c) => c.id === activeCase.id) < allCases.length - 1
-                  ? handleNextCase
+          {currentMode === 'cases' ? (
+            activeCase ? (
+              <CaseSolver
+                caseData={activeCase}
+                progress={stats.completedCases[activeCase.id]}
+                onBack={handleBackToCases}
+                onCaseSolved={handleCaseSolved}
+                onNextCase={
+                  allCases.findIndex((c) => c.id === activeCase.id) < allCases.length - 1
+                    ? handleNextCase
+                    : undefined
+                }
+              />
+            ) : (
+              <CaseList
+                cases={allCases}
+                stats={stats}
+                onSelectCase={handleSelectCase}
+              />
+            )
+          ) : activeLesson ? (
+            <AcademyLessonPlayer
+              lesson={activeLesson}
+              isCompleted={!!stats.completedLessons?.[activeLesson.id]?.completed}
+              onBack={handleBackFromLesson}
+              onLessonCompleted={handleLessonCompleted}
+              onNextLesson={
+                allLessons.findIndex((l) => l.id === activeLesson.id) < allLessons.length - 1
+                  ? handleNextLesson
                   : undefined
               }
             />
           ) : (
-            <CaseList
-              cases={allCases}
+            <AcademyLessonList
               stats={stats}
-              onSelectCase={handleSelectCase}
+              onSelectLesson={handleSelectLesson}
             />
           )}
         </main>
@@ -94,10 +177,10 @@ export function App() {
         <div className="max-w-7xl mx-auto px-4 space-y-2">
           <div className="flex items-center justify-center space-x-2 text-slate-400 font-cinzel">
             <Shield className="w-4 h-4 text-noir-accent" />
-            <span className="font-bold tracking-wider">SQL THÁM TỬ VN</span>
+            <span className="font-bold tracking-wider">SQL THÁM TỬ VN • HỌC VIỆN SQL TƯƠNG TÁC</span>
           </div>
           <p className="max-w-md mx-auto text-slate-400">
-            Học và nâng cao tư duy truy vấn cơ sở dữ liệu qua các bài tập điều tra phá án thực tế. Toàn bộ câu lệnh được thực thi trực tiếp trên trình duyệt của bạn với SQLite WebAssembly.
+            Học và nâng cao tư duy truy vấn cơ sở dữ liệu qua các bài tập điều tra phá án và giáo trình tương tác từ cơ bản đến nâng cao. Toàn bộ câu lệnh được thực thi trực tiếp trên trình duyệt với SQLite WebAssembly.
           </p>
           <div className="pt-2 flex items-center justify-center space-x-1 text-slate-400">
             <span>Xây dựng với</span>
