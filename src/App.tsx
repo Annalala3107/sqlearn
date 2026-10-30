@@ -7,14 +7,20 @@ import { progressService } from './services/progressService';
 import { authService, AuthUser } from './services/authService';
 import { Navbar } from './components/Navbar';
 import { CaseList } from './components/CaseList';
-import { CaseSolver } from './components/CaseSolver';
 import { AcademyLessonList } from './components/AcademyLessonList';
-import { AcademyLessonPlayer } from './components/AcademyLessonPlayer';
 import { OnboardingTour } from './components/OnboardingTour';
 import { CheckCircle2 } from 'lucide-react';
 import { startViewTransition } from './utils/transition';
 
-// NHÓM 4: CODE-SPLITTING BẰNG REACT.LAZY ĐỂ GIẢM KÍCH THƯỚC BUNDLE CHÍNH
+// LAZY LOAD CÁC MÀN HÌNH NẶNG ĐỂ GIẢM BUNDLE KHỞI ĐỘNG (PONYTAIL OPTIMIZATION)
+const CaseSolver = lazy(() =>
+  import('./components/CaseSolver').then((m) => ({ default: m.CaseSolver }))
+);
+const AcademyLessonPlayer = lazy(() =>
+  import('./components/AcademyLessonPlayer').then((m) => ({ default: m.AcademyLessonPlayer }))
+);
+
+// LAZY LOAD CÁC MODAL
 const AdminDashboard = lazy(() =>
   import('./components/AdminDashboard').then((m) => ({ default: m.AdminDashboard }))
 );
@@ -26,6 +32,13 @@ const GuideModal = lazy(() =>
 );
 const BackupRestoreModal = lazy(() =>
   import('./components/BackupRestoreModal').then((m) => ({ default: m.BackupRestoreModal }))
+);
+
+const ViewLoadingFallback = () => (
+  <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-3">
+    <div className="w-8 h-8 rounded-full border-2 border-noir-accent border-t-transparent animate-spin" />
+    <span className="text-xs text-slate-400 font-mono">Đang mở không gian tác chiến...</span>
+  </div>
 );
 
 export function App() {
@@ -278,49 +291,51 @@ export function App() {
         />
 
         <main>
-          {currentMode === 'cases' ? (
-            activeCase ? (
-              <CaseSolver
-                caseData={activeCase}
-                progress={stats.completedCases[activeCase.id]}
-                onBack={handleBackToCases}
-                onCaseSolved={handleCaseSolved}
-                onNavigateToLesson={handleNavigateToLesson}
-                onNextCase={
-                  allCases.findIndex((c) => c.id === activeCase.id) < allCases.length - 1
-                    ? handleNextCase
+          <Suspense fallback={<ViewLoadingFallback />}>
+            {currentMode === 'cases' ? (
+              activeCase ? (
+                <CaseSolver
+                  caseData={activeCase}
+                  progress={stats.completedCases[activeCase.id]}
+                  onBack={handleBackToCases}
+                  onCaseSolved={handleCaseSolved}
+                  onNavigateToLesson={handleNavigateToLesson}
+                  onNextCase={
+                    allCases.findIndex((c) => c.id === activeCase.id) < allCases.length - 1
+                      ? handleNextCase
+                      : undefined
+                  }
+                />
+              ) : (
+                <CaseList
+                  cases={allCases}
+                  stats={stats}
+                  onSelectCase={handleSelectCase}
+                  onNavigateToAcademy={() => handleChangeMode('academy')}
+                  onOpenGuide={handleOpenGuide}
+                />
+              )
+            ) : activeLesson ? (
+              <AcademyLessonPlayer
+                lesson={activeLesson}
+                isCompleted={!!stats.completedLessons?.[activeLesson.id]?.completed}
+                onBack={handleBackFromLesson}
+                onLessonCompleted={handleLessonCompleted}
+                onNavigateToCase={handleNavigateToCase}
+                onNextLesson={
+                  allLessons.findIndex((l) => l.id === activeLesson.id) < allLessons.length - 1
+                    ? handleNextLesson
                     : undefined
                 }
               />
             ) : (
-              <CaseList
-                cases={allCases}
+              <AcademyLessonList
                 stats={stats}
-                onSelectCase={handleSelectCase}
-                onNavigateToAcademy={() => handleChangeMode('academy')}
+                onSelectLesson={handleSelectLesson}
                 onOpenGuide={handleOpenGuide}
               />
-            )
-          ) : activeLesson ? (
-            <AcademyLessonPlayer
-              lesson={activeLesson}
-              isCompleted={!!stats.completedLessons?.[activeLesson.id]?.completed}
-              onBack={handleBackFromLesson}
-              onLessonCompleted={handleLessonCompleted}
-              onNavigateToCase={handleNavigateToCase}
-              onNextLesson={
-                allLessons.findIndex((l) => l.id === activeLesson.id) < allLessons.length - 1
-                  ? handleNextLesson
-                  : undefined
-              }
-            />
-          ) : (
-            <AcademyLessonList
-              stats={stats}
-              onSelectLesson={handleSelectLesson}
-              onOpenGuide={handleOpenGuide}
-            />
-          )}
+            )}
+          </Suspense>
         </main>
       </div>
 
