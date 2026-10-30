@@ -287,6 +287,24 @@ class AuthService {
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
     this.recordUserInRegistry(user);
     this.notify();
+
+    if (isSupabaseConfigured()) {
+      try {
+        supabase.from('profiles').upsert({
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          avatar_url: user.avatar,
+          updated_at: new Date().toISOString()
+        }).then(({ error }) => {
+          if (error) console.warn('Supabase profile sync warning:', error);
+        });
+      } catch (e) {
+        console.warn('Supabase profile sync failed:', e);
+      }
+    }
+
     return user;
   }
 
@@ -320,6 +338,23 @@ class AuthService {
       updatedAt: new Date().toISOString(),
     };
     localStorage.setItem(`sqlearn_sync_${this.currentUser.id}`, JSON.stringify(syncPayload));
+    if (isSupabaseConfigured()) {
+      try {
+        supabase.from('user_stats').upsert({
+          user_id: this.currentUser.id,
+          xp: stats.xp,
+          rank: stats.rank,
+          solved_case_ids: Object.keys(stats.completedCases || {}),
+          completed_lesson_ids: Object.keys(stats.completedLessons || {}),
+          updated_at: new Date().toISOString()
+        }).then(({ error }) => {
+          if (error) console.warn('Supabase user_stats sync warning:', error);
+        });
+      } catch (e) {
+        console.warn('Supabase user_stats sync failed:', e);
+      }
+    }
+
     return { success: true, timestamp: syncPayload.updatedAt };
   }
 
