@@ -1,4 +1,5 @@
 import { UserStats } from '../cases/types';
+import { supabase, isSupabaseConfigured } from './supabaseClient';
 
 export interface AuthUser {
   id: string;
@@ -6,43 +7,12 @@ export interface AuthUser {
   email: string;
   avatar: string;
   role: 'admin' | 'learner';
-  provider: 'google' | 'guest';
+  provider: 'supabase' | 'google' | 'guest';
   lastLogin: string;
-}
-
-export interface GoogleJwtPayload {
-  sub: string;
-  email: string;
-  name: string;
-  picture?: string;
-  email_verified?: boolean;
 }
 
 const AUTH_STORAGE_KEY = 'sqlearn_auth_user';
 const USERS_REGISTRY_KEY = 'sqlearn_users_registry';
-
-/**
- * Giải mã an toàn Token JWT từ Google Identity Services (Hỗ trợ UTF-8 cho ký tự tiếng Việt)
- */
-export function decodeGoogleJwt(token: string): GoogleJwtPayload | null {
-  try {
-    const parts = token.split('.');
-    if (parts.length < 2) return null;
-
-    const base64Url = parts[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
-    );
-    return JSON.parse(jsonPayload);
-  } catch (e) {
-    console.error('Failed to decode Google JWT credential:', e);
-    return null;
-  }
-}
 
 class AuthService {
   private currentUser: AuthUser | null = null;
@@ -50,6 +20,7 @@ class AuthService {
 
   constructor() {
     this.loadUserFromStorage();
+    this.initSupabaseListener();
   }
 
   private loadUserFromStorage(): void {
@@ -64,21 +35,76 @@ class AuthService {
     }
   }
 
+  private initSupabaseListener(): void {
+    if (!isSupabaseConfigured()) return;
+
+    try {
+      supabase.auth.onAuthStateChange(async (event, session) => {
+        if (session?.user) {
+          await this.syncUserFromSupabase(session.user);
+        } else if (event === 'SIGNED_OUT') {
+          this.currentUser = null;
+          localStorage.removeItem(AUTH_STORAGE_KEY);
+          this.notify();
+        }
+      });
+    } catch (e) {
+      console.warn('Supabase auth state listener error:', e);
+    }
+  }
+
+  /**
+   * Đồng bộ profile từ bảng `profiles` của Supabase
+   */
+  private async syncUserFromSupabase(sbUser: any): Promise<AuthUser> {
+    const email = sbUser.email || '';
+    let name = sbUser.user_metadata?.name || email.split('@')[0];
+    let role: 'admin' | 'learner' = this.checkIsAdminEmail(email) ? 'admin' : 'learner';
+    let avatar =
+      sbUser.user_metadata?.avatar_url ||
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=e5a93c&color=0b0c10&bold=true`;
+
+    try {
+      if (isSupabaseConfigured()) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('name, role, avatar_url')
+          .eq('id', sbUser.id)
+          .single();
+
+        if (profile) {
+          if (profile.name) name = profile.name;
+          if (profile.role === 'admin' || role === 'admin') role = 'admin';
+          if (profile.avatar_url) avatar = profile.avatar_url;
+        }
+      }
+    } catch (err) {
+      console.warn('Could not fetch profiles table, fallback to metadata', err);
+    }
+
+    const authUser: AuthUser = {
+      id: sbUser.id,
+      name,
+      email,
+      avatar,
+      role,
+      provider: sbUser.app_metadata?.provider === 'google' ? 'google' : 'supabase',
+      lastLogin: new Date().toISOString(),
+    };
+
+    this.currentUser = authUser;
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authUser));
+    this.recordUserInRegistry(authUser);
+    this.notify();
+    return authUser;
+  }
+
   public getCurrentUser(): AuthUser | null {
     return this.currentUser;
   }
 
   public isAdmin(): boolean {
     return this.currentUser?.role === 'admin';
-  }
-
-  public getGoogleClientId(): string {
-    return (import.meta.env.VITE_GOOGLE_CLIENT_ID || '').trim();
-  }
-
-  public isGoogleConfigured(): boolean {
-    const cid = this.getGoogleClientId();
-    return cid.length > 10 && cid.includes('.apps.googleusercontent.com');
   }
 
   public getAdminEmails(): string[] {
@@ -108,42 +134,129 @@ class AuthService {
   }
 
   /**
-   * ĐĂNG NHẬP CHÍNH THỨC: Xác thực tài khoản Google thật từ Google Identity Services (GIS)
-   * Nhận credential JWT trả về trực tiếp từ popup đăng nhập của Google
+   * ĐĂNG KÝ TÀI KHOẢN MỚI BẰNG EMAIL & MẬT KHẨU (SUPABASE AUTH)
    */
-  public async signInWithGoogleCredential(credential: string): Promise<AuthUser> {
-    const decoded = decodeGoogleJwt(credential);
-    if (!decoded || !decoded.email) {
-      throw new Error('Mã xác thực Google không hợp lệ hoặc đã hết hạn.');
+  public async signUpWithEmail(email: string, password: string, name: string): Promise<AuthUser> {
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanName = name.trim() || cleanEmail.split('@')[0];
+
+    if (!cleanEmail || !password) {
+      throw new Error('Vui lòng điền đầy đủ Email và Mật khẩu.');
+    }
+    if (password.length < 6) {
+      throw new Error('Mật khẩu bảo mật phải có ít nhất 6 ký tự.');
     }
 
-    const email = decoded.email.trim();
-    const role: 'admin' | 'learner' = this.checkIsAdminEmail(email) ? 'admin' : 'learner';
-    const name = decoded.name || email.split('@')[0];
-    const avatar =
-      decoded.picture ||
-      `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=e5a93c&color=0b0c10&bold=true`;
+    if (isSupabaseConfigured()) {
+      const { data, error } = await supabase.auth.signUp({
+        email: cleanEmail,
+        password,
+        options: {
+          data: {
+            name: cleanName,
+          },
+        },
+      });
 
-    const user: AuthUser = {
-      id: `google_${decoded.sub}`,
-      name,
-      email,
-      avatar,
+      if (error) {
+        if (error.message.includes('already registered')) {
+          throw new Error('Email này đã được đăng ký. Vui lòng chuyển sang tab Đăng Nhập.');
+        }
+        throw new Error(error.message);
+      }
+
+      if (data.user) {
+        return await this.syncUserFromSupabase(data.user);
+      }
+    }
+
+    // Fallback nếu chưa điền key Supabase (Local Prototype Mode)
+    const role: 'admin' | 'learner' = this.checkIsAdminEmail(cleanEmail) ? 'admin' : 'learner';
+    const fallbackUser: AuthUser = {
+      id: `usr_${Date.now()}`,
+      name: cleanName,
+      email: cleanEmail,
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(cleanName)}&background=e5a93c&color=0b0c10&bold=true`,
       role,
-      provider: 'google',
+      provider: 'supabase',
       lastLogin: new Date().toISOString(),
     };
 
-    this.currentUser = user;
-    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
-
-    this.recordUserInRegistry(user);
+    this.currentUser = fallbackUser;
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(fallbackUser));
+    this.recordUserInRegistry(fallbackUser);
     this.notify();
-    return user;
+    return fallbackUser;
   }
 
   /**
-   * ĐĂNG NHẬP THỬ NGHIỆM / SANDBOX (Fallback khi chưa cấu hình Google Client ID)
+   * ĐĂNG NHẬP BẰNG EMAIL & MẬT KHẨU (SUPABASE AUTH)
+   */
+  public async signInWithEmail(email: string, password: string): Promise<AuthUser> {
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (!cleanEmail || !password) {
+      throw new Error('Vui lòng điền đầy đủ Email và Mật khẩu.');
+    }
+
+    if (isSupabaseConfigured()) {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password,
+      });
+
+      if (error) {
+        if (error.message.includes('Invalid login credentials')) {
+          throw new Error('Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại!');
+        }
+        throw new Error(error.message);
+      }
+
+      if (data.user) {
+        return await this.syncUserFromSupabase(data.user);
+      }
+    }
+
+    // Fallback nếu chưa điền key Supabase
+    const role: 'admin' | 'learner' = this.checkIsAdminEmail(cleanEmail) ? 'admin' : 'learner';
+    const fallbackUser: AuthUser = {
+      id: `usr_${Date.now()}`,
+      name: cleanEmail.split('@')[0],
+      email: cleanEmail,
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(cleanEmail)}&background=e5a93c&color=0b0c10&bold=true`,
+      role,
+      provider: 'supabase',
+      lastLogin: new Date().toISOString(),
+    };
+
+    this.currentUser = fallbackUser;
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(fallbackUser));
+    this.recordUserInRegistry(fallbackUser);
+    this.notify();
+    return fallbackUser;
+  }
+
+  /**
+   * ĐĂNG NHẬP CHÍNH THỨC VỚI GOOGLE QUA SUPABASE OAUTH
+   */
+  public async signInWithGoogleOAuth(): Promise<void> {
+    if (isSupabaseConfigured()) {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin,
+        },
+      });
+      if (error) throw error;
+      return;
+    }
+
+    // Fallback simulation
+    await this.signInWithGoogle();
+  }
+
+  /**
+   * Fallback tương thích mock đăng nhập nhanh
    */
   public async signInWithGoogle(options?: {
     email?: string;
@@ -151,16 +264,14 @@ class AuthService {
     avatar?: string;
     role?: 'admin' | 'learner';
   }): Promise<AuthUser> {
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 200));
 
     const email = options?.email || (options?.role === 'admin' ? 'admin.nam@sqlearn.vn' : 'thamtuhocvien@gmail.com');
     const role = options?.role || (this.checkIsAdminEmail(email) ? 'admin' : 'learner');
     const name = options?.name || (role === 'admin' ? 'Nguyễn Hải Nam (Admin)' : 'Thám Tử Học Viên');
     const avatar =
       options?.avatar ||
-      (role === 'admin'
-        ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80'
-        : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&auto=format&fit=crop&q=80');
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=e5a93c&color=0b0c10&bold=true`;
 
     const user: AuthUser = {
       id: `usr_${Date.now()}`,
@@ -174,7 +285,6 @@ class AuthService {
 
     this.currentUser = user;
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
-
     this.recordUserInRegistry(user);
     this.notify();
     return user;
@@ -184,7 +294,13 @@ class AuthService {
    * Đăng xuất an toàn
    */
   public async signOut(): Promise<void> {
-    await new Promise((resolve) => setTimeout(resolve, 150));
+    try {
+      if (isSupabaseConfigured()) {
+        await supabase.auth.signOut();
+      }
+    } catch (e) {
+      console.warn('Supabase signOut error', e);
+    }
     this.currentUser = null;
     localStorage.removeItem(AUTH_STORAGE_KEY);
     this.notify();
@@ -207,16 +323,13 @@ class AuthService {
     return { success: true, timestamp: syncPayload.updatedAt };
   }
 
-  /**
-   * Lưu trữ danh sách người dùng cho Admin Dashboard theo dõi
-   */
   private recordUserInRegistry(user: AuthUser): void {
     try {
       const raw = localStorage.getItem(USERS_REGISTRY_KEY);
       let registry: AuthUser[] = raw ? JSON.parse(raw) : [];
       const index = registry.findIndex((u) => u.email.toLowerCase() === user.email.toLowerCase());
       if (index >= 0) {
-        registry[index] = { ...registry[index], lastLogin: user.lastLogin, avatar: user.avatar, name: user.name };
+        registry[index] = { ...registry[index], lastLogin: user.lastLogin, avatar: user.avatar, name: user.name, role: user.role };
       } else {
         registry.unshift(user);
       }
@@ -240,17 +353,8 @@ class AuthService {
         email: 'admin.nam@sqlearn.vn',
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
         role: 'admin',
-        provider: 'google',
+        provider: 'supabase',
         lastLogin: new Date().toISOString(),
-      },
-      {
-        id: 'usr_2',
-        name: 'Trần Văn Minh',
-        email: 'minhtran.dev@gmail.com',
-        avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=120&auto=format&fit=crop&q=80',
-        role: 'learner',
-        provider: 'google',
-        lastLogin: new Date(Date.now() - 3600000 * 2).toISOString(),
       },
     ];
   }
