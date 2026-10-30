@@ -23,6 +23,7 @@ interface GuideModalProps {
   onClose: () => void;
   onNavigateToAcademy?: () => void;
   onNavigateToCases?: () => void;
+  onRestartTour?: () => void;
 }
 
 export const GuideModal: React.FC<GuideModalProps> = ({
@@ -30,6 +31,7 @@ export const GuideModal: React.FC<GuideModalProps> = ({
   onClose,
   onNavigateToAcademy,
   onNavigateToCases,
+  onRestartTour,
 }) => {
   const [activeTab, setActiveTab] = useState<'start' | 'tools' | 'schema' | 'cheatsheet'>('start');
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
@@ -196,6 +198,23 @@ export const GuideModal: React.FC<GuideModalProps> = ({
                   </p>
                 </div>
               </div>
+
+              {/* Restart Spotlight Interactive Walkthrough Button */}
+              {onRestartTour && (
+                <button
+                  onClick={() => {
+                    onClose();
+                    onRestartTour();
+                  }}
+                  className="w-full p-3 rounded-xl bg-gradient-to-r from-amber-500/15 via-noir-850 to-amber-500/15 border border-noir-accent/40 hover:border-noir-accent text-noir-gold hover:text-amber-300 flex items-center justify-between text-xs font-semibold transition-all active:scale-[0.99] cursor-pointer shadow-md"
+                >
+                  <div className="flex items-center space-x-2.5">
+                    <Sparkles className="w-4 h-4 text-noir-accent" />
+                    <span>Mở Lại Tour Hướng Dẫn Tương Tác (Spotlight Walkthrough)</span>
+                  </div>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              )}
 
               {/* 2 Modes Comparison */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -10,6 +10,7 @@ import { CaseList } from './components/CaseList';
 import { CaseSolver } from './components/CaseSolver';
 import { AcademyLessonList } from './components/AcademyLessonList';
 import { AcademyLessonPlayer } from './components/AcademyLessonPlayer';
+import { OnboardingTour } from './components/OnboardingTour';
 import { CheckCircle2 } from 'lucide-react';
 import { startViewTransition } from './utils/transition';
 
@@ -33,6 +34,7 @@ export function App() {
   const [activeCase, setActiveCase] = useState<DetectiveCase | null>(null);
   const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [isTourOpen, setIsTourOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => authService.getCurrentUser());
@@ -46,19 +48,6 @@ export function App() {
     const unsubscribeAuth = authService.subscribe((user) => {
       setCurrentUser(user);
     });
-
-    // Auto-open guide for first-time visitors
-    const hasSeenGuide = localStorage.getItem('sqlearn_guide_seen');
-    if (!hasSeenGuide) {
-      const timer = setTimeout(() => {
-        setIsGuideOpen(true);
-        localStorage.setItem('sqlearn_guide_seen', 'true');
-      }, 700);
-      return () => {
-        clearTimeout(timer);
-        unsubscribeAuth();
-      };
-    }
 
     return () => unsubscribeAuth();
   }, []);
@@ -350,6 +339,10 @@ export function App() {
           onClose={handleCloseGuide}
           onNavigateToAcademy={() => handleChangeMode('academy')}
           onNavigateToCases={() => handleChangeMode('cases')}
+          onRestartTour={() => {
+            handleChangeMode('cases');
+            setIsTourOpen(true);
+          }}
         />
 
         {/* NHÓM 4: Backup & Restore JSON Modal */}
@@ -359,6 +352,16 @@ export function App() {
           onStatsRestored={handleStatsRestored}
         />
       </Suspense>
+
+      {/* Onboarding Interactive Tour (Tự động kích hoạt cho khách mới hoặc mở từ sổ tay) */}
+      <OnboardingTour
+        isOpenOverride={isTourOpen ? true : undefined}
+        onCloseOverride={() => setIsTourOpen(false)}
+        onComplete={() => {
+          setIsTourOpen(false);
+          showToast('Hoàn tất hướng dẫn tân thủ! Chúc bạn phá án thành công 🕵️✨');
+        }}
+      />
 
       {/* Global Toast Notification */}
       {toastMessage && (

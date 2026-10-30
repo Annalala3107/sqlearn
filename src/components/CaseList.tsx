@@ -92,7 +92,10 @@ export const CaseList: React.FC<CaseListProps> = ({
   return (
     <div className="max-w-6xl mx-auto px-3.5 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-10">
       {/* Hero Welcome Banner */}
-      <div className="relative bg-gradient-to-br from-noir-900 via-noir-850 to-noir-950 border border-noir-700/80 rounded-2xl p-5 sm:p-10 shadow-2xl overflow-hidden">
+      <div
+        id="hero-welcome-banner"
+        className="relative bg-gradient-to-br from-noir-900 via-noir-850 to-noir-950 border border-noir-700/80 rounded-2xl p-5 sm:p-10 shadow-2xl overflow-hidden"
+      >
         <div className="absolute top-0 right-0 w-96 h-96 bg-noir-accent/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-3xl space-y-3.5 sm:space-y-4 relative z-10">
@@ -145,7 +148,10 @@ export const CaseList: React.FC<CaseListProps> = ({
       </div>
 
       {/* Beginner Welcome / Roadmap Gateway Callout */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-sky-950/40 via-noir-900 to-amber-950/30 border border-sky-800/40 shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div
+        id="beginner-callout"
+        className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-sky-950/40 via-noir-900 to-amber-950/30 border border-sky-800/40 shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4"
+      >
         <div className="flex items-start space-x-3.5">
           <div className="w-10 h-10 rounded-xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-400 flex-shrink-0 mt-0.5">
             <GraduationCap className="w-5 h-5" />
@@ -210,7 +216,10 @@ export const CaseList: React.FC<CaseListProps> = ({
         {/* Filter Toolbar (Tabs & Search) */}
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 pt-2">
           {/* Difficulty Tabs */}
-          <div className="flex items-center space-x-1.5 overflow-x-auto no-scrollbar py-1">
+          <div
+            id="difficulty-filters"
+            className="flex items-center space-x-1.5 overflow-x-auto no-scrollbar py-1"
+          >
             <button
               onClick={() => setSelectedDifficulty('all')}
               className={`min-h-[40px] px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all cursor-pointer flex-shrink-0 ${
@@ -280,12 +289,13 @@ export const CaseList: React.FC<CaseListProps> = ({
 
         {/* Case Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
-          {filteredCases.map((c) => {
+          {filteredCases.map((c, index) => {
             const isCompleted = !!stats.completedCases[c.id]?.completed;
 
             return (
               <div
                 key={c.id}
+                id={index === 0 ? 'first-case-card' : undefined}
                 onClick={() => onSelectCase(c)}
                 className={`group cursor-pointer rounded-2xl border transition-all duration-300 p-6 flex flex-col justify-between relative overflow-hidden bg-noir-900/90 shadow-lg ${
                   isCompleted
