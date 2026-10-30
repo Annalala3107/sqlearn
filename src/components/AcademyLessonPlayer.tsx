@@ -20,6 +20,8 @@ import {
   Briefcase,
   AlertTriangle,
   RotateCcw,
+  Target,
+  FileText,
 } from 'lucide-react';
 import { Lesson } from '../academy/types';
 import { databaseService, QueryExecutionResult } from '../services/databaseService';
@@ -27,6 +29,254 @@ import { BridgeService } from '../services/bridgeService';
 import { SqlEditor } from './SqlEditor';
 import { QueryResultTable } from './QueryResultTable';
 import { startViewTransition } from '../utils/transition';
+
+// Utility to format inline markdown terms (bold, code, single quotes, italics)
+const renderInlineMarkdown = (text: string) => {
+  if (!text) return null;
+
+  // Split tokens: **`code`**, **bold**, `code`, 'quoted', *italic*
+  const regex = /(\*\*(?:`[^`]+`|[^*]+)\*\*|`[^`]+`|'[^']+'|\*[^*]+\*)/g;
+  const parts = text.split(regex);
+
+  return parts.map((part, idx) => {
+    if (!part) return null;
+
+    // Bold + Code combo: **`CODE`**
+    if (part.startsWith('**`') && part.endsWith('`**')) {
+      const code = part.slice(3, -3);
+      return (
+        <code
+          key={idx}
+          className="px-1.5 py-0.5 rounded-md bg-amber-950/80 border border-amber-700/70 font-mono text-amber-300 font-bold text-xs mx-0.5 shadow-sm"
+        >
+          {code}
+        </code>
+      );
+    }
+
+    // Bold: **text**
+    if (part.startsWith('**') && part.endsWith('**')) {
+      const content = part.slice(2, -2);
+      return (
+        <strong key={idx} className="text-noir-gold font-bold font-sans">
+          {content}
+        </strong>
+      );
+    }
+
+    // Inline Code: `code`
+    if (part.startsWith('`') && part.endsWith('`')) {
+      const code = part.slice(1, -1);
+      return (
+        <code
+          key={idx}
+          className="px-1.5 py-0.5 rounded-md bg-noir-950 border border-noir-750 font-mono text-sky-300 font-semibold text-xs mx-0.5"
+        >
+          {code}
+        </code>
+      );
+    }
+
+    // Single quoted identifier/query: 'text'
+    if (part.startsWith("'") && part.endsWith("'") && part.length > 2) {
+      const inner = part.slice(1, -1);
+      return (
+        <code
+          key={idx}
+          className="px-1.5 py-0.5 rounded-md bg-noir-950 border border-emerald-800/60 font-mono text-emerald-300 font-medium text-xs mx-0.5"
+        >
+          '{inner}'
+        </code>
+      );
+    }
+
+    // Italic: *text*
+    if (part.startsWith('*') && part.endsWith('*')) {
+      return (
+        <em key={idx} className="text-slate-200 italic">
+          {part.slice(1, -1)}
+        </em>
+      );
+    }
+
+    return <span key={idx}>{part}</span>;
+  });
+};
+
+// Utility to render the full structured concept with elegant cards and typography
+const renderStructuredConcept = (concept: string) => {
+  if (!concept) return null;
+  const lines = concept.split('\n');
+
+  const elements: React.ReactNode[] = [];
+  let currentParagraphLines: string[] = [];
+
+  const flushParagraph = (key: string) => {
+    if (currentParagraphLines.length > 0) {
+      const text = currentParagraphLines.join(' ').trim();
+      if (text) {
+        elements.push(
+          <p key={key} className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans text-pretty">
+            {renderInlineMarkdown(text)}
+          </p>
+        );
+      }
+      currentParagraphLines = [];
+    }
+  };
+
+  lines.forEach((rawLine, idx) => {
+    const line = rawLine.trim();
+    if (!line) {
+      flushParagraph(`p-${idx}`);
+      return;
+    }
+
+    // 1. Heading: ### ...
+    if (line.startsWith('###')) {
+      flushParagraph(`p-before-h-${idx}`);
+      const headingText = line.replace(/^###\s*/, '');
+      elements.push(
+        <div key={`h-${idx}`} className="pt-2 pb-1 border-b border-noir-800 flex items-center space-x-2">
+          <span className="w-1.5 h-3.5 rounded-full bg-noir-accent flex-shrink-0" />
+          <h3 className="text-xs sm:text-sm font-extrabold text-slate-100 uppercase tracking-wide font-sans">
+            {headingText}
+          </h3>
+        </div>
+      );
+      return;
+    }
+
+    // 2. Callout Tip: 💡 **Mẹo...** hoặc Mẹo nhỏ
+    if (line.includes('💡') || line.toLowerCase().startsWith('mẹo:') || line.toLowerCase().startsWith('lưu ý:')) {
+      flushParagraph(`p-before-tip-${idx}`);
+      elements.push(
+        <div
+          key={`tip-${idx}`}
+          className="p-3.5 rounded-xl bg-amber-950/25 border border-amber-800/40 text-amber-200 flex items-start space-x-3 shadow-sm"
+        >
+          <Sparkles className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+          <div className="text-xs sm:text-sm leading-relaxed flex-1 font-sans text-pretty">
+            {renderInlineMarkdown(line.replace(/^[💡\s]+/, ''))}
+          </div>
+        </div>
+      );
+      return;
+    }
+
+    // 3. Definition item: - **Tên (Giải thích):** Mô tả...
+    const defMatch = line.match(/^[-*•]\s+\*\*([^*]+)\*\*:\s*(.*)$/);
+    if (defMatch) {
+      flushParagraph(`p-before-def-${idx}`);
+      const term = defMatch[1];
+      const desc = defMatch[2];
+      elements.push(
+        <div
+          key={`def-${idx}`}
+          className="p-3.5 rounded-xl bg-noir-950/80 border border-noir-800/90 space-y-1.5 hover:border-noir-750 transition-colors shadow-sm"
+        >
+          <div className="flex items-center space-x-2">
+            <span className="w-2 h-2 rounded-full bg-noir-accent flex-shrink-0" />
+            <span className="text-xs sm:text-sm font-bold text-noir-gold font-sans tracking-wide">
+              {term}
+            </span>
+          </div>
+          <div className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans pl-4 text-pretty">
+            {renderInlineMarkdown(desc)}
+          </div>
+        </div>
+      );
+      return;
+    }
+
+    // 4. Numbered step: 1. ... or 2. ...
+    const numMatch = line.match(/^(\d+)\.\s+(.*)$/);
+    if (numMatch) {
+      flushParagraph(`p-before-num-${idx}`);
+      const num = numMatch[1];
+      const content = numMatch[2];
+      elements.push(
+        <div
+          key={`num-${idx}`}
+          className="flex items-start space-x-2.5 p-2.5 rounded-xl bg-noir-950/60 border border-noir-800/80 shadow-sm"
+        >
+          <span className="w-5 h-5 rounded-md bg-noir-accent/20 text-noir-gold border border-noir-accent/30 flex items-center justify-center text-xs font-mono font-bold flex-shrink-0 mt-0.5">
+            {num}
+          </span>
+          <div className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans flex-1 text-pretty">
+            {renderInlineMarkdown(content)}
+          </div>
+        </div>
+      );
+      return;
+    }
+
+    // 5. Normal bullet point: - ...
+    if (line.match(/^[-*•]\s+/)) {
+      flushParagraph(`p-before-bullet-${idx}`);
+      const bulletContent = line.replace(/^[-*•]\s+/, '');
+      elements.push(
+        <div key={`bullet-${idx}`} className="flex items-start space-x-2.5 pl-1.5 py-0.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-sky-400 mt-2 flex-shrink-0" />
+          <div className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans flex-1 text-pretty">
+            {renderInlineMarkdown(bulletContent)}
+          </div>
+        </div>
+      );
+      return;
+    }
+
+    // Accumulate regular paragraph lines
+    currentParagraphLines.push(line);
+  });
+
+  flushParagraph('p-final');
+  return <div className="space-y-3">{elements}</div>;
+};
+
+// Utility to render syntax code snippet with syntax coloring
+const renderSyntaxCode = (code: string) => {
+  if (!code) return null;
+  const lines = code.trim().split('\n');
+
+  return (
+    <pre className="p-3.5 bg-noir-950 rounded-xl border border-noir-800 text-xs font-mono overflow-x-auto leading-relaxed">
+      {lines.map((line, idx) => {
+        const isComment = line.trim().startsWith('--');
+        if (isComment) {
+          return (
+            <div key={idx} className="text-slate-400 italic">
+              {line}
+            </div>
+          );
+        }
+        const parts = line.split(/\b(SELECT|FROM|WHERE|CREATE|VIEW|TRIGGER|BEFORE|AFTER|FOR|EACH|ROW|BEGIN|END|AS|INSERT|INTO|VALUES|JOIN|LEFT|RIGHT|INNER|ON|ORDER|BY|GROUP|HAVING|LIMIT|DESC|ASC|AND|OR|NOT|IN|LIKE|BETWEEN|IS|NULL|COUNT|SUM|AVG|MIN|MAX|ROUND)\b/gi);
+        return (
+          <div key={idx}>
+            {parts.map((p, pIdx) => {
+              const upper = p.toUpperCase();
+              if (['SELECT', 'FROM', 'WHERE', 'CREATE', 'VIEW', 'TRIGGER', 'BEFORE', 'AFTER', 'FOR', 'EACH', 'ROW', 'BEGIN', 'END', 'AS', 'INSERT', 'INTO', 'VALUES', 'JOIN', 'LEFT', 'RIGHT', 'INNER', 'ON', 'ORDER', 'BY', 'GROUP', 'HAVING', 'LIMIT', 'DESC', 'ASC', 'AND', 'OR', 'NOT', 'IN', 'LIKE', 'BETWEEN', 'IS', 'NULL'].includes(upper)) {
+                return (
+                  <span key={pIdx} className="text-amber-400 font-bold">
+                    {p}
+                  </span>
+                );
+              }
+              if (['COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'ROUND'].includes(upper)) {
+                return (
+                  <span key={pIdx} className="text-sky-400 font-semibold">
+                    {p}
+                  </span>
+                );
+              }
+              return <span key={pIdx} className="text-slate-200">{p}</span>;
+            })}
+          </div>
+        );
+      })}
+    </pre>
+  );
+};
 
 interface AcademyLessonPlayerProps {
   lesson: Lesson;
@@ -310,29 +560,34 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
             {((typeof window !== 'undefined' && window.innerWidth >= 1024 && activeDesktopTab === 'theory') ||
               (activeMobileTab === 'theory')) && (
               <div className="bg-noir-900 border border-noir-800 rounded-2xl p-5 shadow-md space-y-4">
-                <div className="flex items-center space-x-2 text-sky-400 font-bold text-sm border-b border-noir-800 pb-2">
-                  <BookOpen className="w-4 h-4" />
-                  <h2>Lý Thuyết Cốt Lõi: {lesson.title}</h2>
+                <div className="flex items-center space-x-2 text-sky-400 font-bold text-sm border-b border-noir-800 pb-2.5">
+                  <BookOpen className="w-4 h-4 text-sky-400 flex-shrink-0" />
+                  <h2 className="font-extrabold text-slate-100 font-sans tracking-normal">
+                    Lý Thuyết Cốt Lõi: <span className="text-sky-300">{lesson.title}</span>
+                  </h2>
                 </div>
 
-                <div className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans space-y-3 whitespace-pre-line">
-                  {lesson.concept}
+                {/* Structured Rich Concept Cards */}
+                <div className="space-y-3 font-sans">
+                  {renderStructuredConcept(lesson.concept)}
                 </div>
 
                 {/* Syntax Example Box */}
-                <div className="space-y-2 pt-2 border-t border-noir-800">
+                <div className="space-y-2 pt-3 border-t border-noir-800">
                   <div className="flex items-center justify-between text-xs font-mono text-slate-400">
-                    <span>Ví dụ cú pháp mẫu:</span>
+                    <span className="flex items-center space-x-1.5 text-noir-gold font-bold">
+                      <Code2 className="w-3.5 h-3.5 text-noir-accent" />
+                      <span>Ví dụ cú pháp mẫu:</span>
+                    </span>
                     <button
                       onClick={() => setQuery(lesson.syntaxExample)}
-                      className="text-sky-400 hover:text-sky-300 text-[11px] font-semibold underline cursor-pointer"
+                      className="px-2.5 py-1 rounded-lg bg-sky-950/80 hover:bg-sky-900/80 text-sky-400 hover:text-sky-300 text-[11px] font-semibold border border-sky-800/60 transition-colors cursor-pointer flex items-center space-x-1"
                     >
-                      Nạp vào Editor
+                      <Sparkles className="w-3 h-3" />
+                      <span>Nạp vào Editor</span>
                     </button>
                   </div>
-                  <pre className="p-3 bg-noir-950 rounded-xl border border-noir-800 text-xs font-mono text-amber-300 overflow-x-auto">
-                    {lesson.syntaxExample}
-                  </pre>
+                  {renderSyntaxCode(lesson.syntaxExample)}
                 </div>
               </div>
             )}
@@ -341,22 +596,39 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
             {((typeof window !== 'undefined' && window.innerWidth >= 1024 && activeDesktopTab === 'task') ||
               (activeMobileTab === 'task')) && (
               <div className="bg-noir-900 border border-noir-800 rounded-2xl p-5 shadow-md space-y-4">
-                <div className="flex items-center justify-between border-b border-noir-800 pb-2">
+                <div className="flex items-center justify-between border-b border-noir-800 pb-2.5">
                   <div className="flex items-center space-x-2 text-noir-gold font-bold text-sm">
-                    <Lightbulb className="w-4 h-4 text-noir-accent" />
-                    <h2>Thử Thách Bài Tập (Hands-on Challenge)</h2>
+                    <Lightbulb className="w-4 h-4 text-noir-accent flex-shrink-0" />
+                    <h2 className="font-extrabold text-slate-100 font-sans tracking-normal">
+                      Thử Thách Bài Tập (Hands-on Challenge)
+                    </h2>
                   </div>
-                  <span className="text-xs font-mono text-noir-gold font-bold bg-noir-accent/15 px-2.5 py-0.5 rounded-full border border-noir-accent/30">
-                    +{lesson.xpReward} XP
+                  <span className="text-xs font-mono text-noir-gold font-bold bg-noir-accent/15 px-2.5 py-0.5 rounded-full border border-noir-accent/30 flex items-center space-x-1">
+                    <Sparkles className="w-3 h-3 text-noir-accent" />
+                    <span>+{lesson.xpReward} XP</span>
                   </span>
                 </div>
 
-                <div className="p-4 bg-noir-950/80 rounded-xl border border-noir-800 space-y-2">
-                  <span className="text-xs font-bold text-slate-400 uppercase font-mono">Mục tiêu:</span>
-                  <p className="text-sm font-semibold text-slate-100">{lesson.exercise.goal}</p>
-                  <p className="text-xs text-slate-300 leading-relaxed pt-1">
-                    {lesson.exercise.taskDescription}
-                  </p>
+                {/* Goal Focus Card */}
+                <div className="p-3.5 rounded-xl bg-amber-950/20 border border-amber-800/50 space-y-1.5 shadow-sm">
+                  <div className="flex items-center space-x-1.5 text-amber-400 font-bold text-xs font-mono uppercase tracking-wider">
+                    <Target className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
+                    <span>Mục Tiêu Trọng Tâm</span>
+                  </div>
+                  <div className="text-sm font-bold text-slate-100 leading-snug font-sans">
+                    {renderInlineMarkdown(lesson.exercise.goal)}
+                  </div>
+                </div>
+
+                {/* Task Description Detail Card */}
+                <div className="p-4 bg-noir-950/80 rounded-xl border border-noir-800/90 space-y-2 shadow-sm">
+                  <div className="flex items-center space-x-1.5 text-sky-400 font-bold text-xs font-mono uppercase tracking-wider">
+                    <FileText className="w-3.5 h-3.5 text-sky-400 flex-shrink-0" />
+                    <span>Mô Tả & Yêu Cầu Thực Hiện</span>
+                  </div>
+                  <div className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans text-pretty">
+                    {renderInlineMarkdown(lesson.exercise.taskDescription)}
+                  </div>
                 </div>
 
                 {/* Hints section */}
@@ -368,9 +640,9 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
                         <div key={idx} className="border border-noir-800 rounded-xl overflow-hidden bg-noir-950/60">
                           <button
                             onClick={() => setShowHintIndex(showHintIndex === idx ? null : idx)}
-                            className="w-full flex items-center justify-between p-2.5 text-xs text-slate-300 hover:text-noir-gold transition-colors text-left"
+                            className="w-full flex items-center justify-between p-2.5 text-xs text-slate-300 hover:text-noir-gold transition-colors text-left cursor-pointer"
                           >
-                            <span>Gợi ý #{idx + 1}</span>
+                            <span className="font-semibold">Gợi ý #{idx + 1}</span>
                             {showHintIndex === idx ? (
                               <ChevronUp className="w-3.5 h-3.5 text-noir-accent" />
                             ) : (
@@ -378,7 +650,7 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
                             )}
                           </button>
                           {showHintIndex === idx && (
-                            <div className="p-3 bg-noir-900 border-t border-noir-800/60 text-xs text-amber-300 font-mono">
+                            <div className="p-3 bg-noir-900 border-t border-noir-800/60 text-xs text-amber-300 font-mono leading-relaxed whitespace-pre-wrap">
                               {hint}
                             </div>
                           )}

@@ -102,8 +102,8 @@ export const CaseList: React.FC<CaseListProps> = ({
           </div>
 
           <h1 className="text-2xl sm:text-5xl font-black text-slate-100 tracking-normal sm:tracking-[0.02em] leading-snug sm:leading-[1.25]">
-            <span className="block mb-1 sm:mb-2">VẠCH MẶT KẺ THỦ ÁC</span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-noir-gold via-noir-accent to-amber-500">
+            <span className="block mb-1 sm:mb-2 text-slate-100">VẠCH MẶT KẺ THỦ ÁC</span>
+            <span className="block text-amber-400 font-black tracking-normal sm:tracking-[0.03em] drop-shadow-[0_2px_14px_rgba(251,191,36,0.4)]">
               BẰNG TRUY VẤN SQL
             </span>
           </h1>
