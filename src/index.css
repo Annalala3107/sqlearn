@@ -4,6 +4,7 @@
 
 @layer base {
   :root {
+    color-scheme: dark;
     --sat: env(safe-area-inset-top, 0px);
     --sab: env(safe-area-inset-bottom, 0px);
     --sal: env(safe-area-inset-left, 0px);
@@ -11,6 +12,7 @@
   }
 
   html {
+    color-scheme: dark;
     -webkit-text-size-adjust: 100%;
     touch-action: manipulation;
   }
@@ -49,10 +51,24 @@
     font-family: 'JetBrains Mono', 'Fira Code', monospace;
   }
 
+  /* Tabular numbers for clean stats, times, XP comparisons */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
   /* Khắc phục lỗi tracking-widest làm lệch dấu thanh kép tiếng Việt */
   .uppercase {
     letter-spacing: 0.035em;
   }
+}
+
+/* Accessible focus ring utility (Web Interface Guidelines) */
+.focus-ring {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  outline: 2px solid #e5a93c;
+  outline-offset: 2px;
 }
 
 /* Native View Transitions (Vercel Guidelines) */
@@ -92,7 +108,17 @@
   }
 }
 
+/* Respect user's motion preference (Web Interface Guidelines) */
 @media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
   ::view-transition-old(root),
   ::view-transition-new(root) {
     animation: none !important;

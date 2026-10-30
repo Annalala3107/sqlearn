@@ -41,7 +41,7 @@ export const CaseList: React.FC<CaseListProps> = ({
   const [expandedBriefIds, setExpandedBriefIds] = useState<Record<string, boolean>>({});
 
   const completedCount = useMemo(() => {
-    return cases.filter((c) => !!stats.completedCases[c.id]?.completed).length;
+    return cases.filter((c) => !!stats.completedCases?.[c.id]?.completed).length;
   }, [cases, stats.completedCases]);
 
   const progressPercent = Math.round((completedCount / (cases.length || 1)) * 100);
@@ -50,7 +50,7 @@ export const CaseList: React.FC<CaseListProps> = ({
     return cases.filter((c) => {
       const matchDifficulty =
         selectedDifficulty === 'all' || c.difficulty === selectedDifficulty;
-      
+
       const query = searchQuery.trim().toLowerCase();
       const matchSearch =
         !query ||
@@ -92,19 +92,20 @@ export const CaseList: React.FC<CaseListProps> = ({
   return (
     <div className="max-w-6xl mx-auto px-3.5 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-10">
       {/* Hero Welcome Banner */}
-      <div
+      <section
         id="hero-welcome-banner"
+        aria-label="Giới thiệu nền tảng SQL Thám Tử"
         className="relative bg-gradient-to-br from-noir-900 via-noir-850 to-noir-950 border border-noir-700/80 rounded-2xl p-5 sm:p-10 shadow-2xl overflow-hidden"
       >
-        <div className="absolute top-0 right-0 w-96 h-96 bg-noir-accent/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-noir-accent/10 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
 
         <div className="max-w-3xl space-y-3.5 sm:space-y-4 relative z-10">
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-noir-accent/15 border border-noir-accent/30 text-noir-gold text-[11px] sm:text-xs font-mono font-semibold">
-            <Sparkles className="w-3.5 h-3.5 text-noir-accent flex-shrink-0" />
+            <Sparkles className="w-3.5 h-3.5 text-noir-accent flex-shrink-0" aria-hidden="true" />
             <span>NỀN TẢNG LUYỆN TẬP SQL QUA TRINH THÁM ĐẦU TIÊN TẠI VN</span>
           </div>
 
-          <h1 className="text-2xl sm:text-5xl font-black text-slate-100 tracking-normal sm:tracking-[0.02em] leading-snug sm:leading-[1.25]">
+          <h1 className="text-2xl sm:text-5xl font-black text-slate-100 tracking-normal sm:tracking-[0.02em] leading-snug sm:leading-[1.25] text-balance">
             <span className="block mb-1 sm:mb-2 text-slate-100">VẠCH MẶT KẺ THỦ ÁC</span>
             <span className="block text-amber-400 font-black tracking-normal sm:tracking-[0.03em] drop-shadow-[0_2px_14px_rgba(251,191,36,0.4)]">
               BẰNG TRUY VẤN SQL
@@ -115,20 +116,27 @@ export const CaseList: React.FC<CaseListProps> = ({
             Khám phá 30 chuyên án hình sự thực chiến, truy vấn SQL để giải mã manh mối và lật tẩy thủ phạm.
           </p>
 
-          {/* Progress Overview Bar */}
+          {/* Progress Overview Bar with Tabular Numbers */}
           <div className="pt-2 sm:pt-4 space-y-2">
-            <div className="flex items-center justify-between text-xs font-mono">
+            <div className="flex items-center justify-between text-xs font-mono tabular-nums">
               <span className="text-slate-400 flex items-center space-x-1.5">
-                <Trophy className="w-3.5 h-3.5 text-noir-accent" />
+                <Trophy className="w-3.5 h-3.5 text-noir-accent" aria-hidden="true" />
                 <span>Tiến độ phá án:</span>
                 <strong className="text-slate-200">{completedCount}/{cases.length} vụ án</strong>
               </span>
               <span className="text-noir-gold font-bold">{progressPercent}%</span>
             </div>
 
-            <div className="w-full h-2.5 bg-noir-950 rounded-full border border-noir-800 overflow-hidden">
+            <div
+              role="progressbar"
+              aria-valuenow={progressPercent}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label="Tiến độ phá án tổng thể"
+              className="w-full h-2.5 bg-noir-950 rounded-full border border-noir-800 overflow-hidden"
+            >
               <div
-                className="h-full bg-gradient-to-r from-amber-500 via-noir-accent to-emerald-400 transition-all duration-500"
+                className="h-full bg-gradient-to-r from-amber-500 via-noir-accent to-emerald-400 transition-all duration-500 motion-reduce:transition-none"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
@@ -136,25 +144,26 @@ export const CaseList: React.FC<CaseListProps> = ({
 
           <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-1 sm:pt-2 text-xs text-slate-400">
             <div className="flex items-center space-x-1.5">
-              <Shield className="w-4 h-4 text-noir-accent flex-shrink-0" />
+              <Shield className="w-4 h-4 text-noir-accent flex-shrink-0" aria-hidden="true" />
               <span>SQLite WebAssembly</span>
             </div>
             <div className="flex items-center space-x-1.5">
-              <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+              <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0" aria-hidden="true" />
               <span>Tự động lưu tiến độ</span>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Beginner Welcome / Roadmap Gateway Callout */}
-      <div
+      <section
         id="beginner-callout"
+        aria-label="Lời khuyên dành cho người mới bắt đầu"
         className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-sky-950/40 via-noir-900 to-amber-950/30 border border-sky-800/40 shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4"
       >
         <div className="flex items-start space-x-3.5">
           <div className="w-10 h-10 rounded-xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-400 flex-shrink-0 mt-0.5">
-            <GraduationCap className="w-5 h-5" />
+            <GraduationCap className="w-5 h-5" aria-hidden="true" />
           </div>
           <div className="space-y-1">
             <div className="flex items-center space-x-2">
@@ -165,7 +174,7 @@ export const CaseList: React.FC<CaseListProps> = ({
                 Khuyên dùng
               </span>
             </div>
-            <p className="text-xs text-slate-300 max-w-xl leading-relaxed">
+            <p className="text-xs text-slate-300 max-w-xl leading-relaxed text-pretty">
               Khám phá 20 bài học thực hành tương tác tại <strong>Học Viện SQL</strong> hoặc xem <strong>Sổ Tay Hướng Dẫn</strong> để nắm vững kỹ năng trước khi phá án.
             </p>
           </div>
@@ -175,9 +184,10 @@ export const CaseList: React.FC<CaseListProps> = ({
           {onOpenGuide && (
             <button
               onClick={onOpenGuide}
-              className="px-3.5 py-2 rounded-xl bg-noir-850 hover:bg-noir-800 text-slate-200 border border-noir-700 text-xs font-semibold flex items-center space-x-1.5 transition-all cursor-pointer active:scale-95"
+              className="px-3.5 py-2 rounded-xl bg-noir-850 hover:bg-noir-800 text-slate-200 border border-noir-700 text-xs font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer active:scale-95 focus-ring"
+              aria-label="Mở Sổ Tay Hướng Dẫn"
             >
-              <BookOpen className="w-4 h-4 text-noir-accent" />
+              <BookOpen className="w-4 h-4 text-noir-accent" aria-hidden="true" />
               <span>Sổ Tay Hướng Dẫn</span>
             </button>
           )}
@@ -185,22 +195,23 @@ export const CaseList: React.FC<CaseListProps> = ({
           {onNavigateToAcademy && (
             <button
               onClick={onNavigateToAcademy}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-teal-500 hover:from-sky-400 hover:to-teal-400 text-noir-950 font-bold text-xs flex items-center space-x-1.5 shadow-md shadow-sky-950/50 transition-all cursor-pointer active:scale-95"
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-teal-500 hover:from-sky-400 hover:to-teal-400 text-noir-950 font-bold text-xs flex items-center space-x-1.5 shadow-md shadow-sky-950/50 transition-transform active:scale-95 cursor-pointer focus-ring"
+              aria-label="Đến Học Viện SQL để thực hành"
             >
-              <GraduationCap className="w-4 h-4" />
+              <GraduationCap className="w-4 h-4" aria-hidden="true" />
               <span>Đến Học Viện SQL</span>
             </button>
           )}
         </div>
-      </div>
+      </section>
 
       {/* Cases Section Header & Filters */}
-      <div className="space-y-4">
+      <section aria-label="Danh sách hồ sơ các vụ án trọng điểm" className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center space-x-3">
-            <FolderKanban className="w-6 h-6 text-noir-accent flex-shrink-0" />
+            <FolderKanban className="w-6 h-6 text-noir-accent flex-shrink-0" aria-hidden="true" />
             <div>
-              <h2 className="text-xl sm:text-2xl font-extrabold text-slate-100 tracking-normal font-sans">
+              <h2 className="text-xl sm:text-2xl font-extrabold text-slate-100 tracking-normal font-sans text-balance">
                 HỒ SƠ CÁC VỤ ÁN TRỌNG ĐIỂM
               </h2>
               <p className="text-xs text-slate-400">
@@ -208,33 +219,39 @@ export const CaseList: React.FC<CaseListProps> = ({
               </p>
             </div>
           </div>
-          <span className="text-xs text-slate-400 font-mono bg-noir-900 border border-noir-800 px-3 py-1 rounded-full self-start sm:self-auto">
+          <span className="text-xs text-slate-400 font-mono tabular-nums bg-noir-900 border border-noir-800 px-3 py-1 rounded-full self-start sm:self-auto">
             Hiển thị: <strong>{filteredCases.length}</strong> / {cases.length} vụ án
           </span>
         </div>
 
-        {/* Filter Toolbar (Tabs & Search) */}
+        {/* Filter Toolbar */}
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 pt-2">
           {/* Difficulty Tabs */}
           <div
             id="difficulty-filters"
+            role="tablist"
+            aria-label="Lọc theo độ khó vụ án"
             className="flex items-center space-x-1.5 overflow-x-auto no-scrollbar py-1"
           >
             <button
+              role="tab"
+              aria-selected={selectedDifficulty === 'all'}
               onClick={() => setSelectedDifficulty('all')}
-              className={`min-h-[40px] px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all cursor-pointer flex-shrink-0 ${
+              className={`min-h-[40px] px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer flex-shrink-0 focus-ring ${
                 selectedDifficulty === 'all'
                   ? 'bg-noir-800 text-noir-gold border border-noir-700 shadow font-bold'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <Filter className="w-3.5 h-3.5" />
+              <Filter className="w-3.5 h-3.5" aria-hidden="true" />
               <span>Tất Cả ({cases.length})</span>
             </button>
 
             <button
+              role="tab"
+              aria-selected={selectedDifficulty === 'dễ'}
               onClick={() => setSelectedDifficulty('dễ')}
-              className={`min-h-[40px] px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all cursor-pointer flex-shrink-0 ${
+              className={`min-h-[40px] px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer flex-shrink-0 focus-ring ${
                 selectedDifficulty === 'dễ'
                   ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-700 shadow font-bold'
                   : 'text-slate-400 hover:text-slate-200'
@@ -244,8 +261,10 @@ export const CaseList: React.FC<CaseListProps> = ({
             </button>
 
             <button
+              role="tab"
+              aria-selected={selectedDifficulty === 'trung bình'}
               onClick={() => setSelectedDifficulty('trung bình')}
-              className={`min-h-[40px] px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all cursor-pointer flex-shrink-0 ${
+              className={`min-h-[40px] px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer flex-shrink-0 focus-ring ${
                 selectedDifficulty === 'trung bình'
                   ? 'bg-amber-950/80 text-amber-300 border border-amber-700 shadow font-bold'
                   : 'text-slate-400 hover:text-slate-200'
@@ -255,8 +274,10 @@ export const CaseList: React.FC<CaseListProps> = ({
             </button>
 
             <button
+              role="tab"
+              aria-selected={selectedDifficulty === 'nâng cao'}
               onClick={() => setSelectedDifficulty('nâng cao')}
-              className={`min-h-[40px] px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all cursor-pointer flex-shrink-0 ${
+              className={`min-h-[40px] px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer flex-shrink-0 focus-ring ${
                 selectedDifficulty === 'nâng cao'
                   ? 'bg-rose-950/80 text-rose-300 border border-rose-700 shadow font-bold'
                   : 'text-slate-400 hover:text-slate-200'
@@ -268,18 +289,22 @@ export const CaseList: React.FC<CaseListProps> = ({
 
           {/* Search Box */}
           <div className="relative min-w-[240px] max-w-sm">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Tìm theo tên vụ án, JOIN, CTE, LIKE..."
-              className="w-full bg-noir-900 border border-noir-800 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-noir-accent transition-colors"
+              placeholder="Tìm theo tên vụ án, JOIN, CTE, LIKE…"
+              aria-label="Tìm kiếm vụ án theo tên, từ khóa hoặc kỹ năng SQL"
+              autoComplete="off"
+              spellCheck={false}
+              className="w-full bg-noir-900 border border-noir-800 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-200 placeholder-slate-500 focus-ring transition-colors"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 text-xs cursor-pointer"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 text-xs cursor-pointer focus-ring rounded p-0.5"
+                aria-label="Xóa nội dung tìm kiếm"
               >
                 ✕
               </button>
@@ -290,23 +315,32 @@ export const CaseList: React.FC<CaseListProps> = ({
         {/* Case Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
           {filteredCases.map((c, index) => {
-            const isCompleted = !!stats.completedCases[c.id]?.completed;
+            const isCompleted = !!stats.completedCases?.[c.id]?.completed;
 
             return (
-              <div
+              <article
                 key={c.id}
                 id={index === 0 ? 'first-case-card' : undefined}
                 onClick={() => onSelectCase(c)}
-                className={`group cursor-pointer rounded-2xl border transition-all duration-300 p-6 flex flex-col justify-between relative overflow-hidden bg-noir-900/90 shadow-lg ${
+                tabIndex={0}
+                role="button"
+                aria-label={`Vụ án: ${c.title}, độ khó ${c.difficulty}, thưởng ${c.xpReward} XP`}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSelectCase(c);
+                  }
+                }}
+                className={`group cursor-pointer rounded-2xl border transition-all duration-300 motion-reduce:transition-none p-6 flex flex-col justify-between relative overflow-hidden bg-noir-900/90 shadow-lg focus-ring ${
                   isCompleted
                     ? 'border-emerald-800/80 hover:border-emerald-500 shadow-emerald-950/20'
-                    : 'border-noir-800 hover:border-noir-accent/80 hover:shadow-noir-accent/10 hover:-translate-y-1'
+                    : 'border-noir-800 hover:border-noir-accent/80 hover:shadow-noir-accent/10 hover:-translate-y-1 motion-reduce:hover:translate-y-0'
                 }`}
               >
                 {/* Completed Stamp / Badge */}
                 {isCompleted && (
                   <div className="absolute top-4 right-4 flex items-center space-x-1.5 text-xs px-3 py-1 rounded-full bg-emerald-950/90 border border-emerald-600/90 text-emerald-300 font-bold font-typewriter shadow-md z-10">
-                    <CheckCircle className="w-3.5 h-3.5" />
+                    <CheckCircle className="w-3.5 h-3.5" aria-hidden="true" />
                     <span>ĐÃ PHÁ ÁN</span>
                   </div>
                 )}
@@ -321,35 +355,35 @@ export const CaseList: React.FC<CaseListProps> = ({
                     >
                       {getDifficultyBadge(c.difficulty)}
                     </span>
-                    <div className="flex items-center text-xs text-noir-gold font-mono font-bold bg-noir-accent/10 px-2 py-0.5 rounded-full border border-noir-accent/20">
-                      <Award className="w-3.5 h-3.5 mr-1 text-noir-accent" />
+                    <div className="flex items-center text-xs text-noir-gold font-mono tabular-nums font-bold bg-noir-accent/10 px-2 py-0.5 rounded-full border border-noir-accent/20">
+                      <Award className="w-3.5 h-3.5 mr-1 text-noir-accent" aria-hidden="true" />
                       +{c.xpReward} XP
                     </div>
                   </div>
 
                   {/* SQL Skill Tag */}
                   <div className="flex items-center space-x-1.5 text-[11px] text-sky-400 font-mono bg-sky-950/40 border border-sky-900/50 px-2.5 py-1 rounded-lg w-fit">
-                    <Code2 className="w-3 h-3 text-sky-400 flex-shrink-0" />
+                    <Code2 className="w-3 h-3 text-sky-400 flex-shrink-0" aria-hidden="true" />
                     <span className="truncate">{c.category}</span>
                   </div>
 
                   {/* Title */}
-                  <h3 className="font-sans text-base sm:text-lg font-bold text-slate-100 group-hover:text-noir-gold transition-colors leading-snug tracking-normal">
+                  <h3 className="font-sans text-base sm:text-lg font-bold text-slate-100 group-hover:text-noir-gold transition-colors leading-snug tracking-normal text-balance">
                     {c.title}
                   </h3>
 
                   {/* Meta details */}
-                  <div className="space-y-1.5 text-xs text-slate-300 border-y border-noir-800/80 py-2.5">
+                  <div className="space-y-1.5 text-xs text-slate-300 border-y border-noir-800/80 py-2.5 tabular-nums">
                     <div className="flex items-center space-x-2">
-                      <Calendar className="w-3.5 h-3.5 text-noir-accent flex-shrink-0" />
+                      <Calendar className="w-3.5 h-3.5 text-noir-accent flex-shrink-0" aria-hidden="true" />
                       <span>Thời gian: {c.date}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <MapPin className="w-3.5 h-3.5 text-noir-accent flex-shrink-0" />
+                      <MapPin className="w-3.5 h-3.5 text-noir-accent flex-shrink-0" aria-hidden="true" />
                       <span className="truncate">Hiện trường: {c.location}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Clock className="w-3.5 h-3.5 text-noir-accent flex-shrink-0" />
+                      <Clock className="w-3.5 h-3.5 text-noir-accent flex-shrink-0" aria-hidden="true" />
                       <span>Dự kiến: {c.timeEstimate}</span>
                     </div>
                   </div>
@@ -369,22 +403,23 @@ export const CaseList: React.FC<CaseListProps> = ({
                         e.stopPropagation();
                         setExpandedBriefIds((prev) => ({ ...prev, [c.id]: !prev[c.id] }));
                       }}
-                      className="text-[11px] font-semibold text-noir-accent hover:text-amber-300 transition-colors inline-flex items-center space-x-1 cursor-pointer select-none"
+                      className="text-[11px] font-semibold text-noir-accent hover:text-amber-300 transition-colors inline-flex items-center space-x-1 cursor-pointer select-none focus-ring rounded"
+                      aria-expanded={!!expandedBriefIds[c.id]}
                     >
-                      <span>{expandedBriefIds[c.id] ? 'Thu gọn hồ sơ' : 'Xem thêm...'}</span>
+                      <span>{expandedBriefIds[c.id] ? 'Thu gọn hồ sơ' : 'Xem thêm…'}</span>
                       {expandedBriefIds[c.id] ? (
-                        <ChevronUp className="w-3 h-3" />
+                        <ChevronUp className="w-3 h-3" aria-hidden="true" />
                       ) : (
-                        <ChevronDown className="w-3 h-3" />
+                        <ChevronDown className="w-3 h-3" aria-hidden="true" />
                       )}
                     </button>
                   </div>
                 </div>
 
-                {/* Footer Action - Clean Separation */}
+                {/* Footer Action */}
                 <div className="pt-4 mt-4 border-t border-noir-800/80 flex items-center justify-between gap-3">
-                  <div className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg bg-noir-950/90 border border-noir-800 text-[11px] font-mono text-slate-300 flex-shrink-0">
-                    <Target className="w-3.5 h-3.5 text-noir-accent flex-shrink-0" />
+                  <div className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg bg-noir-950/90 border border-noir-800 text-[11px] font-mono tabular-nums text-slate-300 flex-shrink-0">
+                    <Target className="w-3.5 h-3.5 text-noir-accent flex-shrink-0" aria-hidden="true" />
                     <span><strong>{c.objectives.length}</strong> mục tiêu điều tra</span>
                   </div>
 
@@ -393,25 +428,26 @@ export const CaseList: React.FC<CaseListProps> = ({
                       e.stopPropagation();
                       onSelectCase(c);
                     }}
-                    className={`min-h-[42px] text-xs font-bold px-3.5 sm:px-4 py-2 rounded-xl flex items-center space-x-1.5 transition-all active:scale-95 cursor-pointer flex-shrink-0 ${
+                    className={`min-h-[42px] text-xs font-bold px-3.5 sm:px-4 py-2 rounded-xl flex items-center space-x-1.5 transition-transform active:scale-95 cursor-pointer flex-shrink-0 focus-ring ${
                       isCompleted
                         ? 'bg-noir-800 text-slate-300 hover:bg-noir-750 border border-noir-700'
                         : 'bg-noir-accent/20 text-noir-gold border border-noir-accent/40 group-hover:bg-noir-accent group-hover:text-noir-950 group-hover:shadow-md'
                     }`}
+                    aria-label={isCompleted ? `Xem lại ${c.title}` : `Bắt đầu điều tra ${c.title}`}
                   >
                     <span>{isCompleted ? 'Xem Lại' : 'Bắt Đầu Điều Tra'}</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                   </button>
                 </div>
-              </div>
+              </article>
             );
           })}
         </div>
 
         {/* Empty state if no case matched */}
         {filteredCases.length === 0 && (
-          <div className="text-center py-16 space-y-3 bg-noir-900/40 border border-noir-800 rounded-2xl">
-            <FolderKanban className="w-10 h-10 text-slate-600 mx-auto" />
+          <div className="text-center py-16 space-y-3 bg-noir-900/40 border border-noir-800 rounded-2xl" role="status">
+            <FolderKanban className="w-10 h-10 text-slate-600 mx-auto" aria-hidden="true" />
             <h4 className="text-sm font-bold text-slate-300">Không tìm thấy vụ án phù hợp</h4>
             <p className="text-xs text-slate-500">
               Thử tìm kiếm với từ khóa khác hoặc bấm nút "Tất Cả" ở thanh lọc bên trên.
@@ -421,13 +457,13 @@ export const CaseList: React.FC<CaseListProps> = ({
                 setSelectedDifficulty('all');
                 setSearchQuery('');
               }}
-              className="px-4 py-1.5 rounded-lg bg-noir-800 text-xs text-noir-gold hover:bg-noir-750 border border-noir-700 transition-colors"
+              className="px-4 py-1.5 rounded-lg bg-noir-800 text-xs text-noir-gold hover:bg-noir-750 border border-noir-700 transition-colors focus-ring cursor-pointer"
             >
               Đặt lại bộ lọc
             </button>
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
 };

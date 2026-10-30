@@ -37,7 +37,7 @@ const BackupRestoreModal = lazy(() =>
 const ViewLoadingFallback = () => (
   <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-3">
     <div className="w-8 h-8 rounded-full border-2 border-noir-accent border-t-transparent animate-spin" />
-    <span className="text-xs text-slate-400 font-mono">Đang mở không gian tác chiến...</span>
+    <span className="text-xs text-slate-400 font-mono">Đang mở không gian tác chiến…</span>
   </div>
 );
 
@@ -380,8 +380,12 @@ export function App() {
 
       {/* Global Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-noir-900 border border-noir-700 text-slate-100 px-4 py-2.5 rounded-2xl shadow-2xl text-xs font-semibold flex items-center space-x-2 animate-bounce">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed bottom-6 right-6 z-50 bg-noir-900 border border-noir-700 text-slate-100 px-4 py-2.5 rounded-2xl shadow-2xl text-xs font-semibold flex items-center space-x-2 animate-in fade-in slide-in-from-bottom-2 duration-200 motion-reduce:animate-none"
+        >
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" aria-hidden="true" />
           <span>{toastMessage}</span>
         </div>
       )}

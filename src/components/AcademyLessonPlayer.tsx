@@ -454,7 +454,7 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
         <Loader2 className="w-10 h-10 text-sky-400 animate-spin" />
         <div className="text-center">
           <h3 className="text-lg font-bold text-slate-200">
-            Đang Thiết Lập Môi Trường Thực Hành...
+            Đang thiết lập môi trường thực hành…
           </h3>
           <p className="text-xs text-slate-400 font-mono mt-1 max-w-sm mx-auto">
             Khởi tạo Sandbox SQLite WebAssembly: {lesson.title}
