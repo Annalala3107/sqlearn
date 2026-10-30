@@ -356,7 +356,10 @@ export function App() {
           onNavigateToCases={() => handleChangeMode('cases')}
           onRestartTour={() => {
             handleChangeMode('cases');
-            setIsTourOpen(true);
+            window.scrollTo({ top: 0, behavior: 'auto' });
+            setTimeout(() => {
+              setIsTourOpen(true);
+            }, 100);
           }}
         />
 

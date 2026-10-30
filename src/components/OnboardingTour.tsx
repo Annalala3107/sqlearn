@@ -73,6 +73,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
       const isCompleted = localStorage.getItem(ONBOARDING_STORAGE_KEY);
       if (!isCompleted) {
         const timer = setTimeout(() => {
+          setCurrentStep(0);
           setInternalOpen(true);
         }, 500);
         return () => clearTimeout(timer);
@@ -82,7 +83,14 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
     }
   }, [isOpenOverride]);
 
-  // 2. Đo đạc toạ độ phần tử mục tiêu (0% layout thrashing)
+  // 2. Khi mở lại tour (bằng nút hoặc override), luôn đặt lại bước 0
+  useEffect(() => {
+    if (isOpenOverride) {
+      setCurrentStep(0);
+    }
+  }, [isOpenOverride]);
+
+  // 3. Đo đạc toạ độ phần tử mục tiêu (0% layout thrashing)
   const measureTarget = useCallback(() => {
     if (!isOpen || currentStep >= steps.length) {
       setTargetRect(null);
@@ -105,7 +113,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
     }
   }, [isOpen, currentStep, steps]);
 
-  // 3. Cuộn mượt đến phần tử mục tiêu CHỈ MỘT LẦN khi đổi bước
+  // 4. Cuộn mượt đến phần tử mục tiêu khi đổi bước
   useEffect(() => {
     if (!isOpen) return;
 
@@ -116,6 +124,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
+      // Đợi hoàn tất cuộn (350ms) rồi đo toạ độ chính xác
       const timer = setTimeout(() => {
         measureTarget();
         isTransitioningRef.current = false;
@@ -128,36 +137,29 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
     }
   }, [isOpen, currentStep, steps, measureTarget]);
 
-  // 4. Lắng nghe Resize màn hình với Debounce nhẹ
+  // 5. Lắng nghe Scroll & Resize bằng requestAnimationFrame (Không đệ quy scroll, 0% CPU, 60fps)
   useEffect(() => {
     if (!isOpen) return;
 
-    let resizeTimer: any;
-    const handleResize = () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        measureTarget();
-      }, 100);
+    let ticking = false;
+    const handleScrollOrResize = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          measureTarget();
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('scroll', handleScrollOrResize, { passive: true });
+    window.addEventListener('resize', handleScrollOrResize);
+
     return () => {
-      clearTimeout(resizeTimer);
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleScrollOrResize);
+      window.removeEventListener('resize', handleScrollOrResize);
     };
   }, [isOpen, measureTarget]);
-
-  // 5. Khóa cuộn trang khi tour đang hoạt động
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, [isOpen]);
 
   // 6. Hoàn tất hoặc Bỏ qua hướng dẫn
   const handleFinish = useCallback(() => {
@@ -212,34 +214,47 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
   const step = steps[currentStep] || steps[0];
   const stepText = step.content || step.description || '';
 
-  // Tính vị trí hiển thị Tooltip an toàn
-  let tooltipTop = 120;
-  let tooltipLeft = 20;
+  // Tính vị trí hiển thị Tooltip an toàn, tuyệt đối không bị tràn ra ngoài màn hình
+  const DIALOG_MAX_H = 320;
+  const DIALOG_W = Math.min(380, typeof window !== 'undefined' ? window.innerWidth - 32 : 360);
+  const PADDING = 16;
+  const viewportH = typeof window !== 'undefined' ? window.innerHeight : 800;
+  const viewportW = typeof window !== 'undefined' ? window.innerWidth : 1200;
+
+  let tooltipTop = Math.max(PADDING, (viewportH - DIALOG_MAX_H) / 2);
+  let tooltipLeft = Math.max(PADDING, (viewportW - DIALOG_W) / 2);
 
   if (targetRect) {
-    const spaceBelow = window.innerHeight - (targetRect.top + targetRect.height);
+    const spaceBelow = viewportH - (targetRect.top + targetRect.height);
     const spaceAbove = targetRect.top;
 
-    if (spaceBelow >= 220 || spaceBelow > spaceAbove) {
-      tooltipTop = Math.min(window.innerHeight - 250, targetRect.top + targetRect.height + 16);
+    if (spaceBelow >= DIALOG_MAX_H + 20) {
+      // Đặt phía dưới phần tử
+      tooltipTop = targetRect.top + targetRect.height + 12;
+    } else if (spaceAbove >= DIALOG_MAX_H + 20) {
+      // Đặt phía trên phần tử
+      tooltipTop = targetRect.top - DIALOG_MAX_H - 12;
     } else {
-      tooltipTop = Math.max(16, targetRect.top - 240);
+      // Nếu cả hai phía đều hẹp, neo ở vị trí an toàn trong viewport
+      tooltipTop = Math.max(PADDING, viewportH - DIALOG_MAX_H - PADDING);
     }
 
+    // Căn giữa theo chiều ngang của phần tử mục tiêu
     tooltipLeft = Math.max(
-      16,
-      Math.min(window.innerWidth - 376, targetRect.left + targetRect.width / 2 - 180)
+      PADDING,
+      Math.min(viewportW - DIALOG_W - PADDING, targetRect.left + (targetRect.width - DIALOG_W) / 2)
     );
-  } else {
-    tooltipTop = Math.max(40, window.innerHeight / 2 - 120);
-    tooltipLeft = Math.max(16, window.innerWidth / 2 - 180);
   }
 
-  const padding = 8;
-  const maskX = targetRect ? Math.max(0, targetRect.left - padding) : 0;
-  const maskY = targetRect ? Math.max(0, targetRect.top - padding) : 0;
-  const maskW = targetRect ? targetRect.width + padding * 2 : 0;
-  const maskH = targetRect ? targetRect.height + padding * 2 : 0;
+  // Khóa cứng toạ độ: Đảm bảo 100% không bao giờ bị cắt mép dưới hay mép trên
+  tooltipTop = Math.max(PADDING, Math.min(viewportH - DIALOG_MAX_H - PADDING, tooltipTop));
+  tooltipLeft = Math.max(PADDING, Math.min(viewportW - DIALOG_W - PADDING, tooltipLeft));
+
+  const pad = 8;
+  const maskX = targetRect ? Math.max(0, targetRect.left - pad) : 0;
+  const maskY = targetRect ? Math.max(0, targetRect.top - pad) : 0;
+  const maskW = targetRect ? targetRect.width + pad * 2 : 0;
+  const maskH = targetRect ? targetRect.height + pad * 2 : 0;
 
   return (
     <div
@@ -303,10 +318,10 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
           top: `${tooltipTop}px`,
           left: `${tooltipLeft}px`,
         }}
-        className="fixed z-50 w-[calc(100vw-32px)] sm:w-[360px] p-5 rounded-2xl bg-noir-900 border border-noir-700 shadow-2xl transition-all duration-200 motion-reduce:transition-none ring-1 ring-noir-accent/30 flex flex-col space-y-3.5 focus-ring"
+        className="fixed z-50 w-[calc(100vw-32px)] sm:w-[380px] max-h-[min(380px,85vh)] p-5 rounded-2xl bg-noir-900 border border-noir-700 shadow-2xl transition-all duration-200 motion-reduce:transition-none ring-1 ring-noir-accent/30 flex flex-col justify-between space-y-3.5 focus-ring overflow-y-auto"
       >
         {/* Header */}
-        <div className="flex items-center justify-between pb-2.5 border-b border-noir-800">
+        <div className="flex items-center justify-between pb-2.5 border-b border-noir-800 flex-shrink-0">
           <div className="flex items-center space-x-2">
             <span
               className="w-6 h-6 rounded-lg bg-noir-accent/20 border border-noir-accent/40 flex items-center justify-center text-noir-gold"
@@ -351,7 +366,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
         </div>
 
         {/* Content */}
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 flex-1">
           <h3 className="text-base font-extrabold text-slate-100 font-sans tracking-normal leading-snug">
             {step.title}
           </h3>
@@ -364,7 +379,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="pt-1 flex items-center justify-between gap-2">
+        <div className="pt-2 flex items-center justify-between gap-2 flex-shrink-0 border-t border-noir-800/60">
           <button
             onClick={handleFinish}
             className="text-[11px] text-slate-400 hover:text-slate-200 font-semibold px-2.5 py-1.5 rounded-lg hover:bg-noir-800 transition-colors cursor-pointer focus-ring"

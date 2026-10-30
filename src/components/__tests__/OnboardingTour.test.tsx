@@ -89,4 +89,20 @@ describe('OnboardingTour Component', () => {
     fireEvent.keyDown(window, { key: 'ArrowLeft' });
     expect(screen.getByText('Bước 1: Giới thiệu')).toBeDefined();
   });
+
+  it('resets to step 0 when reopening with isOpenOverride', () => {
+    const { rerender } = render(<OnboardingTour steps={mockSteps} isOpenOverride={true} />);
+    
+    // Advance to step 2
+    fireEvent.click(screen.getByText('Tiếp tục'));
+    expect(screen.getByText('Bước 2: Tìm kiếm')).toBeDefined();
+
+    // Close
+    rerender(<OnboardingTour steps={mockSteps} isOpenOverride={false} />);
+    expect(screen.queryByRole('dialog')).toBeNull();
+
+    // Reopen -> must start at step 1
+    rerender(<OnboardingTour steps={mockSteps} isOpenOverride={true} />);
+    expect(screen.getByText('Bước 1: Giới thiệu')).toBeDefined();
+  });
 });
