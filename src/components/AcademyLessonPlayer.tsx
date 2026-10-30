@@ -607,6 +607,7 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
             onExecute={handleExecute}
             queryHistory={queryHistory}
             isLoading={isExecuting}
+            schemas={lesson.schemas}
           />
 
           {/* Result Table */}

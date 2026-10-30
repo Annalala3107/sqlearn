@@ -89,7 +89,7 @@ export const SolutionModal: React.FC<SolutionModalProps> = ({
                 <Award className="w-3.5 h-3.5 mr-1" />
                 +{caseData.xpReward} XP ĐÃ ĐƯỢC CỘNG
               </div>
-              <h2 className="font-serif text-xl sm:text-2xl font-bold text-slate-100 tracking-normal">
+              <h2 className="font-sans text-xl sm:text-2xl font-extrabold text-slate-100 tracking-normal">
                 {caseData.solution.successTitle}
               </h2>
             </div>
@@ -102,7 +102,7 @@ export const SolutionModal: React.FC<SolutionModalProps> = ({
             <div className="text-left bg-noir-950/90 border border-noir-800 p-4 rounded-xl space-y-2">
               <div className="flex items-center space-x-2 text-xs font-bold text-noir-gold">
                 <BookOpen className="w-4 h-4 text-noir-accent" />
-                <span className="font-serif">Báo Cáo Phá Án Chi Tiết</span>
+                <span className="font-bold">Báo Cáo Phá Án Chi Tiết</span>
               </div>
               <p className="text-xs text-slate-200 whitespace-pre-line leading-relaxed font-sans text-pretty">
                 {caseData.solution.explanation}

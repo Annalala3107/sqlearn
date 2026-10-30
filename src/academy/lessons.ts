@@ -65,7 +65,7 @@ FROM users;`,
       goal: 'Trích xuất danh sách tên phim (title) và năm phát hành (release_year)',
       taskDescription:
         'Chào mừng bạn đến với kho dữ liệu Điện ảnh toàn cầu! Quản lý muốn bạn trích xuất danh sách gồm 2 cột: tên phim (`title`) và năm phát hành (`release_year`) từ bảng `Movies`.',
-      starterQuery: `-- Viết code của bạn ở đây:\nSELECT title, release_year\nFROM Movies;\n`,
+      starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT title, release_year FROM Movies;`,
       hints: [
         'Dùng câu lệnh: SELECT title, release_year FROM Movies;',
@@ -143,7 +143,7 @@ WHERE amount > 100;`,
       goal: "Lấy ra tất cả các cột của các siêu phẩm đạo diễn bởi 'Christopher Nolan'",
       taskDescription:
         "Bạn đang tìm kiếm ý tưởng kịch bản và muốn xem lại các siêu phẩm của đạo diễn lừng danh 'Christopher Nolan'. Hãy lấy ra tất cả các cột (`*`) từ bảng `Movies` nơi mà `director = 'Christopher Nolan'`. (Lưu ý: Chữ trong SQL phải được đặt trong dấu nháy đơn ' ').",
-      starterQuery: `-- Viết code của bạn ở đây:\nSELECT *\nFROM Movies\nWHERE director = 'Christopher Nolan';\n`,
+      starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT * FROM Movies WHERE director = 'Christopher Nolan';`,
       hints: [
         "Cú pháp: SELECT * FROM Movies WHERE director = 'Christopher Nolan';",
@@ -212,7 +212,7 @@ WHERE age > 18 AND status = 'active';`,
       goal: "Tìm nhân viên làm việc tại phòng 'IT' HOẶC có lương trên 2000$",
       taskDescription:
         "Bộ phận HR cần danh sách để phát thưởng cuối năm. Họ muốn tìm các nhân viên (`employees`) làm việc tại phòng 'IT' HOẶC những người có mức lương (`salary`) trên 2000$ (bất kể phòng ban nào).",
-      starterQuery: `-- Viết code của bạn ở đây:\nSELECT *\nFROM employees\nWHERE department = 'IT' OR salary > 2000;\n`,
+      starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT * FROM employees WHERE department = 'IT' OR salary > 2000;`,
       hints: [
         "Sử dụng toán tử OR giữa 2 điều kiện: department = 'IT' OR salary > 2000",
@@ -280,7 +280,7 @@ LIMIT 5;`,
       goal: 'Lấy ra thông tin Top 3 sản phẩm rẻ nhất (giá tăng dần)',
       taskDescription:
         'Cửa hàng đang có chương trình khuyến mãi "Giá sốc". Hãy lấy ra danh sách toàn bộ thông tin (`*`) của Top 3 sản phẩm (`products`) rẻ nhất (sắp xếp giá `price` tăng dần `ASC`, `LIMIT 3`).',
-      starterQuery: `-- Viết code của bạn ở đây:\nSELECT *\nFROM products\nORDER BY price ASC\nLIMIT 3;\n`,
+      starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT * FROM products ORDER BY price ASC LIMIT 3;`,
       hints: [
         'Sắp xếp giá tăng dần: ORDER BY price ASC',
@@ -370,7 +370,7 @@ LIMIT 10;`,
       goal: 'Báo cáo 10 phim Action sau 2010 có doanh thu cao nhất',
       taskDescription:
         "Lấy 2 cột `title` và `revenue` từ bảng `Movies` với điều kiện `genre = 'Action' AND release_year > 2010`, sắp xếp `ORDER BY revenue DESC LIMIT 10`.",
-      starterQuery: `-- Hãy lắp ghép 5 bước thành 1 câu lệnh hoàn chỉnh:\nSELECT title, revenue\nFROM Movies\nWHERE genre = 'Action' AND release_year > 2010\nORDER BY revenue DESC\nLIMIT 10;\n`,
+      starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT title, revenue FROM Movies WHERE genre = 'Action' AND release_year > 2010 ORDER BY revenue DESC LIMIT 10;`,
       hints: [
         "SELECT title, revenue FROM Movies WHERE genre = 'Action' AND release_year > 2010 ORDER BY revenue DESC LIMIT 10;",
@@ -433,7 +433,7 @@ FROM employees;`,
       goal: 'Tính Tổng doanh thu (amount) và Số lượng đơn hàng đã bán ra',
       taskDescription:
         'Kế toán trưởng cần chốt sổ tháng. Từ bảng `Orders`, hãy tính Tổng doanh thu (`SUM(amount) AS total_revenue`) và Số lượng đơn hàng (`COUNT(*) AS total_orders`).',
-      starterQuery: `-- Viết code của bạn ở đây:\nSELECT SUM(amount) AS total_revenue, COUNT(*) AS total_orders\nFROM Orders;\n`,
+      starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT SUM(amount) AS total_revenue, COUNT(*) AS total_orders FROM Orders;`,
       hints: [
         'Dùng: SELECT SUM(amount) AS total_revenue, COUNT(*) AS total_orders FROM Orders;',
@@ -497,7 +497,7 @@ HAVING COUNT(*) > 5;`,
       goal: 'Tìm các mã khách hàng có tổng số đơn hàng đã mua lớn hơn 5',
       taskDescription:
         'Chăm sóc khách hàng muốn tặng quà cho các "khách sộp". Bạn hãy tìm từ bảng `Orders` những mã khách hàng (`customer_id`) có tổng số đơn hàng đã mua lớn hơn 5 (`HAVING COUNT(*) > 5`).',
-      starterQuery: `-- Viết code của bạn ở đây:\nSELECT customer_id, COUNT(*) AS total_orders\nFROM Orders\nGROUP BY customer_id\nHAVING COUNT(*) > 5;\n`,
+      starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT customer_id, COUNT(*) AS total_orders FROM Orders GROUP BY customer_id HAVING COUNT(*) > 5;`,
       hints: [
         'Cú pháp: GROUP BY customer_id HAVING COUNT(*) > 5',
@@ -584,7 +584,7 @@ JOIN orders b ON a.id = b.customer_id;`,
       goal: 'Ghép tên sinh viên từ Students A với điểm số từ Scores B bằng INNER JOIN',
       taskDescription:
         'Ghép `tên sinh viên` (`A.student_name`) từ bảng `Students` (Bảng A) với `điểm số` (`B.score`) từ bảng `Scores` (Bảng B). Cột chung để nối là `A.id = B.student_id`. Hãy dùng `INNER JOIN`.',
-      starterQuery: `-- Viết code của bạn ở đây:\nSELECT A.student_name, B.score\nFROM Students A\nINNER JOIN Scores B \nON A.id = B.student_id;\n`,
+      starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT A.student_name, B.score FROM Students A INNER JOIN Scores B ON A.id = B.student_id;`,
       hints: [
         'INNER JOIN Scores B ON A.id = B.student_id',
@@ -649,7 +649,7 @@ FROM products;`,
       goal: 'Tạo cột Segment phân khúc: > 1000: VIP, >= 0: Normal, còn lại: Spam',
       taskDescription:
         "Team Marketing muốn chạy chiến dịch email. Dựa vào cột `points` trong bảng `Customers`, hãy tạo cột mới `Segment`: điểm > 1000: 'VIP', điểm từ 0 đến 1000: 'Normal', điểm < 0: 'Spam'. Trích xuất `customer_name, points, Segment`.",
-      starterQuery: `-- Viết code của bạn ở đây:\nSELECT customer_name, points,\n  CASE\n    WHEN points > 1000 THEN 'VIP'\n    WHEN points >= 0 THEN 'Normal'\n    ELSE 'Spam'\n  END AS Segment\nFROM Customers;\n`,
+      starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT customer_name, points, CASE WHEN points > 1000 THEN 'VIP' WHEN points >= 0 THEN 'Normal' ELSE 'Spam' END AS Segment FROM Customers;`,
       hints: [
         "CASE WHEN points > 1000 THEN 'VIP' WHEN points >= 0 THEN 'Normal' ELSE 'Spam' END AS Segment",
@@ -756,7 +756,7 @@ LIMIT 5;`,
       goal: 'Báo cáo Top 5 khách hàng chi tiêu nhiều nhất và phân loại thành viên',
       taskDescription:
         'Nối 3 bảng `Users U`, `Orders O`, `Products P`, tính tổng chi tiêu `SUM(P.price) AS total_spent`, phân loại `membership_tier` (Vàng >500, Bạc >200, Đồng còn lại), gom nhóm theo `U.name`, sắp xếp `ORDER BY total_spent DESC LIMIT 5`.',
-      starterQuery: `-- Dự án kết hợp TẤT CẢ kỹ năng bạn đã học:\nSELECT \n    U.name, \n    SUM(P.price) AS total_spent,\n    CASE\n        WHEN SUM(P.price) > 500 THEN 'Thành viên Vàng'\n        WHEN SUM(P.price) > 200 THEN 'Thành viên Bạc'\n        ELSE 'Thành viên Đồng'\n    END AS membership_tier\nFROM Users U\nJOIN Orders O ON U.id = O.user_id\nJOIN Products P ON O.product_id = P.id\nGROUP BY U.name\nORDER BY total_spent DESC\nLIMIT 5;\n`,
+      starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT U.name, SUM(P.price) AS total_spent, CASE WHEN SUM(P.price) > 500 THEN 'Thành viên Vàng' WHEN SUM(P.price) > 200 THEN 'Thành viên Bạc' ELSE 'Thành viên Đồng' END AS membership_tier FROM Users U JOIN Orders O ON U.id = O.user_id JOIN Products P ON O.product_id = P.id GROUP BY U.name ORDER BY total_spent DESC LIMIT 5;`,
       hints: [
         'JOIN Orders O ON U.id = O.user_id',
@@ -824,7 +824,7 @@ SELECT * FROM TopUsers;`,
       goal: 'Dùng CTE Hanoi_Customers để tìm các đơn hàng của khách hàng ở Hà Nội',
       taskDescription:
         "Tạo CTE `Hanoi_Customers` lấy `customer_id` của khách hàng có `city = 'Hanoi'`, sau đó truy vấn bảng `Orders` có `customer_id IN (SELECT customer_id FROM Hanoi_Customers)`.",
-      starterQuery: `-- Chuyển đổi đoạn code thành CTE:\nWITH Hanoi_Customers AS (\n    SELECT customer_id \n    FROM Customers \n    WHERE city = 'Hanoi'\n)\nSELECT * \nFROM Orders\nWHERE customer_id IN (SELECT customer_id FROM Hanoi_Customers);\n`,
+      starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `WITH Hanoi_Customers AS (SELECT customer_id FROM Customers WHERE city = 'Hanoi') SELECT * FROM Orders WHERE customer_id IN (SELECT customer_id FROM Hanoi_Customers);`,
       hints: [
         'Dùng: WITH Hanoi_Customers AS (SELECT customer_id FROM Customers WHERE city = \'Hanoi\') SELECT * FROM Orders WHERE customer_id IN (SELECT customer_id FROM Hanoi_Customers);',
@@ -895,7 +895,7 @@ FROM students;`,
       goal: 'Xếp hạng nhân viên kinh doanh trong nội bộ từng phòng ban',
       taskDescription:
         'Trưởng phòng kinh doanh muốn trao thưởng cho nhân viên Sales xuất sắc nhất của TỪNG phòng ban. Dùng `PARTITION BY department` kết hợp `RANK()` xếp hạng doanh thu (`revenue`) giảm dần.',
-      starterQuery: `-- Viết code của bạn ở đây:\nSELECT employee_name, department, revenue,\n       RANK() OVER(PARTITION BY department ORDER BY revenue DESC) as dept_rank\nFROM Sales;\n`,
+      starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT employee_name, department, revenue, RANK() OVER(PARTITION BY department ORDER BY revenue DESC) as dept_rank FROM Sales;`,
       hints: [
         'Cú pháp: RANK() OVER(PARTITION BY department ORDER BY revenue DESC) as dept_rank',
@@ -959,7 +959,7 @@ FROM Monthly_Sales;`,
       goal: 'Tính doanh thu tháng trước và mức tăng trưởng so với tháng trước (MoM Growth)',
       taskDescription:
         'Tính doanh thu của tháng trước (`LAG(revenue, 1) OVER(ORDER BY month) AS prev_revenue`), sau đó tính mức chênh lệch `revenue - LAG(revenue, 1) OVER(ORDER BY month) AS growth_amount`.',
-      starterQuery: `-- Viết code của bạn ở đây:\nSELECT month, \n       revenue,\n       LAG(revenue, 1) OVER(ORDER BY month) AS prev_revenue,\n       revenue - LAG(revenue, 1) OVER(ORDER BY month) AS growth_amount\nFROM Revenue_Data;\n`,
+      starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT month, revenue, LAG(revenue, 1) OVER(ORDER BY month) AS prev_revenue, revenue - LAG(revenue, 1) OVER(ORDER BY month) AS growth_amount FROM Revenue_Data;`,
       hints: [
         'Dùng LAG(revenue, 1) OVER(ORDER BY month)',
@@ -1025,7 +1025,7 @@ FROM users;`,
       goal: 'Trích xuất tên miền (domain) nằm ngay sau dấu @ từ cột email',
       taskDescription:
         "Đội Marketing cần phân tích xem người dùng chủ yếu dùng Gmail, Yahoo hay Outlook. Hãy dùng `SUBSTR(email, INSTR(email, '@') + 1) AS email_domain` từ bảng `Users`.",
-      starterQuery: `-- Viết code của bạn ở đây:\nSELECT email,\n       SUBSTR(email, INSTR(email, '@') + 1) AS email_domain\nFROM Users;\n`,
+      starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT email, SUBSTR(email, INSTR(email, '@') + 1) AS email_domain FROM Users;`,
       hints: [
         "SUBSTR(email, INSTR(email, '@') + 1) AS email_domain",
@@ -1116,7 +1116,7 @@ FROM Stock_Prices;`,
       goal: 'Báo cáo biến động giá, xu hướng và đường trung bình động 7 ngày',
       taskDescription:
         'Tính `prev_price`, `price_change`, phân loại `trend` (UP, DOWN, FLAT) và tính trung bình động 7 ngày `moving_avg_7d` bằng cú pháp `AVG(close_price) OVER(ORDER BY trade_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)`.',
-      starterQuery: `-- Viết siêu truy vấn của bạn tại đây:\nSELECT \n    trade_date,\n    close_price,\n    LAG(close_price) OVER(ORDER BY trade_date) AS prev_price,\n    close_price - LAG(close_price) OVER(ORDER BY trade_date) AS price_change,\n    CASE \n        WHEN close_price > LAG(close_price) OVER(ORDER BY trade_date) THEN 'UP'\n        WHEN close_price < LAG(close_price) OVER(ORDER BY trade_date) THEN 'DOWN'\n        ELSE 'FLAT'\n    END AS trend,\n    AVG(close_price) OVER(\n        ORDER BY trade_date \n        ROWS BETWEEN 6 PRECEDING AND CURRENT ROW\n    ) AS moving_avg_7d\nFROM Stock_Prices;\n`,
+      starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT trade_date, close_price, LAG(close_price) OVER(ORDER BY trade_date) AS prev_price, close_price - LAG(close_price) OVER(ORDER BY trade_date) AS price_change, CASE WHEN close_price > LAG(close_price) OVER(ORDER BY trade_date) THEN 'UP' WHEN close_price < LAG(close_price) OVER(ORDER BY trade_date) THEN 'DOWN' ELSE 'FLAT' END AS trend, AVG(close_price) OVER(ORDER BY trade_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS moving_avg_7d FROM Stock_Prices;`,
       hints: [
         'Dùng LAG(close_price) OVER(ORDER BY trade_date)',
@@ -1183,7 +1183,7 @@ SELECT * FROM Employees;`,
       goal: 'Tăng lương 10% cho tất cả nhân viên thuộc phòng IT',
       taskDescription:
         "Công ty vừa làm ăn có lãi. Hãy cập nhật (`UPDATE`) bảng `Employees`, tăng lương (`salary`) thêm 10% cho tất cả nhân viên thuộc phòng 'IT' (`department = 'IT'`), sau đó chạy `SELECT * FROM Employees;` để kiểm tra kết quả.",
-      starterQuery: `-- Viết code của bạn ở đây:\nUPDATE Employees\nSET salary = salary * 1.1\nWHERE department = 'IT';\nSELECT * FROM Employees;\n`,
+      starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `UPDATE Employees SET salary = salary * 1.1 WHERE department = 'IT'; SELECT * FROM Employees;`,
       hints: [
         "UPDATE Employees SET salary = salary * 1.1 WHERE department = 'IT';",
@@ -1269,7 +1269,7 @@ CREATE TABLE Books (
       goal: 'Viết Script tạo bảng Authors và Books có ràng buộc ON DELETE CASCADE',
       taskDescription:
         "Tạo bảng `Authors` (`id INT PRIMARY KEY, name VARCHAR(100)`), và bảng `Books` (`book_id INT PRIMARY KEY, title VARCHAR(200), author_id INT, FOREIGN KEY (author_id) REFERENCES Authors(id) ON DELETE CASCADE`), sau đó kiểm tra bằng câu lệnh `SELECT name FROM sqlite_master WHERE type='table' AND name IN ('Authors', 'Books');`.",
-      starterQuery: `-- Viết code của bạn ở đây:\nCREATE TABLE Authors (\n    id INT PRIMARY KEY,\n    name VARCHAR(100)\n);\n\nCREATE TABLE Books (\n    book_id INT PRIMARY KEY,\n    title VARCHAR(200),\n    author_id INT,\n    FOREIGN KEY (author_id) REFERENCES Authors(id) ON DELETE CASCADE\n);\n\nSELECT name FROM sqlite_master WHERE type='table' AND name IN ('Authors', 'Books');\n`,
+      starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `CREATE TABLE Authors ( id INT PRIMARY KEY, name VARCHAR(100) ); CREATE TABLE Books ( book_id INT PRIMARY KEY, title VARCHAR(200), author_id INT, FOREIGN KEY (author_id) REFERENCES Authors(id) ON DELETE CASCADE ); SELECT name FROM sqlite_master WHERE type='table' AND name IN ('Authors', 'Books');`,
       hints: [
         'FOREIGN KEY (author_id) REFERENCES Authors(id) ON DELETE CASCADE',
@@ -1343,7 +1343,7 @@ SELECT * FROM PublicUsers;`,
       goal: 'Tạo View PublicUsers chỉ hiển thị id, name, email để bảo vệ dữ liệu khách hàng',
       taskDescription:
         'Trưởng phòng Marketing xin quyền truy cập bảng Users. Hãy tạo một View tên là `PublicUsers` chỉ hiển thị 3 cột: `id`, `name`, và `email` từ bảng `Users`, bỏ qua mật khẩu và thẻ tín dụng. Sau đó chạy `SELECT * FROM PublicUsers;`.',
-      starterQuery: `-- Viết code của bạn ở đây:\nCREATE VIEW PublicUsers AS\nSELECT id, name, email\nFROM Users;\n\nSELECT * FROM PublicUsers;\n`,
+      starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `CREATE VIEW PublicUsers AS SELECT id, name, email FROM Users; SELECT * FROM PublicUsers;`,
       hints: [
         'CREATE VIEW PublicUsers AS SELECT id, name, email FROM Users;',
@@ -1413,7 +1413,7 @@ CREATE INDEX idx_user_email ON users(email);`,
       goal: 'Tạo một Index tên idx_phone trên cột phone của bảng Customers',
       taskDescription:
         "Hệ thống báo cáo có truy vấn tìm kiếm người dùng theo số điện thoại đang chạy mất 10 giây khiến App bị lag: `SELECT * FROM Customers WHERE phone = '0987654321';`. Hãy tạo một Index tên `idx_phone` trên cột `phone` của bảng `Customers` để giải cứu hệ thống: `CREATE INDEX idx_phone ON Customers(phone);` sau đó chạy `SELECT name FROM sqlite_master WHERE type='index' AND name='idx_phone';`.",
-      starterQuery: `-- Viết lệnh tạo Index ở đây:\nCREATE INDEX idx_phone ON Customers(phone);\nSELECT name FROM sqlite_master WHERE type='index' AND name='idx_phone';\n`,
+      starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `CREATE INDEX idx_phone ON Customers(phone); SELECT name FROM sqlite_master WHERE type='index' AND name='idx_phone';`,
       hints: [
         'CREATE INDEX idx_phone ON Customers(phone);',
@@ -1528,7 +1528,7 @@ SELECT name FROM sqlite_master WHERE type IN ('table', 'index');`,
       goal: 'Dựng toàn bộ lược đồ CSDL App Đặt xe theo đúng 5 yêu cầu kỹ thuật',
       taskDescription:
         'Viết toàn bộ script DDL tạo bảng `Riders`, `Drivers`, `Rides` (có 2 khóa ngoại), tạo Index `idx_rides_status ON Rides(status)`, chèn 1 dòng mẫu vào `Riders`, và kiểm tra qua `SELECT name FROM sqlite_master WHERE type IN (\'table\', \'index\');`.',
-      starterQuery: `-- Bàn làm việc của Chuyên gia Data Engineer:\n-- 1. Tạo bảng Riders\nCREATE TABLE Riders (\n    id INT PRIMARY KEY,\n    name VARCHAR(100),\n    phone VARCHAR(20) UNIQUE\n);\n\n-- 2. Tạo bảng Drivers\nCREATE TABLE Drivers (\n    id INT PRIMARY KEY,\n    name VARCHAR(100),\n    license_plate VARCHAR(20)\n);\n\n-- 3. Tạo bảng Rides (Chú ý Khóa ngoại)\nCREATE TABLE Rides (\n    id INT PRIMARY KEY,\n    rider_id INT,\n    driver_id INT,\n    status VARCHAR(50),\n    FOREIGN KEY (rider_id) REFERENCES Riders(id),\n    FOREIGN KEY (driver_id) REFERENCES Drivers(id)\n);\n\n-- 4. Tạo Index cho cột status để lọc nhanh\nCREATE INDEX idx_rides_status ON Rides(status);\n\n-- 5. Thêm dữ liệu mẫu vào bảng Riders\nINSERT INTO Riders (id, name, phone) \nVALUES (1, 'Nguyen Van Khach', '0912345678');\n\nSELECT name FROM sqlite_master WHERE type IN ('table', 'index');\n`,
+      starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `CREATE TABLE Riders ( id INT PRIMARY KEY, name VARCHAR(100), phone VARCHAR(20) UNIQUE ); CREATE TABLE Drivers ( id INT PRIMARY KEY, name VARCHAR(100), license_plate VARCHAR(20) ); CREATE TABLE Rides ( id INT PRIMARY KEY, rider_id INT, driver_id INT, status VARCHAR(50), FOREIGN KEY (rider_id) REFERENCES Riders(id), FOREIGN KEY (driver_id) REFERENCES Drivers(id) ); CREATE INDEX idx_rides_status ON Rides(status); INSERT INTO Riders (id, name, phone) VALUES (1, 'Nguyen Van Khach', '0912345678'); SELECT name FROM sqlite_master WHERE type IN ('table', 'index');`,
       hints: [
         'FOREIGN KEY (rider_id) REFERENCES Riders(id)',

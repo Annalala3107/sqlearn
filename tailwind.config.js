@@ -27,10 +27,10 @@ export default {
       },
       fontFamily: {
         sans: ['"Be Vietnam Pro"', 'system-ui', '-apple-system', 'sans-serif'],
-        serif: ['"Merriweather"', 'Georgia', 'Cambria', 'serif'],
+        serif: ['"Be Vietnam Pro"', 'system-ui', '-apple-system', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'Consolas', 'monospace'],
         typewriter: ['"Courier Prime"', 'Courier', 'monospace'],
-        cinzel: ['"Merriweather"', 'serif']
+        cinzel: ['"Be Vietnam Pro"', 'system-ui', '-apple-system', 'sans-serif']
       }
     },
   },

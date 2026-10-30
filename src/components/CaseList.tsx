@@ -15,6 +15,9 @@ import {
   Filter,
   Trophy,
   Code2,
+  Target,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import { DetectiveCase, UserStats, Difficulty } from '../cases/types';
 
@@ -35,6 +38,7 @@ export const CaseList: React.FC<CaseListProps> = ({
 }) => {
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [expandedBriefIds, setExpandedBriefIds] = useState<Record<string, boolean>>({});
 
   const completedCount = useMemo(() => {
     return cases.filter((c) => !!stats.completedCases[c.id]?.completed).length;
@@ -97,15 +101,15 @@ export const CaseList: React.FC<CaseListProps> = ({
             <span>NỀN TẢNG LUYỆN TẬP SQL QUA TRINH THÁM ĐẦU TIÊN TẠI VN</span>
           </div>
 
-          <h1 className="text-2xl sm:text-5xl font-black text-slate-100 tracking-tight leading-tight">
-            VẠCH MẶT KẺ THỦ ÁC <br />
+          <h1 className="text-2xl sm:text-5xl font-black text-slate-100 tracking-normal sm:tracking-[0.02em] leading-snug sm:leading-[1.25]">
+            <span className="block mb-1 sm:mb-2">VẠCH MẶT KẺ THỦ ÁC</span>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-noir-gold via-noir-accent to-amber-500">
               BẰNG TRUY VẤN SQL
             </span>
           </h1>
 
-          <p className="text-xs sm:text-base text-slate-300 leading-relaxed font-sans">
-            Hệ thống <strong>30 vụ án hình sự chân thực</strong> từ cơ bản đến nâng cao. Mỗi vụ án là một hiện trường bí ẩn với cơ sở dữ liệu chứng cứ chân thực. Hãy vận dụng các câu lệnh <code className="text-noir-gold bg-noir-900 px-1.5 py-0.5 rounded border border-noir-800">SELECT</code>, <code className="text-noir-gold bg-noir-900 px-1.5 py-0.5 rounded border border-noir-800">WHERE</code>, <code className="text-noir-gold bg-noir-900 px-1.5 py-0.5 rounded border border-noir-800">JOIN</code>, <code className="text-noir-gold bg-noir-900 px-1.5 py-0.5 rounded border border-noir-800">GROUP BY</code>, <code className="text-noir-gold bg-noir-900 px-1.5 py-0.5 rounded border border-noir-800">WINDOW FUNCTIONS</code> và <code className="text-noir-gold bg-noir-900 px-1.5 py-0.5 rounded border border-noir-800">CTEs</code> để lần theo manh mối, lật tẩy chứng cứ ngoại phạm và đưa thủ phạm ra ánh sáng!
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans max-w-3xl text-pretty">
+            Hệ thống <strong>30 chuyên án hình sự thực chiến</strong> chạy trực tiếp trên nền tảng SQLite WebAssembly. Vận dụng tư duy truy vấn cơ sở dữ liệu từ căn bản đến nâng cao để khám nghiệm hiện trường, bóc tách chứng cứ ngoại phạm và vạch trần kẻ chủ mưu.
           </p>
 
           {/* Progress Overview Bar */}
@@ -190,7 +194,7 @@ export const CaseList: React.FC<CaseListProps> = ({
           <div className="flex items-center space-x-3">
             <FolderKanban className="w-6 h-6 text-noir-accent flex-shrink-0" />
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-slate-100 tracking-wide font-cinzel">
+              <h2 className="text-xl sm:text-2xl font-extrabold text-slate-100 tracking-normal font-sans">
                 HỒ SƠ CÁC VỤ ÁN TRỌNG ĐIỂM
               </h2>
               <p className="text-xs text-slate-400">
@@ -320,7 +324,7 @@ export const CaseList: React.FC<CaseListProps> = ({
                   </div>
 
                   {/* Title */}
-                  <h3 className="font-serif text-base sm:text-lg font-bold text-slate-100 group-hover:text-noir-gold transition-colors leading-snug">
+                  <h3 className="font-sans text-base sm:text-lg font-bold text-slate-100 group-hover:text-noir-gold transition-colors leading-snug tracking-normal">
                     {c.title}
                   </h3>
 
@@ -340,30 +344,52 @@ export const CaseList: React.FC<CaseListProps> = ({
                     </div>
                   </div>
 
-                  {/* Brief Preview */}
-                  <p className="text-xs text-slate-300 line-clamp-3 leading-relaxed font-sans text-pretty">
-                    {c.brief}
-                  </p>
+                  {/* Brief Preview with Expand/Collapse */}
+                  <div className="space-y-1.5">
+                    <p
+                      className={`text-xs text-slate-300 leading-relaxed font-sans text-pretty ${
+                        expandedBriefIds[c.id] ? '' : 'line-clamp-2'
+                      }`}
+                    >
+                      {c.brief}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setExpandedBriefIds((prev) => ({ ...prev, [c.id]: !prev[c.id] }));
+                      }}
+                      className="text-[11px] font-semibold text-noir-accent hover:text-amber-300 transition-colors inline-flex items-center space-x-1 cursor-pointer select-none"
+                    >
+                      <span>{expandedBriefIds[c.id] ? 'Thu gọn hồ sơ' : 'Xem thêm...'}</span>
+                      {expandedBriefIds[c.id] ? (
+                        <ChevronUp className="w-3 h-3" />
+                      ) : (
+                        <ChevronDown className="w-3 h-3" />
+                      )}
+                    </button>
+                  </div>
                 </div>
 
-                {/* Footer Action */}
-                <div className="pt-5 mt-4 border-t border-noir-800/60 flex items-center justify-between">
-                  <span className="text-xs text-slate-400 font-mono">
-                    {c.objectives.length} mục tiêu điều tra
-                  </span>
+                {/* Footer Action - Clean Separation */}
+                <div className="pt-4 mt-4 border-t border-noir-800/80 flex items-center justify-between gap-3">
+                  <div className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg bg-noir-950/90 border border-noir-800 text-[11px] font-mono text-slate-300 flex-shrink-0">
+                    <Target className="w-3.5 h-3.5 text-noir-accent flex-shrink-0" />
+                    <span><strong>{c.objectives.length}</strong> mục tiêu điều tra</span>
+                  </div>
 
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       onSelectCase(c);
                     }}
-                    className={`min-h-[44px] text-xs font-bold px-4 py-2.5 rounded-xl flex items-center space-x-2 transition-all active:scale-95 cursor-pointer ${
+                    className={`min-h-[42px] text-xs font-bold px-3.5 sm:px-4 py-2 rounded-xl flex items-center space-x-1.5 transition-all active:scale-95 cursor-pointer flex-shrink-0 ${
                       isCompleted
-                        ? 'bg-noir-800 text-slate-300 hover:bg-noir-750'
+                        ? 'bg-noir-800 text-slate-300 hover:bg-noir-750 border border-noir-700'
                         : 'bg-noir-accent/20 text-noir-gold border border-noir-accent/40 group-hover:bg-noir-accent group-hover:text-noir-950 group-hover:shadow-md'
                     }`}
                   >
-                    <span>{isCompleted ? 'Xem Lại Hồ Sơ' : 'Bắt Đầu Điều Tra'}</span>
+                    <span>{isCompleted ? 'Xem Lại' : 'Bắt Đầu Điều Tra'}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>

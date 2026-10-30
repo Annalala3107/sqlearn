@@ -242,6 +242,7 @@ export const CaseSolver: React.FC<CaseSolverProps> = ({
               onExecute={handleExecuteQuery}
               queryHistory={queryHistory}
               isLoading={isExecuting}
+              schemas={caseData.schemas}
             />
 
             <QueryResultTable
@@ -334,6 +335,7 @@ export const CaseSolver: React.FC<CaseSolverProps> = ({
             onExecute={handleExecuteQuery}
             queryHistory={queryHistory}
             isLoading={isExecuting}
+            schemas={caseData.schemas}
           />
 
           <QueryResultTable

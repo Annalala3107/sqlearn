@@ -24,21 +24,81 @@ interface CaseBriefProps {
   onNavigateToLesson?: (lessonId: string) => void;
 }
 
-// Utility to format inline backtick code snippets with baseline-aligned typography
-const formatTextWithCode = (text: string) => {
+// Utility to format inline markdown terms (bold, code, single quotes) with detective color accents
+const renderInlineMarkdown = (text: string) => {
   if (!text) return null;
-  const parts = text.split(/(`[^`]+`)/g);
+  const regex = /(\*\*[^*]+\*\*|`[^`]+`|'[^']{2,}')/g;
+  const parts = text.split(regex);
+
   return parts.map((part, idx) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return (
+        <strong key={idx} className="text-noir-gold font-bold font-sans">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
     if (part.startsWith('`') && part.endsWith('`')) {
-      const code = part.slice(1, -1);
       return (
         <code key={idx} className="inline-code font-mono text-sky-300 font-semibold mx-0.5">
-          {code}
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+    if (part.startsWith("'") && part.endsWith("'")) {
+      return (
+        <code key={idx} className="inline-code font-mono text-amber-300 font-semibold mx-0.5">
+          {part.slice(1, -1)}
         </code>
       );
     }
     return <span key={idx}>{part}</span>;
   });
+};
+
+// Utility to render the full case brief as a rich structured detective dossier
+const renderDossierBrief = (brief: string) => {
+  if (!brief) return null;
+  const lines = brief.split('\n');
+
+  return (
+    <div className="space-y-2">
+      {lines.map((line, lineIdx) => {
+        const trimmed = line.trim();
+        if (!trimmed) {
+          return <div key={lineIdx} className="h-1" />;
+        }
+
+        // Check if line is a numbered item (e.g. "1. **CTE Tài Chính:** ...")
+        const listMatch = trimmed.match(/^(\d+)\.\s+(.*)$/);
+        if (listMatch) {
+          const num = listMatch[1];
+          const content = listMatch[2];
+
+          return (
+            <div
+              key={lineIdx}
+              className="flex items-start space-x-2.5 p-2.5 rounded-xl bg-noir-900/90 border border-noir-800/80 shadow-sm"
+            >
+              <span className="w-5 h-5 rounded-md bg-noir-accent/20 text-noir-gold border border-noir-accent/30 flex items-center justify-center text-xs font-mono font-bold flex-shrink-0 mt-0.5">
+                {num}
+              </span>
+              <div className="text-slate-200 text-xs sm:text-sm leading-relaxed font-sans text-pretty flex-1">
+                {renderInlineMarkdown(content)}
+              </div>
+            </div>
+          );
+        }
+
+        // Standard paragraph line
+        return (
+          <p key={lineIdx} className="text-slate-200 text-xs sm:text-sm leading-relaxed font-sans text-pretty">
+            {renderInlineMarkdown(trimmed)}
+          </p>
+        );
+      })}
+    </div>
+  );
 };
 
 export const CaseBrief: React.FC<CaseBriefProps> = ({
@@ -90,7 +150,7 @@ export const CaseBrief: React.FC<CaseBriefProps> = ({
           </div>
         </div>
 
-        <h1 className="font-serif text-xl sm:text-2xl font-bold text-slate-100 mb-3 tracking-normal leading-snug">
+        <h1 className="font-sans text-xl sm:text-2xl font-extrabold text-slate-100 mb-3 tracking-normal leading-snug">
           {caseData.title}
         </h1>
 
@@ -114,10 +174,10 @@ export const CaseBrief: React.FC<CaseBriefProps> = ({
       <div className="bg-noir-900 border border-noir-800 rounded-xl p-5 shadow-md">
         <div className="flex items-center space-x-2 mb-3 text-noir-gold font-bold text-sm">
           <FileText className="w-4 h-4 text-noir-accent" />
-          <h2 className="font-serif">Hồ Sơ & Lời Khai Sơ Bộ</h2>
+          <h2 className="font-bold text-slate-100">Hồ Sơ & Lời Khai Sơ Bộ</h2>
         </div>
-        <div className="text-slate-200 text-sm leading-relaxed whitespace-pre-line bg-noir-950/70 p-4 rounded-xl border border-noir-800/90 font-sans text-pretty">
-          {caseData.brief}
+        <div className="bg-noir-950/70 p-4 rounded-xl border border-noir-800/90 font-sans">
+          {renderDossierBrief(caseData.brief)}
         </div>
       </div>
 
@@ -125,7 +185,7 @@ export const CaseBrief: React.FC<CaseBriefProps> = ({
       <div className="bg-noir-900 border border-noir-800 rounded-xl p-5 shadow-md">
         <div className="flex items-center space-x-2 mb-3 text-noir-gold font-bold text-sm">
           <Lightbulb className="w-4 h-4 text-noir-accent" />
-          <h2 className="font-serif">Manh Mối Ban Đầu Từ Hiện Trường</h2>
+          <h2 className="font-bold text-slate-100">Manh Mối Ban Đầu Từ Hiện Trường</h2>
         </div>
         <ul className="space-y-2.5">
           {caseData.clues.map((clue, idx) => (
@@ -136,7 +196,7 @@ export const CaseBrief: React.FC<CaseBriefProps> = ({
               <span className="flex-shrink-0 w-6 h-6 rounded-full bg-noir-accent/20 text-noir-gold border border-noir-accent/40 flex items-center justify-center text-xs font-mono font-bold">
                 {idx + 1}
               </span>
-              <span className="leading-relaxed">{formatTextWithCode(clue)}</span>
+              <span className="leading-relaxed">{renderInlineMarkdown(clue)}</span>
             </li>
           ))}
         </ul>
@@ -147,7 +207,7 @@ export const CaseBrief: React.FC<CaseBriefProps> = ({
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2 text-noir-gold font-bold text-sm">
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <h2 className="font-serif">Mục Tiêu Điều Tra Cần Hoàn Thành</h2>
+            <h2 className="font-bold text-slate-100">Mục Tiêu Điều Tra Cần Hoàn Thành</h2>
           </div>
           <span className="text-[11px] text-slate-400">Bấm để xem gợi ý tư duy</span>
         </div>
@@ -167,7 +227,7 @@ export const CaseBrief: React.FC<CaseBriefProps> = ({
                     {obj.id}
                   </div>
                   <span className="text-xs sm:text-sm text-slate-200 font-medium leading-relaxed text-pretty">
-                    {formatTextWithCode(obj.text)}
+                    {renderInlineMarkdown(obj.text)}
                   </span>
                 </div>
                 <div className="flex items-center text-xs text-slate-400 flex-shrink-0">
