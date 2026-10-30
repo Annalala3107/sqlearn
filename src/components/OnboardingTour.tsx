@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { ArrowRight, Check, X, Compass } from 'lucide-react';
 
 export interface TourStep {
@@ -52,65 +52,119 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
 }) => {
   const [internalOpen, setInternalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
+  const [targetRect, setTargetRect] = useState<{
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+  } | null>(null);
 
   const isOpen = isOpenOverride !== undefined ? isOpenOverride : internalOpen;
+  const isTransitioningRef = useRef(false);
 
-  // 1. Tự động kiểm tra khách truy cập lần đầu
+  // 1. Kiểm tra khách truy cập lần đầu
   useEffect(() => {
     if (isOpenOverride !== undefined) return;
-    const isCompleted = localStorage.getItem(ONBOARDING_STORAGE_KEY);
-    if (!isCompleted) {
-      // Delay nhẹ 600ms để DOM và giao diện ổn định trước khi bật Spotlight
-      const timer = setTimeout(() => {
-        setInternalOpen(true);
-      }, 700);
-      return () => clearTimeout(timer);
+    try {
+      const isCompleted = localStorage.getItem(ONBOARDING_STORAGE_KEY);
+      if (!isCompleted) {
+        // Trì hoãn 500ms để DOM ổn định hoàn toàn
+        const timer = setTimeout(() => {
+          setInternalOpen(true);
+        }, 500);
+        return () => clearTimeout(timer);
+      }
+    } catch (e) {
+      console.warn('Cannot read localStorage', e);
     }
   }, [isOpenOverride]);
 
-  // 2. Đo đạc toạ độ phần tử mục tiêu và cuộn êm ái
-  const updateTargetPosition = useCallback(() => {
-    if (!isOpen || currentStep >= steps.length) return;
+  // 2. Đo đạc toạ độ phần tử mục tiêu (Tuyệt đối KHÔNG gọi scrollIntoView trong hàm này)
+  const measureTarget = useCallback(() => {
+    if (!isOpen || currentStep >= steps.length) {
+      setTargetRect(null);
+      return;
+    }
 
     const currentSelector = steps[currentStep].targetSelector;
     const element = document.querySelector(currentSelector);
 
     if (element) {
-      // Cuộn mượt để phần tử nằm ngay giữa màn hình
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-      // Cập nhật toạ độ chuẩn
       const rect = element.getBoundingClientRect();
-      setTargetRect(rect);
+      setTargetRect({
+        top: rect.top,
+        left: rect.left,
+        width: rect.width,
+        height: rect.height,
+      });
     } else {
       setTargetRect(null);
     }
   }, [isOpen, currentStep, steps]);
 
-  // Cập nhật khi đổi bước hoặc resize/scroll
+  // 3. Cuộn mượt đến phần tử mục tiêu CHỈ MỘT LẦN khi đổi bước
   useEffect(() => {
     if (!isOpen) return;
 
-    // Đợi 1 frame sau khi đổi step để scroll ổn định
-    const frameId = requestAnimationFrame(() => {
-      updateTargetPosition();
-    });
+    isTransitioningRef.current = true;
+    const currentSelector = steps[currentStep]?.targetSelector;
+    const element = currentSelector ? document.querySelector(currentSelector) : null;
 
-    const handleWindowChange = () => updateTargetPosition();
-    window.addEventListener('resize', handleWindowChange);
-    window.addEventListener('scroll', handleWindowChange, { passive: true });
+    if (element) {
+      // Cuộn mượt chỉ 1 lần duy nhất khi đổi step
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      // Đợi hiệu ứng cuộn dừng (khoảng 350ms) rồi đo toạ độ chính xác
+      const timer = setTimeout(() => {
+        measureTarget();
+        isTransitioningRef.current = false;
+      }, 350);
+
+      return () => clearTimeout(timer);
+    } else {
+      measureTarget();
+      isTransitioningRef.current = false;
+    }
+  }, [isOpen, currentStep, steps, measureTarget]);
+
+  // 4. Lắng nghe Resize màn hình với Debounce nhẹ (KHÔNG lắng nghe scroll để tránh vòng lặp giật lag)
+  useEffect(() => {
+    if (!isOpen) return;
+
+    let resizeTimer: any;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        measureTarget();
+      }, 100);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      clearTimeout(resizeTimer);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [isOpen, measureTarget]);
+
+  // 5. Khóa cuộn trang khi tour đang hoạt động để tránh Layout Thrashing và tăng hiệu năng 60fps
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
 
     return () => {
-      cancelAnimationFrame(frameId);
-      window.removeEventListener('resize', handleWindowChange);
-      window.removeEventListener('scroll', handleWindowChange);
+      document.body.style.overflow = originalOverflow;
     };
-  }, [isOpen, currentStep, updateTargetPosition]);
+  }, [isOpen]);
 
-  // 3. Hoàn tất hướng dẫn
+  // 6. Hoàn tất hoặc Bỏ qua hướng dẫn
   const handleFinish = () => {
-    localStorage.setItem(ONBOARDING_STORAGE_KEY, 'true');
+    try {
+      localStorage.setItem(ONBOARDING_STORAGE_KEY, 'true');
+    } catch (e) {
+      console.warn('Cannot write localStorage', e);
+    }
     setInternalOpen(false);
     if (onCloseOverride) onCloseOverride();
     if (onComplete) onComplete();
@@ -124,65 +178,96 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
     }
   };
 
-  const handleSkip = () => {
-    handleFinish();
-  };
-
   if (!isOpen) return null;
 
   const step = steps[currentStep];
 
-  // Tính toán vị trí Tooltip nổi (tránh tràn mép dưới/trên màn hình)
-  let tooltipTop = 100;
+  // Tính vị trí hiển thị Tooltip an toàn, không bị tràn màn hình
+  let tooltipTop = 120;
   let tooltipLeft = 20;
 
   if (targetRect) {
-    const spaceBelow = window.innerHeight - targetRect.bottom;
+    const spaceBelow = window.innerHeight - (targetRect.top + targetRect.height);
     const spaceAbove = targetRect.top;
 
     if (spaceBelow >= 220 || spaceBelow > spaceAbove) {
-      tooltipTop = Math.min(window.innerHeight - 240, targetRect.bottom + 16);
+      tooltipTop = Math.min(window.innerHeight - 250, targetRect.top + targetRect.height + 16);
     } else {
-      tooltipTop = Math.max(16, targetRect.top - 230);
+      tooltipTop = Math.max(16, targetRect.top - 240);
     }
 
     tooltipLeft = Math.max(
       16,
-      Math.min(window.innerWidth - 360, targetRect.left + (targetRect.width / 2) - 175)
+      Math.min(window.innerWidth - 376, targetRect.left + targetRect.width / 2 - 180)
     );
   } else {
     tooltipTop = Math.max(40, window.innerHeight / 2 - 120);
-    tooltipLeft = Math.max(16, window.innerWidth / 2 - 175);
+    tooltipLeft = Math.max(16, window.innerWidth / 2 - 180);
   }
 
-  return (
-    <div className="fixed inset-0 z-50 pointer-events-auto select-none overflow-hidden">
-      {/* Lớp phủ tối màu chặn toàn bộ tương tác ngoài lề */}
-      <div className="absolute inset-0 bg-noir-950/40 backdrop-blur-[1px] transition-opacity duration-300" />
+  const padding = 8;
+  const maskX = targetRect ? Math.max(0, targetRect.left - padding) : 0;
+  const maskY = targetRect ? Math.max(0, targetRect.top - padding) : 0;
+  const maskW = targetRect ? targetRect.width + padding * 2 : 0;
+  const maskH = targetRect ? targetRect.height + padding * 2 : 0;
 
-      {/* Đèn Spotlight khoét rọi sáng đối tượng với transition gia tốc mượt mà */}
+  return (
+    <div className="fixed inset-0 z-50 pointer-events-auto select-none overflow-hidden animate-in fade-in duration-200">
+      {/* SVG MASK CUTOUT: Thay thế hoàn toàn box-shadow 9999px nặng nề. Chạy 100% trên phần cứng đồ họa GPU, 0% CPU! */}
+      <svg
+        className="fixed inset-0 w-full h-full pointer-events-none z-40 transition-all duration-300"
+        style={{ width: '100vw', height: '100vh' }}
+      >
+        <defs>
+          <mask id="onboarding-spotlight-mask">
+            {/* Lớp nền trắng cho phép ánh sáng đi qua (làm tối) */}
+            <rect x="0" y="0" width="100%" height="100%" fill="white" />
+            {/* Vùng màu đen khoét lỗ rọi sáng vào phần tử mục tiêu */}
+            {targetRect && (
+              <rect
+                x={maskX}
+                y={maskY}
+                width={maskW}
+                height={maskH}
+                rx="16"
+                ry="16"
+                fill="black"
+              />
+            )}
+          </mask>
+        </defs>
+
+        {/* Lớp phủ làm tối toàn bộ hậu cảnh, ngoại trừ lỗ khoét của mask */}
+        <rect
+          x="0"
+          y="0"
+          width="100%"
+          height="100%"
+          fill="rgba(11, 12, 16, 0.85)"
+          mask="url(#onboarding-spotlight-mask)"
+        />
+      </svg>
+
+      {/* Khung viền màu vàng hổ phách bao quanh phần tử mục tiêu */}
       {targetRect && (
         <div
           style={{
-            top: `${Math.max(0, targetRect.top - 6)}px`,
-            left: `${Math.max(0, targetRect.left - 6)}px`,
-            width: `${targetRect.width + 12}px`,
-            height: `${targetRect.height + 12}px`,
+            top: `${maskY}px`,
+            left: `${maskX}px`,
+            width: `${maskW}px`,
+            height: `${maskH}px`,
           }}
-          className="fixed z-50 rounded-2xl border-2 border-noir-accent shadow-[0_0_0_9999px_rgba(11,12,16,0.85)] transition-all duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none ring-4 ring-noir-accent/20"
-        >
-          {/* Hào quang nhịp thở nhẹ nhàng */}
-          <div className="absolute inset-0 rounded-2xl bg-noir-accent/10 animate-pulse pointer-events-none" />
-        </div>
+          className="fixed z-45 rounded-2xl border-2 border-noir-accent pointer-events-none transition-all duration-300 ring-4 ring-noir-accent/20"
+        />
       )}
 
-      {/* Tooltip Dialog chỉ dẫn */}
+      {/* Tooltip Dialog hướng dẫn nghiệp vụ */}
       <div
         style={{
           top: `${tooltipTop}px`,
           left: `${tooltipLeft}px`,
         }}
-        className="fixed z-50 w-[calc(100vw-32px)] sm:w-[360px] p-5 rounded-2xl bg-noir-900/98 backdrop-blur-md border border-noir-700 shadow-2xl transition-all duration-300 ease-out animate-in fade-in zoom-in-95 ring-1 ring-noir-accent/30 flex flex-col space-y-3.5"
+        className="fixed z-50 w-[calc(100vw-32px)] sm:w-[360px] p-5 rounded-2xl bg-noir-900 border border-noir-700 shadow-2xl transition-all duration-200 ring-1 ring-noir-accent/30 flex flex-col space-y-3.5"
       >
         {/* Header với Icon, Tiêu đề bước và Nút Bỏ qua */}
         <div className="flex items-center justify-between pb-2.5 border-b border-noir-800">
@@ -211,11 +296,11 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
             </div>
 
             <button
-              onClick={handleSkip}
-              className="text-slate-500 hover:text-slate-300 p-1 rounded-lg hover:bg-noir-800 transition-colors ml-1"
+              onClick={handleFinish}
+              className="text-slate-500 hover:text-slate-300 p-1 rounded-lg hover:bg-noir-800 transition-colors ml-1 cursor-pointer"
               title="Đóng hướng dẫn"
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -233,7 +318,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
         {/* Action Button */}
         <div className="pt-1 flex items-center justify-between gap-2">
           <button
-            onClick={handleSkip}
+            onClick={handleFinish}
             className="text-[11px] text-slate-400 hover:text-slate-200 font-semibold px-2.5 py-1.5 rounded-lg hover:bg-noir-800 transition-colors cursor-pointer"
           >
             Bỏ qua
