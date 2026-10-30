@@ -245,10 +245,10 @@ export const SqlEditor: React.FC<SqlEditorProps> = ({
       const textBefore = query.slice(0, start);
       const textAfter = query.slice(end);
 
-      const newQuery = textBefore + item.insertText + textAfter;
+      const newQuery = (textBefore + item.insertText + textAfter).slice(0, 5000);
       onChangeQuery(newQuery);
 
-      const targetCursor = start + item.insertText.length + (item.cursorOffset ?? 0);
+      const targetCursor = Math.min(5000, start + item.insertText.length + (item.cursorOffset ?? 0));
       setShowSuggestions(false);
 
       requestAnimationFrame(() => {
@@ -311,8 +311,8 @@ export const SqlEditor: React.FC<SqlEditorProps> = ({
   };
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const val = e.target.value;
-    const cursorPos = e.target.selectionStart;
+    const val = e.target.value.slice(0, 5000);
+    const cursorPos = Math.min(5000, e.target.selectionStart);
     onChangeQuery(val);
     updateSuggestions(val, cursorPos);
   };
@@ -328,19 +328,19 @@ export const SqlEditor: React.FC<SqlEditorProps> = ({
     setShowSuggestions(false);
     const textarea = textareaRef.current;
     if (!textarea) {
-      onChangeQuery(query ? `${query}\n${snippet}` : snippet);
+      onChangeQuery((query ? `${query}\n${snippet}` : snippet).slice(0, 5000));
       return;
     }
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const textBefore = query.substring(0, start);
     const textAfter = query.substring(end);
-    const newQuery = `${textBefore}${snippet}${textAfter}`;
+    const newQuery = `${textBefore}${snippet}${textAfter}`.slice(0, 5000);
     onChangeQuery(newQuery);
 
     setTimeout(() => {
       textarea.focus();
-      const cursorPosition = start + snippet.length;
+      const cursorPosition = Math.min(5000, start + snippet.length);
       textarea.setSelectionRange(cursorPosition, cursorPosition);
     }, 10);
   };
@@ -632,6 +632,7 @@ export const SqlEditor: React.FC<SqlEditorProps> = ({
           onKeyDown={handleKeyDown}
           onScroll={handleScroll}
           spellCheck={false}
+          maxLength={5000}
           className="relative z-10 w-full h-full min-h-[160px] sm:min-h-[180px] p-3.5 sm:p-4 bg-transparent text-transparent caret-amber-400 font-mono text-base sm:text-sm leading-[24px] sm:leading-[22px] whitespace-pre-wrap break-words resize-y focus:outline-none placeholder-transparent"
           style={{ caretColor: '#f59e0b' }}
         />
@@ -718,12 +719,17 @@ export const SqlEditor: React.FC<SqlEditorProps> = ({
 
       {/* Action Footer */}
       <div className="px-3.5 sm:px-4 py-2.5 sm:py-3 bg-noir-850 border-t border-noir-800 flex flex-col sm:flex-row items-center justify-between gap-2.5">
-        <div className="text-xs text-slate-400 font-mono hidden sm:flex items-center space-x-1.5">
-          <span>Phím tắt:</span>
-          <kbd className="px-1.5 py-0.5 bg-noir-800 rounded border border-noir-700 text-noir-gold font-bold">Ctrl</kbd>
-          <span>+</span>
-          <kbd className="px-1.5 py-0.5 bg-noir-800 rounded border border-noir-700 text-noir-gold font-bold">Enter</kbd>
-          <span>để thực thi</span>
+        <div className="text-xs text-slate-400 font-mono flex items-center space-x-3">
+          <div className="hidden sm:flex items-center space-x-1.5">
+            <span>Phím tắt:</span>
+            <kbd className="px-1.5 py-0.5 bg-noir-800 rounded border border-noir-700 text-noir-gold font-bold">Ctrl</kbd>
+            <span>+</span>
+            <kbd className="px-1.5 py-0.5 bg-noir-800 rounded border border-noir-700 text-noir-gold font-bold">Enter</kbd>
+            <span>để thực thi</span>
+          </div>
+          <span className="text-[11px] text-slate-500 font-mono">
+            {query.length}/5000 ký tự
+          </span>
         </div>
 
         <button

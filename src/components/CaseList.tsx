@@ -108,8 +108,8 @@ export const CaseList: React.FC<CaseListProps> = ({
             </span>
           </h1>
 
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans max-w-3xl text-pretty">
-            Hệ thống <strong>30 chuyên án hình sự thực chiến</strong> chạy trực tiếp trên nền tảng SQLite WebAssembly. Vận dụng tư duy truy vấn cơ sở dữ liệu từ căn bản đến nâng cao để khám nghiệm hiện trường, bóc tách chứng cứ ngoại phạm và vạch trần kẻ chủ mưu.
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans max-w-2xl text-pretty">
+            Khám phá 30 chuyên án hình sự thực chiến, truy vấn SQL để giải mã manh mối và lật tẩy thủ phạm.
           </p>
 
           {/* Progress Overview Bar */}
@@ -134,11 +134,11 @@ export const CaseList: React.FC<CaseListProps> = ({
           <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-1 sm:pt-2 text-xs text-slate-400">
             <div className="flex items-center space-x-1.5">
               <Shield className="w-4 h-4 text-noir-accent flex-shrink-0" />
-              <span>Chạy 100% trên trình duyệt (SQLite WebAssembly)</span>
+              <span>SQLite WebAssembly</span>
             </div>
             <div className="flex items-center space-x-1.5">
               <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-              <span>Tự động lưu tiến độ vào máy</span>
+              <span>Tự động lưu tiến độ</span>
             </div>
           </div>
         </div>
@@ -153,14 +153,14 @@ export const CaseList: React.FC<CaseListProps> = ({
           <div className="space-y-1">
             <div className="flex items-center space-x-2">
               <h3 className="text-sm font-bold text-slate-100">
-                Bạn mới bắt đầu học SQL? Hãy khởi đầu vững chắc!
+                Mới bắt đầu học SQL?
               </h3>
               <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-300 border border-sky-500/30 font-semibold">
                 Khuyên dùng
               </span>
             </div>
-            <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
-              Các vụ án yêu cầu bạn tự viết truy vấn để tìm manh mối. Nếu chưa quen với các câu lệnh <code className="text-sky-300 bg-noir-950 px-1 py-0.5 rounded">SELECT</code>, <code className="text-sky-300 bg-noir-950 px-1 py-0.5 rounded">WHERE</code> hoặc <code className="text-sky-300 bg-noir-950 px-1 py-0.5 rounded">JOIN</code>, hãy ghé thăm <strong>Học Viện SQL</strong> (20 bài học tương tác) hoặc mở <strong>Sổ Tay Tân Thủ</strong> để nắm bí kíp nhé!
+            <p className="text-xs text-slate-300 max-w-xl leading-relaxed">
+              Khám phá 20 bài học thực hành tương tác tại <strong>Học Viện SQL</strong> hoặc xem <strong>Sổ Tay Hướng Dẫn</strong> để nắm vững kỹ năng trước khi phá án.
             </p>
           </div>
         </div>

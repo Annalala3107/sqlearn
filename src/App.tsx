@@ -10,7 +10,7 @@ import { CaseList } from './components/CaseList';
 import { CaseSolver } from './components/CaseSolver';
 import { AcademyLessonList } from './components/AcademyLessonList';
 import { AcademyLessonPlayer } from './components/AcademyLessonPlayer';
-import { Shield, Heart, CheckCircle2 } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import { startViewTransition } from './utils/transition';
 
 // NHÓM 4: CODE-SPLITTING BẰNG REACT.LAZY ĐỂ GIẢM KÍCH THƯỚC BUNDLE CHÍNH
@@ -368,23 +368,8 @@ export function App() {
         </div>
       )}
 
-      {/* Footer */}
-      <footer className="mt-12 sm:mt-16 border-t border-noir-800 bg-noir-900/60 py-8 text-center text-xs text-slate-500 pb-[calc(2rem+env(safe-area-inset-bottom,0px))]">
-        <div className="max-w-7xl mx-auto px-4 space-y-2">
-          <div className="flex items-center justify-center space-x-2 text-slate-400 font-cinzel">
-            <Shield className="w-4 h-4 text-noir-accent" />
-            <span className="font-bold tracking-wider">SQL THÁM TỬ VN • HỌC VIỆN SQL TƯƠNG TÁC</span>
-          </div>
-          <p className="max-w-md mx-auto text-slate-400">
-            Học và nâng cao tư duy truy vấn cơ sở dữ liệu qua các bài tập điều tra phá án và giáo trình tương tác từ cơ bản đến nâng cao. Toàn bộ câu lệnh được thực thi trực tiếp trên trình duyệt với SQLite WebAssembly.
-          </p>
-          <div className="pt-2 flex items-center justify-center space-x-1 text-slate-400">
-            <span>Xây dựng với</span>
-            <Heart className="w-3.5 h-3.5 text-rose-500 fill-current" />
-            <span>dành cho cộng đồng học SQL Việt Nam</span>
-          </div>
-        </div>
-      </footer>
+      {/* Bottom padding for safe area */}
+      <div className="pb-10 sm:pb-12" />
     </div>
   );
 }

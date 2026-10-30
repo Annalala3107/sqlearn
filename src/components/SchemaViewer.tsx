@@ -74,22 +74,13 @@ export const SchemaViewer: React.FC<SchemaViewerProps> = ({
 
       {/* Render based on viewMode */}
       {viewMode === 'diagram' ? (
-        <div className="space-y-2">
-          <p className="text-xs text-slate-400">
-            Sơ đồ trực quan thể hiện mối quan hệ giữa các bảng (khóa chính <span className="text-noir-gold font-bold">PK</span> và khóa ngoại <span className="text-sky-400 font-bold">FK</span>). Nhấn nút <Play className="w-3 h-3 text-noir-accent inline mx-0.5" /> trên bảng để truy vấn.
-          </p>
-          <SchemaDiagram
-            schemas={schemas}
-            onSelectTableQuery={(table) => onQuickQuery(`SELECT * FROM ${table} LIMIT 10;`)}
-            getTableCount={getTableCount}
-          />
-        </div>
+        <SchemaDiagram
+          schemas={schemas}
+          onSelectTableQuery={(table) => onQuickQuery(`SELECT * FROM ${table} LIMIT 10;`)}
+          getTableCount={getTableCount}
+        />
       ) : (
         <div className="space-y-3">
-          <p className="text-xs text-slate-400">
-            Danh sách chi tiết các trường dữ liệu. Nhấn nút <span className="text-noir-gold font-bold">Xem mẫu</span> để nạp câu lệnh SELECT 5 dòng đầu tiên.
-          </p>
-
           <div className="space-y-3">
             {schemas.map((table) => {
               const isExpanded = !!expandedTables[table.name];

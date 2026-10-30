@@ -73,6 +73,7 @@ export const DetectiveNotes: React.FC<DetectiveNotesProps> = ({ caseId }) => {
       <textarea
         value={note}
         onChange={(e) => handleChange(e.target.value)}
+        maxLength={5000}
         placeholder="Ghi chép các giả thuyết, tên nghi phạm, mốc thời gian hoặc manh mối bạn phát hiện từ các truy vấn SQL tại đây..."
         className="w-full h-48 sm:h-44 p-3.5 sm:p-3 bg-noir-950/70 border border-noir-800 rounded-xl text-slate-200 text-base sm:text-sm font-sans placeholder-slate-600 focus:outline-none focus:border-noir-accent/60 leading-relaxed resize-y"
       />
