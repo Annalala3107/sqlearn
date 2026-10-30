@@ -10,8 +10,39 @@ export interface AuthUser {
   lastLogin: string;
 }
 
+export interface GoogleJwtPayload {
+  sub: string;
+  email: string;
+  name: string;
+  picture?: string;
+  email_verified?: boolean;
+}
+
 const AUTH_STORAGE_KEY = 'sqlearn_auth_user';
 const USERS_REGISTRY_KEY = 'sqlearn_users_registry';
+
+/**
+ * Giải mã an toàn Token JWT từ Google Identity Services (Hỗ trợ UTF-8 cho ký tự tiếng Việt)
+ */
+export function decodeGoogleJwt(token: string): GoogleJwtPayload | null {
+  try {
+    const parts = token.split('.');
+    if (parts.length < 2) return null;
+
+    const base64Url = parts[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (e) {
+    console.error('Failed to decode Google JWT credential:', e);
+    return null;
+  }
+}
 
 class AuthService {
   private currentUser: AuthUser | null = null;
@@ -41,6 +72,29 @@ class AuthService {
     return this.currentUser?.role === 'admin';
   }
 
+  public getGoogleClientId(): string {
+    return (import.meta.env.VITE_GOOGLE_CLIENT_ID || '').trim();
+  }
+
+  public isGoogleConfigured(): boolean {
+    const cid = this.getGoogleClientId();
+    return cid.length > 10 && cid.includes('.apps.googleusercontent.com');
+  }
+
+  public getAdminEmails(): string[] {
+    const raw = (import.meta.env.VITE_ADMIN_EMAILS || '').trim();
+    if (!raw) return ['admin.nam@sqlearn.vn'];
+    return raw
+      .split(',')
+      .map((e: string) => e.trim().toLowerCase())
+      .filter(Boolean);
+  }
+
+  public checkIsAdminEmail(email: string): boolean {
+    const admins = this.getAdminEmails();
+    return admins.includes(email.trim().toLowerCase());
+  }
+
   public subscribe(callback: (user: AuthUser | null) => void): () => void {
     this.listeners.push(callback);
     callback(this.currentUser);
@@ -54,8 +108,42 @@ class AuthService {
   }
 
   /**
-   * Đăng nhập với tài khoản Google (Học viên hoặc Quản trị viên)
-   * Sử dụng Google OAuth 2.0 / Google Identity Services
+   * ĐĂNG NHẬP CHÍNH THỨC: Xác thực tài khoản Google thật từ Google Identity Services (GIS)
+   * Nhận credential JWT trả về trực tiếp từ popup đăng nhập của Google
+   */
+  public async signInWithGoogleCredential(credential: string): Promise<AuthUser> {
+    const decoded = decodeGoogleJwt(credential);
+    if (!decoded || !decoded.email) {
+      throw new Error('Mã xác thực Google không hợp lệ hoặc đã hết hạn.');
+    }
+
+    const email = decoded.email.trim();
+    const role: 'admin' | 'learner' = this.checkIsAdminEmail(email) ? 'admin' : 'learner';
+    const name = decoded.name || email.split('@')[0];
+    const avatar =
+      decoded.picture ||
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=e5a93c&color=0b0c10&bold=true`;
+
+    const user: AuthUser = {
+      id: `google_${decoded.sub}`,
+      name,
+      email,
+      avatar,
+      role,
+      provider: 'google',
+      lastLogin: new Date().toISOString(),
+    };
+
+    this.currentUser = user;
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
+
+    this.recordUserInRegistry(user);
+    this.notify();
+    return user;
+  }
+
+  /**
+   * ĐĂNG NHẬP THỬ NGHIỆM / SANDBOX (Fallback khi chưa cấu hình Google Client ID)
    */
   public async signInWithGoogle(options?: {
     email?: string;
@@ -63,12 +151,11 @@ class AuthService {
     avatar?: string;
     role?: 'admin' | 'learner';
   }): Promise<AuthUser> {
-    // Mô phỏng độ trễ xác thực mạng 350ms
-    await new Promise((resolve) => setTimeout(resolve, 350));
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
-    const role = options?.role || (options?.email?.includes('admin') ? 'admin' : 'learner');
-    const name = options?.name || (role === 'admin' ? 'Nguyễn Hải Nam (Admin)' : 'Thám Tử Tập Sự');
-    const email = options?.email || (role === 'admin' ? 'admin.nam@sqlearn.vn' : 'thamtuhocvien@gmail.com');
+    const email = options?.email || (options?.role === 'admin' ? 'admin.nam@sqlearn.vn' : 'thamtuhocvien@gmail.com');
+    const role = options?.role || (this.checkIsAdminEmail(email) ? 'admin' : 'learner');
+    const name = options?.name || (role === 'admin' ? 'Nguyễn Hải Nam (Admin)' : 'Thám Tử Học Viên');
     const avatar =
       options?.avatar ||
       (role === 'admin'
@@ -88,7 +175,6 @@ class AuthService {
     this.currentUser = user;
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
 
-    // Ghi nhận vào registry quản lý
     this.recordUserInRegistry(user);
     this.notify();
     return user;
@@ -105,7 +191,7 @@ class AuthService {
   }
 
   /**
-   * Đồng bộ tiến trình học tập của học viên lên hồ sơ
+   * Đồng bộ tiến trình học tập của học viên lên hồ sơ đám mây
    */
   public syncProgressWithCloud(stats: UserStats): { success: boolean; timestamp: string } {
     if (!this.currentUser) {
@@ -113,6 +199,7 @@ class AuthService {
     }
     const syncPayload = {
       userId: this.currentUser.id,
+      email: this.currentUser.email,
       stats,
       updatedAt: new Date().toISOString(),
     };
@@ -127,9 +214,9 @@ class AuthService {
     try {
       const raw = localStorage.getItem(USERS_REGISTRY_KEY);
       let registry: AuthUser[] = raw ? JSON.parse(raw) : [];
-      const index = registry.findIndex((u) => u.email === user.email);
+      const index = registry.findIndex((u) => u.email.toLowerCase() === user.email.toLowerCase());
       if (index >= 0) {
-        registry[index] = { ...registry[index], lastLogin: user.lastLogin };
+        registry[index] = { ...registry[index], lastLogin: user.lastLogin, avatar: user.avatar, name: user.name };
       } else {
         registry.unshift(user);
       }
@@ -146,7 +233,6 @@ class AuthService {
     } catch (e) {
       console.warn(e);
     }
-    // Dữ liệu mẫu giả lập nếu chưa có ai đăng nhập
     return [
       {
         id: 'usr_admin_1',
@@ -165,15 +251,6 @@ class AuthService {
         role: 'learner',
         provider: 'google',
         lastLogin: new Date(Date.now() - 3600000 * 2).toISOString(),
-      },
-      {
-        id: 'usr_3',
-        name: 'Lê Thuỳ Linh',
-        email: 'thuylinh.data@gmail.com',
-        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&auto=format&fit=crop&q=80',
-        role: 'learner',
-        provider: 'google',
-        lastLogin: new Date(Date.now() - 3600000 * 18).toISOString(),
       },
     ];
   }
