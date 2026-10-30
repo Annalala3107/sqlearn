@@ -245,7 +245,7 @@ export function App() {
   if (currentMode === 'admin') {
     return (
       <div className="min-h-screen bg-noir-950">
-        <Suspense fallback={<div className="p-12 text-center text-slate-400 font-mono text-sm">Đang tải Cổng Quản Trị...</div>}>
+        <Suspense fallback={<ViewLoadingFallback />}>
           <AdminDashboard
             currentUser={currentUser}
             onBackToApp={() => handleChangeMode('cases')}
