@@ -1,15 +1,16 @@
 -- ========================================================
--- SQL THÁM TỬ - SCRIPT THIẾT LẬP CƠ SỞ DỮ LIỆU SUPABASE
+-- SQL THÁM TỬ - SCRIPT KHỞI TẠO CƠ SỞ DỮ LIỆU SUPABASE
 -- Dự án: dwjreceajfrtuycsalzw
--- Chạy script này tại: Supabase Dashboard -> SQL Editor -> New Query -> Run
+-- Thực hiện tại: Supabase Dashboard -> SQL Editor -> New Query -> Run
 -- ========================================================
 
--- 1. Bảng lưu thông tin hồ sơ và phân quyền người dùng (profiles)
+-- 1. BẢNG HỒ SƠ & PHÂN QUYỀN THÁM TỬ (PROFILES)
 create table if not exists public.profiles (
-  id uuid references auth.users on delete cascade primary key,
+  id text primary key,
   email text,
   name text,
-  role text default 'learner', -- 'admin' hoặc 'learner'
+  avatar_url text,
+  role text default 'learner', -- 'learner' (Học Viên) hoặc 'admin' (Quản Trị Viên)
   xp integer default 0,
   created_at timestamp with time zone default timezone('utc'::text, now()),
   updated_at timestamp with time zone default timezone('utc'::text, now())
@@ -18,44 +19,75 @@ create table if not exists public.profiles (
 -- Kích hoạt Row Level Security (RLS) bảo mật dữ liệu
 alter table public.profiles enable row level security;
 
--- Drop policy cũ nếu có để tránh trùng lặp
-drop policy if exists "Public profiles are viewable by everyone." on public.profiles;
-drop policy if exists "Users can update their own profile." on public.profiles;
-
--- Cho phép mọi người đọc hồ sơ (để xem tên, cấp bậc)
-create policy "Public profiles are viewable by everyone."
+-- Thiết lập quyền truy cập cho bảng profiles
+drop policy if exists "Public profiles viewable by all" on public.profiles;
+create policy "Public profiles viewable by all"
   on public.profiles for select
   using (true);
 
--- Cho phép người dùng chỉnh sửa hồ sơ của chính mình
-create policy "Users can update their own profile."
-  on public.profiles for update
-  using (auth.uid() = id);
+drop policy if exists "Allow insert profiles" on public.profiles;
+create policy "Allow insert profiles"
+  on public.profiles for insert
+  with check (true);
 
--- 2. Tự động tạo bản ghi trong bảng profiles khi có người đăng ký mới (auth.users)
+drop policy if exists "Allow update profiles" on public.profiles;
+create policy "Allow update profiles"
+  on public.profiles for update
+  using (true);
+
+-- 2. BẢNG TIẾN TRÌNH HỌC TẬP & ĐIỂM SỐ (USER_STATS)
+create table if not exists public.user_stats (
+  user_id text primary key,
+  xp integer default 0,
+  rank text default 'Thám Tử Tập Sự',
+  solved_case_ids jsonb default '[]'::jsonb,
+  completed_lesson_ids jsonb default '[]'::jsonb,
+  updated_at timestamp with time zone default timezone('utc'::text, now())
+);
+
+-- Kích hoạt RLS cho user_stats
+alter table public.user_stats enable row level security;
+
+drop policy if exists "Allow select user_stats" on public.user_stats;
+create policy "Allow select user_stats"
+  on public.user_stats for select
+  using (true);
+
+drop policy if exists "Allow insert user_stats" on public.user_stats;
+create policy "Allow insert user_stats"
+  on public.user_stats for insert
+  with check (true);
+
+drop policy if exists "Allow update user_stats" on public.user_stats;
+create policy "Allow update user_stats"
+  on public.user_stats for update
+  using (true);
+
+-- 3. TỰ ĐỘNG ĐỒNG BỘ KHI CÓ USER ĐĂNG KÝ MỚI TỪ SUPABASE AUTH
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.profiles (id, email, name, role)
+  insert into public.profiles (id, email, name, role, avatar_url)
   values (
-    new.id,
+    new.id::text,
     new.email,
     coalesce(new.raw_user_meta_data->>'name', split_part(new.email, '@', 1)),
-    'learner'
+    'learner',
+    coalesce(new.raw_user_meta_data->>'avatar_url', '')
   )
   on conflict (id) do nothing;
   return new;
 end;
 $$ language plpgsql security definer;
 
--- Trigger kích hoạt function trên
+-- Trigger kích hoạt tự động
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
 
 -- ========================================================
--- 3. HƯỚNG DẪN CẤP QUYỀN ADMIN CHO TÀI KHOẢN CỦA BẠN:
--- Sau khi bạn đăng ký tài khoản trên web xong, chạy dòng lệnh sau:
--- UPDATE public.profiles SET role = 'admin' WHERE email = 'email_cua_ban@gmail.com';
+-- 4. CÂU LỆNH CẤP QUYỀN ADMIN (QUẢN TRỊ VIÊN) CHO TÀI KHOẢN CỦA BẠN:
+-- (Thay thế bằng email Gmail chính chủ của bạn)
+-- UPDATE public.profiles SET role = 'admin' WHERE email = 'your_email@gmail.com';
 -- ========================================================
