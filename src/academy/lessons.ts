@@ -242,15 +242,26 @@ WHERE age > 18 AND status = 'active';`,
     xpReward: 60,
     concept: `
 ### 📖 Lý thuyết Cốt lõi
-Sau khi đã lọc được dữ liệu, bạn muốn trình bày nó thật đẹp mắt:
-- **\`ORDER BY\` (Sắp xếp theo):** Dùng để sắp xếp dữ liệu. Mặc định là tăng dần (\`ASC\` - Ascending). Nếu muốn sắp xếp giảm dần (ví dụ: từ lớn nhất đến nhỏ nhất), hãy thêm chữ **\`DESC\`** (Descending).
-- **\`LIMIT\` (Giới hạn):** Nếu bảng có 1000 dòng, nhưng bạn chỉ muốn xem "Top 5", hãy dùng \`LIMIT 5\` ở cuối câu lệnh.
+Sau khi đã lọc được dữ liệu bằng \`WHERE\`, bạn sẽ muốn sắp xếp và giới hạn kết quả trả về:
+
+- **\`ORDER BY [tên_cột]\` (Sắp xếp theo thứ tự):**
+  - **\`ASC\` (Ascending - Tăng dần):** Sắp xếp từ nhỏ đến lớn (1 → 10, A → Z). Đây là thứ tự **mặc định** trong SQL (nếu không ghi rõ ASC hay DESC, SQL tự hiểu là \`ASC\`).
+  - **\`DESC\` (Descending - Giảm dần):** Sắp xếp từ lớn đến nhỏ (10 → 1, Z → A). Thường dùng khi muốn tìm điểm cao nhất, giá đắt nhất, hoặc dữ liệu mới nhất...
+
+- **\`LIMIT [số_lượng]\` (Giới hạn số dòng):**
+  - Giúp bạn chỉ lấy đúng số lượng dòng mong muốn tính từ trên xuống (ví dụ \`LIMIT 5\` sẽ lấy đúng 5 dòng đầu tiên).
+  - Khi kết hợp với \`ORDER BY\`, ta sẽ có công thức hoàn hảo để lấy danh sách **Top N** (ví dụ: Top 3 học sinh giỏi nhất, Top 10 video xem nhiều nhất).
     `,
-    syntaxExample: `-- Lấy Top 5 sản phẩm có giá cao nhất
-SELECT name, price 
-FROM products 
-ORDER BY price DESC 
-LIMIT 5;`,
+    syntaxExample: `-- Ví dụ 1: Tìm Top 5 học sinh có điểm thi cao nhất (sắp xếp giảm dần DESC)
+SELECT student_name, score 
+FROM students 
+ORDER BY score DESC 
+LIMIT 5;
+
+-- Ví dụ 2: Sắp xếp danh sách nhân viên theo bảng chữ cái A-Z (tăng dần ASC)
+SELECT full_name, department 
+FROM employees 
+ORDER BY full_name ASC;`,
     schemas: [
       {
         name: 'products',
@@ -324,12 +335,12 @@ Chúc mừng! Nhờ kỹ năng SQL xuất sắc, bạn vừa được nhận là
 4. Sắp xếp thế nào? Doanh thu cao nhất thì phải xếp giảm dần (\`ORDER BY revenue DESC\`)
 5. Lấy bao nhiêu bộ phim? (\`LIMIT 10\`)
     `,
-    syntaxExample: `-- Lắp ghép 5 bước thành câu lệnh hoàn chỉnh
-SELECT title, revenue
-FROM Movies
-WHERE genre = 'Action' AND release_year > 2010
-ORDER BY revenue DESC
-LIMIT 10;`,
+    syntaxExample: `-- Mẫu kết hợp chuẩn chỉnh cả 5 mệnh đề trong SQL:
+SELECT customer_name, total_spent 
+FROM customers 
+WHERE country = 'Vietnam' AND total_spent > 1000 
+ORDER BY total_spent DESC 
+LIMIT 5;`,
     schemas: [
       {
         name: 'Movies',

@@ -75,6 +75,9 @@ export const SqlEditor: React.FC<SqlEditorProps> = ({
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const highlightRef = useRef<HTMLDivElement>(null);
+  const editorContainerRef = useRef<HTMLDivElement>(null);
+  const suggestionsListRef = useRef<HTMLDivElement>(null);
+  const selectedItemRef = useRef<HTMLButtonElement>(null);
   const [copied, setCopied] = useState(false);
 
   // Autocomplete state
@@ -90,6 +93,35 @@ export const SqlEditor: React.FC<SqlEditorProps> = ({
       highlightRef.current.scrollLeft = textareaRef.current.scrollLeft;
     }
   };
+
+  // Close suggestions when clicking outside the editor
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (editorContainerRef.current && !editorContainerRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, []);
+
+  // Keep the active suggestion in view as user navigates with Up/Down arrow keys
+  useEffect(() => {
+    if (!showSuggestions || !selectedItemRef.current || !suggestionsListRef.current) return;
+    const container = suggestionsListRef.current;
+    const item = selectedItemRef.current;
+
+    const itemRect = item.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+
+    if (itemRect.top < containerRect.top) {
+      container.scrollTop -= (containerRect.top - itemRect.top);
+    } else if (itemRect.bottom > containerRect.bottom) {
+      container.scrollTop += (itemRect.bottom - containerRect.bottom);
+    }
+  }, [selectedSuggestionIndex, showSuggestions]);
 
   // Extract the word immediately preceding the cursor
   const getWordBeforeCursor = useCallback((text: string, pos: number) => {
@@ -229,6 +261,9 @@ export const SqlEditor: React.FC<SqlEditorProps> = ({
       setSuggestions(candidates.slice(0, 8));
       setSelectedSuggestionIndex(0);
       setShowSuggestions(true);
+      if (suggestionsListRef.current) {
+        suggestionsListRef.current.scrollTop = 0;
+      }
     },
     [schemas, getWordBeforeCursor]
   );
@@ -285,7 +320,9 @@ export const SqlEditor: React.FC<SqlEditorProps> = ({
       }
       if (e.key === 'Enter' || e.key === 'Tab') {
         e.preventDefault();
-        applySuggestion(suggestions[selectedSuggestionIndex]);
+        if (suggestions[selectedSuggestionIndex]) {
+          applySuggestion(suggestions[selectedSuggestionIndex]);
+        }
         return;
       }
       if (e.key === 'Escape') {
@@ -321,6 +358,21 @@ export const SqlEditor: React.FC<SqlEditorProps> = ({
     const textarea = textareaRef.current;
     if (textarea) {
       updateSuggestions(query, textarea.selectionStart);
+    }
+  };
+
+  const handleKeyUp = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // If suggestions popup is open, arrow/navigation keys are handled by keydown for suggestions
+    if (showSuggestions && ['ArrowDown', 'ArrowUp', 'Enter', 'Tab', 'Escape'].includes(e.key)) {
+      return;
+    }
+    // Ignore modifier keys
+    if (['Control', 'Shift', 'Alt', 'Meta', 'CapsLock'].includes(e.key)) {
+      return;
+    }
+    // Cursor movement keys (horizontal, home, end, or vertical when suggestions closed)
+    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'PageUp', 'PageDown'].includes(e.key)) {
+      handleCursorActivity();
     }
   };
 
@@ -438,7 +490,7 @@ export const SqlEditor: React.FC<SqlEditorProps> = ({
   }, [query]);
 
   return (
-    <div className="bg-noir-900 border border-noir-800 rounded-xl overflow-hidden shadow-xl flex flex-col transition-all">
+    <div ref={editorContainerRef} className="bg-noir-900 border border-noir-800 rounded-xl overflow-hidden shadow-xl flex flex-col transition-all">
       {/* Editor Top Toolbar */}
       <div className="px-4 py-2.5 bg-noir-850 border-b border-noir-800 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center space-x-2 text-noir-gold font-bold text-sm">
@@ -628,7 +680,7 @@ export const SqlEditor: React.FC<SqlEditorProps> = ({
           value={query}
           onChange={handleTextChange}
           onClick={handleCursorActivity}
-          onKeyUp={handleCursorActivity}
+          onKeyUp={handleKeyUp}
           onKeyDown={handleKeyDown}
           onScroll={handleScroll}
           spellCheck={false}
@@ -644,10 +696,10 @@ export const SqlEditor: React.FC<SqlEditorProps> = ({
               top: `${popupCoords.top}px`,
               left: `${popupCoords.left}px`,
             }}
-            className="absolute z-30 w-72 sm:w-80 max-h-60 overflow-y-auto rounded-xl bg-noir-900/95 backdrop-blur-md border border-noir-700 shadow-2xl ring-1 ring-noir-accent/30 flex flex-col py-1 animate-in fade-in zoom-in-95 duration-100"
+            className="absolute z-30 w-72 sm:w-80 rounded-xl bg-noir-900/95 backdrop-blur-md border border-noir-700 shadow-2xl ring-1 ring-noir-accent/30 flex flex-col overflow-hidden py-1 animate-in fade-in zoom-in-95 duration-100"
           >
             {/* Header info */}
-            <div className="px-3 py-1.5 border-b border-noir-800/80 flex items-center justify-between text-[10px] text-slate-400 font-mono">
+            <div className="px-3 py-1.5 border-b border-noir-800/80 flex items-center justify-between text-[10px] text-slate-400 font-mono flex-shrink-0 bg-noir-900/90">
               <span className="flex items-center space-x-1 text-noir-gold font-bold">
                 <Sparkles className="w-3 h-3 text-noir-accent" />
                 <span>GỢI Ý SQL & LƯỢC ĐỒ</span>
@@ -655,14 +707,19 @@ export const SqlEditor: React.FC<SqlEditorProps> = ({
               <span>↑↓ chọn, Tab/Enter</span>
             </div>
 
-            {/* List */}
-            <div className="py-1 divide-y divide-noir-800/40">
+            {/* Scrollable List */}
+            <div
+              ref={suggestionsListRef}
+              className="py-1 divide-y divide-noir-800/40 max-h-52 overflow-y-auto"
+            >
               {suggestions.map((item, idx) => {
                 const isSelected = idx === selectedSuggestionIndex;
                 return (
                   <button
                     key={`${item.type}-${item.text}-${idx}`}
+                    ref={isSelected ? selectedItemRef : null}
                     type="button"
+                    onMouseEnter={() => setSelectedSuggestionIndex(idx)}
                     onMouseDown={(e) => {
                       e.preventDefault();
                       applySuggestion(item);
