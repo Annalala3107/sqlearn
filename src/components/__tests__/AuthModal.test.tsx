@@ -19,9 +19,9 @@ describe('AuthModal Component', () => {
     );
 
     expect(screen.getByText('Đăng nhập tài khoản')).toBeDefined();
-    expect(screen.getByText(/Tiếp tục với Google \(Cổng Học Viên\)/i)).toBeDefined();
+    expect(screen.getByText(/Vào Cổng Học Viên/i)).toBeDefined();
     expect(screen.getByText(/Đăng nhập Cổng Quản Trị/i)).toBeDefined();
-    expect(screen.getByPlaceholderText(/your_email@gmail.com/i)).toBeDefined();
+    expect(screen.getByPlaceholderText(/hocvien@gmail.com/i)).toBeDefined();
   });
 
   it('handles 1-click login for learner', async () => {
@@ -30,7 +30,7 @@ describe('AuthModal Component', () => {
       <AuthModal isOpen={true} onClose={() => {}} onLoginSuccess={handleLoginSuccess} />
     );
 
-    const learnerBtn = screen.getByText(/Tiếp tục với Google \(Cổng Học Viên\)/i);
+    const learnerBtn = screen.getByText(/Vào Cổng Học Viên/i);
     fireEvent.click(learnerBtn);
 
     await waitFor(() => {
@@ -62,7 +62,7 @@ describe('AuthModal Component', () => {
       <AuthModal isOpen={true} onClose={() => {}} onLoginSuccess={handleLoginSuccess} />
     );
 
-    const emailInput = screen.getByPlaceholderText(/your_email@gmail.com/i);
+    const emailInput = screen.getByPlaceholderText(/hocvien@gmail.com/i);
     const nameInput = screen.getByPlaceholderText(/Thám tử Conan/i);
 
     fireEvent.change(nameInput, { target: { value: 'Thám Tử Lừng Danh' } });

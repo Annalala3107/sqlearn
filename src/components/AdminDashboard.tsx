@@ -188,7 +188,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
             <div className="text-[11px] text-indigo-300 mt-2 flex items-center space-x-1">
               <KeyRound className="w-3.5 h-3.5" />
-              <span>Google Identity SSO Active</span>
+              <span>Xác Thực Tài Khoản Đang Hoạt Động</span>
             </div>
           </div>
         </div>
@@ -265,7 +265,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     <span>CỔNG HỌC VIÊN (LEARNER PORTAL)</span>
                   </div>
                   <ul className="text-xs text-slate-300 space-y-2">
-                    <li>• Đăng nhập 1 chạm với tài khoản Google cá nhân.</li>
+                    <li>• Đăng nhập 1 chạm với tài khoản học viên cá nhân.</li>
                     <li>• Tự động đồng bộ chuỗi XP, hồ sơ vụ án đã phá vào Cloud.</li>
                     <li>• Chạy sandbox SQL an toàn, không có quyền can thiệp cấu hình.</li>
                   </ul>
@@ -279,7 +279,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <ul className="text-xs text-slate-300 space-y-2">
                     <li>• Bảo vệ bởi cơ chế RBAC (Chỉ email quản trị viên có quyền truy cập).</li>
                     <li>• Kiểm tra toàn bộ 30 vụ án, câu lệnh truy vấn mẫu và giải thuật phá án.</li>
-                    <li>• Theo dõi nhật ký học viên đăng nhập qua Google Identity Services.</li>
+                    <li>• Theo dõi nhật ký tài khoản học viên đăng nhập vào hệ thống.</li>
                   </ul>
                 </div>
               </div>
@@ -435,7 +435,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h4 className="font-bold text-sm text-slate-100">
-                    Danh Sách Tài Khoản Xác Thực Qua Google Identity
+                    Danh Sách Tài Khoản Đăng Nhập Hệ Thống
                   </h4>
                   <p className="text-xs text-slate-400">
                     Ghi nhận các tài khoản đã đăng nhập vào hệ thống trong phiên thử nghiệm Staging.
@@ -455,7 +455,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <thead>
                     <tr className="bg-noir-950 text-slate-400 uppercase text-[10px] tracking-wider border-b border-noir-800">
                       <th className="py-3 px-4">Người Dùng</th>
-                      <th className="py-3 px-4">Email Google</th>
+                      <th className="py-3 px-4">Email Tài Khoản</th>
                       <th className="py-3 px-4">Vai Trò (RBAC)</th>
                       <th className="py-3 px-4">Xác Thực Bằng</th>
                       <th className="py-3 px-4">Đăng Nhập Gần Nhất</th>
@@ -487,7 +487,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <td className="py-3 px-4">
                           <span className="inline-flex items-center space-x-1 text-slate-300">
                             <span className="w-2 h-2 rounded-full bg-blue-400"></span>
-                            <span>Google SSO</span>
+                            <span>Tài Khoản</span>
                           </span>
                         </td>
                         <td className="py-3 px-4 text-slate-400 font-mono text-[11px]">

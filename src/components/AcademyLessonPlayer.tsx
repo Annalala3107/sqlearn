@@ -307,8 +307,8 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
     message: string;
   }>({ status: 'idle', message: '' });
 
-  const [activeDesktopTab, setActiveDesktopTab] = useState<'theory' | 'task' | 'schema' | 'quiz'>('theory');
-  const [activeMobileTab, setActiveMobileTab] = useState<'theory' | 'task' | 'sql' | 'quiz'>('task');
+  const [activeTab, setActiveTab] = useState<'theory' | 'task' | 'schema' | 'quiz'>('theory');
+  const [mobileShowSql, setMobileShowSql] = useState(false);
   const [showHintIndex, setShowHintIndex] = useState<number | null>(null);
   const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({});
   const [isCompleted, setIsCompleted] = useState(initialCompleted);
@@ -413,13 +413,7 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
     }
   };
 
-  const handleMobileTabSwitch = (tab: 'theory' | 'task' | 'sql' | 'quiz') => {
-    startViewTransition(() => {
-      setActiveMobileTab(tab);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  };
-
+  
   if (dbError) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center space-y-4 px-4 text-center">
@@ -503,13 +497,13 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
         {/* ============================================================ */}
         {/* LEFT COLUMN: THEORY, TASK, SCHEMA & QUIZZES */}
         {/* ============================================================ */}
-        <div className="lg:col-span-5 space-y-4">
+        <div className={`lg:col-span-5 space-y-4 ${mobileShowSql ? 'hidden lg:block' : 'block'}`}>
           {/* Desktop Tab Selector */}
           <div className="hidden lg:flex items-center p-1 bg-noir-900 border border-noir-800 rounded-xl space-x-1">
             <button
-              onClick={() => setActiveDesktopTab('theory')}
+              onClick={() => setActiveTab('theory')}
               className={`flex-1 min-h-[40px] py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all cursor-pointer ${
-                activeDesktopTab === 'theory'
+                activeTab === 'theory'
                   ? 'bg-noir-800 text-sky-300 shadow border border-noir-700 font-bold'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
@@ -518,9 +512,9 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
               <span>Lý Thuyết</span>
             </button>
             <button
-              onClick={() => setActiveDesktopTab('task')}
+              onClick={() => setActiveTab('task')}
               className={`flex-1 min-h-[40px] py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all cursor-pointer ${
-                activeDesktopTab === 'task'
+                activeTab === 'task'
                   ? 'bg-noir-800 text-noir-gold shadow border border-noir-700 font-bold'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
@@ -529,9 +523,9 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
               <span>Nhiệm Vụ</span>
             </button>
             <button
-              onClick={() => setActiveDesktopTab('schema')}
+              onClick={() => setActiveTab('schema')}
               className={`flex-1 min-h-[40px] py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all cursor-pointer ${
-                activeDesktopTab === 'schema'
+                activeTab === 'schema'
                   ? 'bg-noir-800 text-purple-300 shadow border border-noir-700 font-bold'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
@@ -541,9 +535,9 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
             </button>
             {lesson.quizzes && lesson.quizzes.length > 0 && (
               <button
-                onClick={() => setActiveDesktopTab('quiz')}
+                onClick={() => setActiveTab('quiz')}
                 className={`flex-1 min-h-[40px] py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition-all cursor-pointer ${
-                  activeDesktopTab === 'quiz'
+                  activeTab === 'quiz'
                     ? 'bg-noir-800 text-emerald-300 shadow border border-noir-700 font-bold'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
@@ -554,11 +548,10 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
             )}
           </div>
 
-          {/* Desktop Content Views OR Mobile Tab View */}
+          {/* Tab Views Content (Left Column) */}
           <div className="space-y-4">
             {/* View 1: Theory */}
-            {((typeof window !== 'undefined' && window.innerWidth >= 1024 && activeDesktopTab === 'theory') ||
-              (activeMobileTab === 'theory')) && (
+            {activeTab === 'theory' && (
               <div className="bg-noir-900 border border-noir-800 rounded-2xl p-5 shadow-md space-y-4">
                 <div className="flex items-center space-x-2 text-sky-400 font-bold text-sm border-b border-noir-800 pb-2.5">
                   <BookOpen className="w-4 h-4 text-sky-400 flex-shrink-0" />
@@ -593,8 +586,7 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
             )}
 
             {/* View 2: Task / Exercise */}
-            {((typeof window !== 'undefined' && window.innerWidth >= 1024 && activeDesktopTab === 'task') ||
-              (activeMobileTab === 'task')) && (
+            {activeTab === 'task' && (
               <div className="bg-noir-900 border border-noir-800 rounded-2xl p-5 shadow-md space-y-4">
                 <div className="flex items-center justify-between border-b border-noir-800 pb-2.5">
                   <div className="flex items-center space-x-2 text-noir-gold font-bold text-sm">
@@ -663,8 +655,7 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
             )}
 
             {/* View 3: Schema Details */}
-            {((typeof window !== 'undefined' && window.innerWidth >= 1024 && activeDesktopTab === 'schema') ||
-              (false)) && (
+            {activeTab === 'schema' && (
               <div className="bg-noir-900 border border-noir-800 rounded-2xl p-5 shadow-md space-y-4">
                 <div className="flex items-center space-x-2 text-purple-400 font-bold text-sm border-b border-noir-800 pb-2">
                   <Database className="w-4 h-4" />
@@ -707,8 +698,7 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
             {/* View 4: Quizzes */}
             {lesson.quizzes &&
               lesson.quizzes.length > 0 &&
-              ((typeof window !== 'undefined' && window.innerWidth >= 1024 && activeDesktopTab === 'quiz') ||
-                (activeMobileTab === 'quiz')) && (
+              activeTab === 'quiz' && (
                 <div className="bg-noir-900 border border-noir-800 rounded-2xl p-5 shadow-md space-y-4">
                   <div className="flex items-center space-x-2 text-emerald-400 font-bold text-sm border-b border-noir-800 pb-2">
                     <HelpCircle className="w-4 h-4" />
@@ -776,9 +766,7 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
         {/* RIGHT COLUMN: SQL EDITOR + RESULTS & VERIFICATION (Desktop & Mobile) */}
         {/* ============================================================ */}
         <div
-          className={`lg:col-span-7 space-y-4 ${
-            activeMobileTab === 'sql' ? 'block' : 'hidden lg:block'
-          }`}
+          className={`lg:col-span-7 space-y-4 ${mobileShowSql ? 'block' : 'hidden lg:block'}`}
         >
           {/* Action Toolbar */}
           <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-noir-900 border border-noir-800 rounded-xl">
@@ -899,29 +887,41 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
       >
         <div className="grid grid-cols-4 px-2 py-1 max-w-md mx-auto">
           <button
-            onClick={() => handleMobileTabSwitch('task')}
+            onClick={() => {
+              startViewTransition(() => {
+                setActiveTab('task');
+                setMobileShowSql(false);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              });
+            }}
             className={`min-h-[50px] flex flex-col items-center justify-center py-1 rounded-xl transition-all cursor-pointer relative ${
-              activeMobileTab === 'task'
+              !mobileShowSql && activeTab === 'task'
                 ? 'text-noir-gold font-bold bg-noir-800/80'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            {activeMobileTab === 'task' && (
+            {!mobileShowSql && activeTab === 'task' && (
               <span className="absolute top-0 w-8 h-0.5 bg-noir-accent rounded-full" />
             )}
             <Lightbulb className="w-4 h-4 mb-0.5 text-noir-accent" />
-            <span className="text-[10px] tracking-tight">Đề Bài</span>
+            <span className="text-[10px] tracking-tight">Nhiệm Vụ</span>
           </button>
 
           <button
-            onClick={() => handleMobileTabSwitch('theory')}
+            onClick={() => {
+              startViewTransition(() => {
+                setActiveTab('theory');
+                setMobileShowSql(false);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              });
+            }}
             className={`min-h-[50px] flex flex-col items-center justify-center py-1 rounded-xl transition-all cursor-pointer relative ${
-              activeMobileTab === 'theory'
+              !mobileShowSql && activeTab === 'theory'
                 ? 'text-sky-300 font-bold bg-noir-800/80'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            {activeMobileTab === 'theory' && (
+            {!mobileShowSql && activeTab === 'theory' && (
               <span className="absolute top-0 w-8 h-0.5 bg-sky-400 rounded-full" />
             )}
             <BookOpen className="w-4 h-4 mb-0.5 text-sky-400" />
@@ -929,29 +929,40 @@ export const AcademyLessonPlayer: React.FC<AcademyLessonPlayerProps> = ({
           </button>
 
           <button
-            onClick={() => handleMobileTabSwitch('sql')}
+            onClick={() => {
+              startViewTransition(() => {
+                setMobileShowSql(true);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              });
+            }}
             className={`min-h-[50px] flex flex-col items-center justify-center py-1 rounded-xl transition-all cursor-pointer relative ${
-              activeMobileTab === 'sql'
+              mobileShowSql
                 ? 'text-amber-300 font-bold bg-noir-800/80'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            {activeMobileTab === 'sql' && (
+            {mobileShowSql && (
               <span className="absolute top-0 w-8 h-0.5 bg-amber-400 rounded-full" />
             )}
             <Code2 className="w-4 h-4 mb-0.5 text-amber-400" />
-            <span className="text-[10px] tracking-tight">SQL & Bảng</span>
+            <span className="text-[10px] tracking-tight">Soạn SQL</span>
           </button>
 
           <button
-            onClick={() => handleMobileTabSwitch('quiz')}
+            onClick={() => {
+              startViewTransition(() => {
+                setActiveTab('quiz');
+                setMobileShowSql(false);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              });
+            }}
             className={`min-h-[50px] flex flex-col items-center justify-center py-1 rounded-xl transition-all cursor-pointer relative ${
-              activeMobileTab === 'quiz'
+              !mobileShowSql && activeTab === 'quiz'
                 ? 'text-emerald-300 font-bold bg-noir-800/80'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            {activeMobileTab === 'quiz' && (
+            {!mobileShowSql && activeTab === 'quiz' && (
               <span className="absolute top-0 w-8 h-0.5 bg-emerald-400 rounded-full" />
             )}
             <HelpCircle className="w-4 h-4 mb-0.5 text-emerald-400" />

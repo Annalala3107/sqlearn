@@ -109,17 +109,26 @@ export const SqlEditor: React.FC<SqlEditorProps> = ({
 
   // Keep the active suggestion in view as user navigates with Up/Down arrow keys
   useEffect(() => {
-    if (!showSuggestions || !selectedItemRef.current || !suggestionsListRef.current) return;
-    const container = suggestionsListRef.current;
-    const item = selectedItemRef.current;
+    if (!showSuggestions || !selectedItemRef.current) return;
+    try {
+      selectedItemRef.current.scrollIntoView({
+        block: 'nearest',
+        inline: 'nearest',
+        behavior: 'auto',
+      });
+    } catch {
+      if (suggestionsListRef.current) {
+        const container = suggestionsListRef.current;
+        const item = selectedItemRef.current;
+        const itemRect = item.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
 
-    const itemRect = item.getBoundingClientRect();
-    const containerRect = container.getBoundingClientRect();
-
-    if (itemRect.top < containerRect.top) {
-      container.scrollTop -= (containerRect.top - itemRect.top);
-    } else if (itemRect.bottom > containerRect.bottom) {
-      container.scrollTop += (itemRect.bottom - containerRect.bottom);
+        if (itemRect.top < containerRect.top) {
+          container.scrollTop -= (containerRect.top - itemRect.top);
+        } else if (itemRect.bottom > containerRect.bottom) {
+          container.scrollTop += (itemRect.bottom - containerRect.bottom);
+        }
+      }
     }
   }, [selectedSuggestionIndex, showSuggestions]);
 
@@ -307,13 +316,16 @@ export const SqlEditor: React.FC<SqlEditorProps> = ({
     }
 
     // 2. Suggestion Box Navigation
+    const isDownKey = e.key === 'ArrowDown' || e.key === 'Down';
+    const isUpKey = e.key === 'ArrowUp' || e.key === 'Up';
+
     if (showSuggestions && suggestions.length > 0) {
-      if (e.key === 'ArrowDown') {
+      if (isDownKey) {
         e.preventDefault();
         setSelectedSuggestionIndex((prev) => (prev + 1) % suggestions.length);
         return;
       }
-      if (e.key === 'ArrowUp') {
+      if (isUpKey) {
         e.preventDefault();
         setSelectedSuggestionIndex((prev) => (prev - 1 + suggestions.length) % suggestions.length);
         return;
@@ -362,8 +374,9 @@ export const SqlEditor: React.FC<SqlEditorProps> = ({
   };
 
   const handleKeyUp = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const isNavKey = ['ArrowDown', 'ArrowUp', 'Down', 'Up', 'Enter', 'Tab', 'Escape'].includes(e.key);
     // If suggestions popup is open, arrow/navigation keys are handled by keydown for suggestions
-    if (showSuggestions && ['ArrowDown', 'ArrowUp', 'Enter', 'Tab', 'Escape'].includes(e.key)) {
+    if (showSuggestions && isNavKey) {
       return;
     }
     // Ignore modifier keys
@@ -371,8 +384,10 @@ export const SqlEditor: React.FC<SqlEditorProps> = ({
       return;
     }
     // Cursor movement keys (horizontal, home, end, or vertical when suggestions closed)
-    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'PageUp', 'PageDown'].includes(e.key)) {
-      handleCursorActivity();
+    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Down', 'Up', 'Home', 'End', 'PageUp', 'PageDown'].includes(e.key)) {
+      if (!showSuggestions) {
+        handleCursorActivity();
+      }
     }
   };
 
@@ -719,7 +734,11 @@ export const SqlEditor: React.FC<SqlEditorProps> = ({
                     key={`${item.type}-${item.text}-${idx}`}
                     ref={isSelected ? selectedItemRef : null}
                     type="button"
-                    onMouseEnter={() => setSelectedSuggestionIndex(idx)}
+                    onMouseMove={(e) => {
+                      if (e.movementX !== 0 || e.movementY !== 0) {
+                        setSelectedSuggestionIndex(idx);
+                      }
+                    }}
                     onMouseDown={(e) => {
                       e.preventDefault();
                       applySuggestion(item);

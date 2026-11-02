@@ -109,4 +109,45 @@ describe('SqlEditor Autocomplete & Navigation', () => {
     fireEvent.keyDown(textarea, { key: 'Escape' });
     expect(screen.queryByText('GỢI Ý SQL & LƯỢC ĐỒ')).toBeNull();
   });
+  it('supports Down/Up key codes and ignores stationary mouse moves', () => {
+    let currentQuery = '';
+    const handleChangeQuery = vi.fn((q) => { currentQuery = q; });
+    const { rerender } = render(
+      <SqlEditor
+        query={currentQuery}
+        onChangeQuery={handleChangeQuery}
+        onExecute={vi.fn()}
+        queryHistory={[]}
+        schemas={schemas}
+      />
+    );
+
+    const textarea = screen.getByRole('textbox');
+    fireEvent.change(textarea, { target: { value: 's', selectionStart: 1 } });
+    rerender(
+      <SqlEditor
+        query="s"
+        onChangeQuery={handleChangeQuery}
+        onExecute={vi.fn()}
+        queryHistory={[]}
+        schemas={schemas}
+      />
+    );
+
+    const selectBtn = screen.getByText('SELECT').closest('button');
+    const sumBtn = screen.getByText('SUM()').closest('button');
+
+    // Press Down key code
+    fireEvent.keyDown(textarea, { key: 'Down' });
+    fireEvent.keyUp(textarea, { key: 'Down' });
+    expect(sumBtn?.className).toContain('border-l-2');
+
+    // Stationary mouse move over selectBtn (movementX: 0, movementY: 0) should not reset selection
+    fireEvent.mouseMove(selectBtn!, { movementX: 0, movementY: 0 });
+    expect(sumBtn?.className).toContain('border-l-2');
+
+    // Actual mouse move with movementX: 2 updates selection
+    fireEvent.mouseMove(selectBtn!, { movementX: 2, movementY: 1 });
+    expect(selectBtn?.className).toContain('border-l-2');
+  });
 });

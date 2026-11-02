@@ -23,13 +23,13 @@ Hãy tưởng tượng cơ sở dữ liệu của bạn như một file Excel kh
 
 💡 **Mẹo nhỏ:** Nếu bạn muốn lấy **TẤT CẢ** các cột trong bảng, hãy dùng dấu sao \`*\`.
     `,
-    syntaxExample: `-- Lấy tên và tuổi từ bảng users
-SELECT name, age 
-FROM users;
+    syntaxExample: `-- 1. Lấy một số cột cụ thể (tên và chuyên ngành) từ bảng sinh viên
+SELECT full_name, major 
+FROM students;
 
--- Lấy toàn bộ các cột của bảng
+-- 2. Lấy toàn bộ thông tin tất cả các cột bằng dấu sao (*)
 SELECT * 
-FROM users;`,
+FROM students;`,
     schemas: [
       {
         name: 'Movies',
@@ -62,14 +62,21 @@ FROM users;`,
         (6, 'Oppenheimer', 'Christopher Nolan', 2023, 'Drama', 957000000);`,
     ],
     exercise: {
-      goal: 'Trích xuất danh sách tên phim (title) và năm phát hành (release_year)',
+      goal: 'Trích xuất danh sách gồm 2 cột: tên phim (title) và năm phát hành (release_year) từ bảng Movies',
       taskDescription:
-        'Chào mừng bạn đến với kho dữ liệu Điện ảnh toàn cầu! Quản lý muốn bạn trích xuất danh sách gồm 2 cột: tên phim (`title`) và năm phát hành (`release_year`) từ bảng `Movies`.',
+        `🎬 **Bối cảnh:** Bạn đang tiếp quản kho lưu trữ điện ảnh toàn cầu. Quản lý rạp chiếu cần một danh mục tóm tắt các tác phẩm để chuẩn bị cho tuần lễ phim cổ điển.
+
+🎯 **Yêu cầu cụ thể:**
+- Truy vấn dữ liệu từ bảng **\`Movies\`**.
+- Chỉ chọn ra đúng 2 cột: tên phim (**\`title\`**) và năm phát hành (**\`release_year\`**).
+- Không lấy các cột khác để báo cáo ngắn gọn, đúng trọng tâm.
+
+💡 **Mẹo:** Dùng cấu trúc: \`SELECT cot_1, cot_2 FROM ten_bang;\`. Đừng quên kết thúc câu lệnh bằng dấu chấm phẩy (\`;\`).`,
       starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT title, release_year FROM Movies;`,
       hints: [
-        'Dùng câu lệnh: SELECT title, release_year FROM Movies;',
-        'Nhớ kết thúc bằng dấu chấm phẩy (;).',
+        'Cấu trúc cơ bản: SELECT tên_cột_1, tên_cột_2 FROM tên_bảng;',
+        'Ở bài này, hai cột cần chọn là title và release_year, lấy từ bảng Movies.',
       ],
       explanation:
         'Chính xác! Bạn vừa gọi thành công tài liệu từ chiếc tủ hồ sơ CSDL ra màn hình.',
@@ -105,10 +112,15 @@ Các toán tử so sánh cơ bản:
 - \`<\`: Nhỏ hơn
 - \`<>\` hoặc \`!=\`: Khác (Không bằng)
     `,
-    syntaxExample: `-- Tìm tất cả các hóa đơn có giá trị lớn hơn 100$
+    syntaxExample: `-- 1. Lọc khách hàng sống tại Hà Nội (chuỗi văn bản đặt trong dấu nháy đơn ' ')
 SELECT * 
-FROM sales 
-WHERE amount > 100;`,
+FROM customers 
+WHERE city = 'Hanoi';
+
+-- 2. Lọc các hóa đơn có giá trị lớn hơn 500$ (số không cần dấu nháy)
+SELECT order_id, amount 
+FROM invoices 
+WHERE amount > 500;`,
     schemas: [
       {
         name: 'Movies',
@@ -140,13 +152,20 @@ WHERE amount > 100;`,
         (5, 'Titanic', 'James Cameron', 1997, 'Romance', 2257000000);`,
     ],
     exercise: {
-      goal: "Lấy ra tất cả các cột của các siêu phẩm đạo diễn bởi 'Christopher Nolan'",
+      goal: 'Lọc toàn bộ thông tin các bộ phim của đạo diễn Christopher Nolan',
       taskDescription:
-        "Bạn đang tìm kiếm ý tưởng kịch bản và muốn xem lại các siêu phẩm của đạo diễn lừng danh 'Christopher Nolan'. Hãy lấy ra tất cả các cột (`*`) từ bảng `Movies` nơi mà `director = 'Christopher Nolan'`. (Lưu ý: Chữ trong SQL phải được đặt trong dấu nháy đơn ' ').",
+        `🎬 **Bối cảnh:** Để chuẩn bị cho buổi tọa đàm về điện ảnh nghệ thuật, ban tổ chức muốn tổng hợp lại toàn bộ các siêu phẩm của vị đạo diễn lừng danh **Christopher Nolan**.
+
+🎯 **Yêu cầu cụ thể:**
+- Lấy **tất cả các cột** (\`*\`) từ bảng dữ liệu **\`Movies\`**.
+- Áp dụng mệnh đề lọc **\`WHERE\`** với điều kiện đạo diễn: \`director = 'Christopher Nolan'\`.
+
+💡 **Lưu ý:** Tên riêng hoặc chuỗi ký tự trong SQL luôn phải đặt trong cặp dấu nháy đơn (ví dụ \`'Christopher Nolan'\`), phân biệt chính xác chữ hoa và chữ thường.`,
       starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT * FROM Movies WHERE director = 'Christopher Nolan';`,
       hints: [
-        "Cú pháp: SELECT * FROM Movies WHERE director = 'Christopher Nolan';",
+        'Sử dụng câu lệnh: SELECT * FROM Movies WHERE director = \'...\';',
+        'Nhớ viết hoa chữ Christopher Nolan đúng chính tả và đặt trong cặp dấu nháy đơn.',
       ],
       explanation:
         'Tuyệt vời! Bạn đã sử dụng bộ lọc thần kỳ WHERE để trích xuất chính xác phim của đạo diễn Christopher Nolan.',
@@ -178,10 +197,15 @@ Cuộc sống không phải lúc nào cũng chỉ có 1 điều kiện. Đôi kh
 - **\`OR\` (Hoặc):** Dữ liệu chỉ cần thỏa mãn MỘT TRONG HAI điều kiện là được (Dễ dãi).
 - **\`NOT\` (Không):** Lọc ra những dữ liệu KHÔNG thỏa mãn điều kiện đó.
     `,
-    syntaxExample: `-- Tìm người dùng trên 18 tuổi VÀ đang hoạt động
-SELECT * 
-FROM users 
-WHERE age > 18 AND status = 'active';`,
+    syntaxExample: `-- 1. Lấy sản phẩm thuộc ngành 'Điện tử' VÀ có giá dưới 300$
+SELECT product_name, price, category 
+FROM products 
+WHERE category = 'Electronics' AND price < 300;
+
+-- 2. Lấy sản phẩm hết hàng (stock = 0) HOẶC trạng thái 'Ngừng kinh doanh'
+SELECT product_name, status 
+FROM products 
+WHERE stock_quantity = 0 OR status = 'Discontinued';`,
     schemas: [
       {
         name: 'employees',
@@ -209,13 +233,22 @@ WHERE age > 18 AND status = 'active';`,
         (5, 'Hoang Van E', 'Marketing', 1900);`,
     ],
     exercise: {
-      goal: "Tìm nhân viên làm việc tại phòng 'IT' HOẶC có lương trên 2000$",
+      goal: 'Tìm nhân viên làm việc tại phòng \'IT\' HOẶC có mức lương trên 2000$',
       taskDescription:
-        "Bộ phận HR cần danh sách để phát thưởng cuối năm. Họ muốn tìm các nhân viên (`employees`) làm việc tại phòng 'IT' HOẶC những người có mức lương (`salary`) trên 2000$ (bất kể phòng ban nào).",
+        `🏢 **Bối cảnh:** Phòng Nhân sự (HR) cần lập danh sách để trao thưởng cuối năm cho những nhân sự chủ chốt hoặc nhân sự thuộc bộ phận kỹ thuật mũi nhọn.
+
+🎯 **Yêu cầu cụ thể:**
+- Lấy toàn bộ thông tin (\`*\`) từ bảng nhân sự **\`employees\`**.
+- Lọc dữ liệu thỏa mãn **ít nhất một trong hai** điều kiện sau (sử dụng toán tử **\`OR\`**):
+  1. Nhân viên thuộc phòng Công nghệ: \`department = 'IT'\`.
+  2. HOẶC nhân viên có mức lương cao: \`salary > 2000\` (bất kể phòng ban nào).
+
+💡 **Lưu ý:** Toán tử \`OR\` chỉ cần 1 trong 2 vế điều kiện đúng là bản ghi sẽ được trả về.`,
       starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT * FROM employees WHERE department = 'IT' OR salary > 2000;`,
       hints: [
-        "Sử dụng toán tử OR giữa 2 điều kiện: department = 'IT' OR salary > 2000",
+        'Cấu trúc: SELECT * FROM employees WHERE điều_kiện_1 OR điều_kiện_2;',
+        'Hai điều kiện ở đây là: department = \'IT\' và salary > 2000.',
       ],
       explanation:
         'Chính xác! Toán tử OR giúp bạn gom các nhân viên thỏa mãn ít nhất một trong hai tiêu chí.',
@@ -252,13 +285,13 @@ Sau khi đã lọc được dữ liệu bằng \`WHERE\`, bạn sẽ muốn sắ
   - Giúp bạn chỉ lấy đúng số lượng dòng mong muốn tính từ trên xuống (ví dụ \`LIMIT 5\` sẽ lấy đúng 5 dòng đầu tiên).
   - Khi kết hợp với \`ORDER BY\`, ta sẽ có công thức hoàn hảo để lấy danh sách **Top N** (ví dụ: Top 3 học sinh giỏi nhất, Top 10 video xem nhiều nhất).
     `,
-    syntaxExample: `-- Ví dụ 1: Tìm Top 5 học sinh có điểm thi cao nhất (sắp xếp giảm dần DESC)
+    syntaxExample: `-- 1. Tìm Top 5 học sinh có điểm thi cao nhất (sắp xếp giảm dần DESC)
 SELECT student_name, score 
 FROM students 
 ORDER BY score DESC 
 LIMIT 5;
 
--- Ví dụ 2: Sắp xếp danh sách nhân viên theo bảng chữ cái A-Z (tăng dần ASC)
+-- 2. Sắp xếp danh sách nhân viên theo bảng chữ cái A-Z (tăng dần ASC)
 SELECT full_name, department 
 FROM employees 
 ORDER BY full_name ASC;`,
@@ -288,14 +321,21 @@ ORDER BY full_name ASC;`,
         (6, 'Giá đỡ Laptop kim loại', 35);`,
     ],
     exercise: {
-      goal: 'Lấy ra thông tin Top 3 sản phẩm rẻ nhất (giá tăng dần)',
+      goal: 'Lấy ra thông tin Top 3 sản phẩm rẻ nhất (giá tăng dần ASC)',
       taskDescription:
-        'Cửa hàng đang có chương trình khuyến mãi "Giá sốc". Hãy lấy ra danh sách toàn bộ thông tin (`*`) của Top 3 sản phẩm (`products`) rẻ nhất (sắp xếp giá `price` tăng dần `ASC`, `LIMIT 3`).',
+        `🛒 **Bối cảnh:** Cửa hàng công nghệ chuẩn bị chạy chiến dịch Flash Sale "Giá Rẻ Bất Ngờ". Bạn cần tìm ra 3 sản phẩm có mức giá thấp nhất để đặt lên vị trí nổi bật nhất của trang chủ.
+
+🎯 **Yêu cầu cụ thể:**
+- Lấy toàn bộ thông tin (\`*\`) từ bảng sản phẩm **\`products\`**.
+- Sắp xếp dữ liệu theo giá bán (**\`price\`**) từ rẻ nhất đến đắt nhất (dùng **\`ORDER BY price ASC\`**).
+- Giới hạn kết quả chỉ lấy đúng 3 sản phẩm rẻ nhất (dùng **\`LIMIT 3\`**).
+
+💡 **Mẹo:** \`ASC\` là viết tắt của Ascending (tăng dần). Khi muốn tìm giá rẻ nhất, thấp nhất, hãy luôn sắp xếp \`ASC\`.`,
       starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT * FROM products ORDER BY price ASC LIMIT 3;`,
       hints: [
-        'Sắp xếp giá tăng dần: ORDER BY price ASC',
-        'Giới hạn 3 kết quả: LIMIT 3',
+        'Sắp xếp giá tăng dần từ nhỏ tới lớn: ORDER BY price ASC',
+        'Giới hạn 3 dòng kết quả đầu tiên: LIMIT 3',
       ],
       explanation:
         'Rất tốt! Cú pháp ORDER BY ... ASC LIMIT 3 giúp bạn lấy chuẩn xác Top 3 sản phẩm giá mềm nhất.',
@@ -335,7 +375,7 @@ Chúc mừng! Nhờ kỹ năng SQL xuất sắc, bạn vừa được nhận là
 4. Sắp xếp thế nào? Doanh thu cao nhất thì phải xếp giảm dần (\`ORDER BY revenue DESC\`)
 5. Lấy bao nhiêu bộ phim? (\`LIMIT 10\`)
     `,
-    syntaxExample: `-- Mẫu kết hợp chuẩn chỉnh cả 5 mệnh đề trong SQL:
+    syntaxExample: `-- Cú pháp tổng hợp hoàn chỉnh kết hợp cả 5 mệnh đề trong SQL:
 SELECT customer_name, total_spent 
 FROM customers 
 WHERE country = 'Vietnam' AND total_spent > 1000 
@@ -378,13 +418,23 @@ LIMIT 5;`,
         (13, 'Mission: Impossible - Fallout', 'Action', 2018, 791600000);`,
     ],
     exercise: {
-      goal: 'Báo cáo 10 phim Action sau 2010 có doanh thu cao nhất',
+      goal: 'Báo cáo Top 10 phim Hành động phát hành sau năm 2010 có doanh thu cao nhất',
       taskDescription:
-        "Lấy 2 cột `title` và `revenue` từ bảng `Movies` với điều kiện `genre = 'Action' AND release_year > 2010`, sắp xếp `ORDER BY revenue DESC LIMIT 10`.",
+        `🎬 **Bối cảnh:** Bạn vừa nhận chức Trợ lý Quản lý Cửa hàng Băng đĩa lớn nhất thành phố. Quản lý cần gấp một danh mục 10 bộ phim Hành động ăn khách nhất thời gian qua để lên đơn đặt hàng nhập khẩu.
+
+🎯 **Yêu cầu cụ thể (Quy trình 5 bước chuẩn):**
+1. **SELECT:** Chỉ lấy 2 cột: tên phim (\`title\`) và doanh thu phòng vé (\`revenue\`).
+2. **FROM:** Truy vấn từ bảng phim **\`Movies\`**.
+3. **WHERE:** Áp dụng đồng thời 2 điều kiện lọc (dùng \`AND\`):
+   - Thể loại phim Hành động: \`genre = 'Action'\`.
+   - Năm phát hành sau năm 2010: \`release_year > 2010\`.
+4. **ORDER BY:** Doanh thu cao nhất thì phải xếp giảm dần: \`ORDER BY revenue DESC\`.
+5. **LIMIT:** Chỉ lấy ra đúng Top 10 bộ phim đầu bảng: \`LIMIT 10\`.`,
       starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT title, revenue FROM Movies WHERE genre = 'Action' AND release_year > 2010 ORDER BY revenue DESC LIMIT 10;`,
       hints: [
-        "SELECT title, revenue FROM Movies WHERE genre = 'Action' AND release_year > 2010 ORDER BY revenue DESC LIMIT 10;",
+        'Lần lượt sắp xếp: SELECT title, revenue FROM Movies WHERE genre = \'Action\' AND release_year > 2010 ORDER BY ... LIMIT ...;',
+        'Doanh thu cao nhất thì xếp giảm dần bằng DESC, giới hạn 10 phim bằng LIMIT 10.',
       ],
       explanation:
         'VINH DANH NGƯỜI GÁC CỔNG DỮ LIỆU! Bạn đã vượt qua toàn bộ thử thách của Giai đoạn 1 một cách ngoạn mục!',
@@ -413,8 +463,12 @@ Nếu sếp hỏi bạn: *"Tháng này chúng ta bán được bao nhiêu tiền
 - \`MAX()\`: Tìm giá trị lớn nhất.
 - \`MIN()\`: Tìm giá trị nhỏ nhất.
     `,
-    syntaxExample: `-- Tính mức lương trung bình của toàn bộ nhân viên
-SELECT AVG(salary) 
+    syntaxExample: `-- 1. Tính mức lương trung bình và mức lương cao nhất của công ty
+SELECT AVG(salary) AS avg_salary, MAX(salary) AS max_salary 
+FROM employees;
+
+-- 2. Đếm tổng số lượng nhân viên đang làm việc
+SELECT COUNT(*) AS total_staff 
 FROM employees;`,
     schemas: [
       {
@@ -441,13 +495,21 @@ FROM employees;`,
         (5, 102, 600);`,
     ],
     exercise: {
-      goal: 'Tính Tổng doanh thu (amount) và Số lượng đơn hàng đã bán ra',
+      goal: 'Tính Tổng doanh thu (total_revenue) và Tổng số đơn hàng (total_orders) từ bảng Orders',
       taskDescription:
-        'Kế toán trưởng cần chốt sổ tháng. Từ bảng `Orders`, hãy tính Tổng doanh thu (`SUM(amount) AS total_revenue`) và Số lượng đơn hàng (`COUNT(*) AS total_orders`).',
+        `📊 **Bối cảnh:** Kế toán trưởng cần chốt số liệu tài chính tháng này để báo cáo trước Hội đồng Quản trị.
+
+🎯 **Yêu cầu cụ thể:**
+- Truy vấn từ bảng đơn hàng **\`Orders\`**.
+- Tính tổng giá trị tất cả đơn hàng (\`amount\`), đặt tên cột là **\`total_revenue\`** (dùng \`SUM(amount) AS total_revenue\`).
+- Đếm tổng số lượng đơn hàng đã bán ra, đặt tên cột là **\`total_orders\`** (dùng \`COUNT(*) AS total_orders\`).
+
+💡 **Mẹo:** Dùng từ khóa \`AS\` để đặt bí danh cho cột tính toán, giúp kết quả hiển thị rõ ràng, chuyên nghiệp.`,
       starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT SUM(amount) AS total_revenue, COUNT(*) AS total_orders FROM Orders;`,
       hints: [
-        'Dùng: SELECT SUM(amount) AS total_revenue, COUNT(*) AS total_orders FROM Orders;',
+        'Cấu trúc: SELECT SUM(cột) AS tên_mới_1, COUNT(*) AS tên_mới_2 FROM tên_bảng;',
+        'Cột cần tính tổng là amount, đặt bí danh là total_revenue.',
       ],
       explanation:
         'Bạn vừa làm công việc của kế toán trong vòng 2 giây! ✅ Pass xuất sắc!',
@@ -478,11 +540,16 @@ Dùng hàm tổng hợp ở Bài 1 sẽ gom *toàn bộ* dữ liệu thành 1 d�
 - **\`GROUP BY\`**: Giúp bạn gom nhóm dữ liệu theo một tiêu chí nào đó (Ví dụ: Gom nhóm theo phòng ban).
 - **\`HAVING\`**: Nếu \`WHERE\` dùng để lọc từng *dòng*, thì \`HAVING\` dùng để lọc các *nhóm* SAU KHI đã dùng \`GROUP BY\`.
     `,
-    syntaxExample: `-- Đếm nhân viên từng phòng ban có trên 5 người
-SELECT department, COUNT(*) 
-FROM employees 
-GROUP BY department 
-HAVING COUNT(*) > 5;`,
+    syntaxExample: `-- 1. Đếm số lượng sản phẩm của từng ngành hàng
+SELECT category, COUNT(*) AS total_products 
+FROM products 
+GROUP BY category;
+
+-- 2. Lọc ra các ngành hàng có số lượng trên 10 sản phẩm
+SELECT category, COUNT(*) AS total_products 
+FROM products 
+GROUP BY category 
+HAVING COUNT(*) > 10;`,
     schemas: [
       {
         name: 'Orders',
@@ -507,11 +574,20 @@ HAVING COUNT(*) > 5;`,
     exercise: {
       goal: 'Tìm các mã khách hàng có tổng số đơn hàng đã mua lớn hơn 5',
       taskDescription:
-        'Chăm sóc khách hàng muốn tặng quà cho các "khách sộp". Bạn hãy tìm từ bảng `Orders` những mã khách hàng (`customer_id`) có tổng số đơn hàng đã mua lớn hơn 5 (`HAVING COUNT(*) > 5`).',
+        `🎁 **Bối cảnh:** Đội ngũ Chăm sóc khách hàng chuẩn bị tặng quà tri ân cho các khách hàng trung thành nhất (những người mua sắm thường xuyên).
+
+🎯 **Yêu cầu cụ thể:**
+- Truy vấn từ bảng đơn hàng **\`Orders\`**.
+- Gom nhóm dữ liệu theo từng khách hàng bằng **\`GROUP BY customer_id\`**.
+- Lấy ra 2 cột: mã khách hàng (\`customer_id\`) và tổng số đơn (\`COUNT(*) AS total_orders\`).
+- Dùng **\`HAVING COUNT(*) > 5\`** để chỉ giữ lại những khách hàng có hơn 5 đơn hàng.
+
+💡 **Lưu ý:** \`WHERE\` dùng để lọc dòng trước khi gom nhóm, còn \`HAVING\` dùng để lọc nhóm sau khi \`GROUP BY\`.`,
       starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT customer_id, COUNT(*) AS total_orders FROM Orders GROUP BY customer_id HAVING COUNT(*) > 5;`,
       hints: [
-        'Cú pháp: GROUP BY customer_id HAVING COUNT(*) > 5',
+        'Gom nhóm theo mã khách hàng: GROUP BY customer_id',
+        'Lọc nhóm sau khi đếm: HAVING COUNT(*) > 5',
       ],
       explanation:
         'Tuyệt vời! Bạn đã lọc ra chính xác khách hàng 101 với 6 đơn hàng thỏa mãn điều kiện HAVING.',
@@ -547,10 +623,10 @@ Trong thực tế, dữ liệu không bao giờ nằm chung ở một bảng. T�
 - **\`INNER JOIN\`**: Chỉ lấy những dữ liệu **có sự khớp nhau** ở cả 2 bảng (Phần giao nhau).
 - **\`LEFT JOIN\`**: Lấy **tất cả** dữ liệu ở bảng bên trái, và những dữ liệu khớp ở bảng bên phải (Nếu không khớp, dữ liệu bên phải sẽ trả về rỗng - NULL).
     `,
-    syntaxExample: `-- Ghép tên khách hàng với ngày mua hàng
-SELECT a.name, b.order_date 
-FROM customers a 
-JOIN orders b ON a.id = b.customer_id;`,
+    syntaxExample: `-- Ghép bảng khách hàng (customers) với bảng hóa đơn (orders) qua cột customer_id
+SELECT c.customer_name, o.order_date, o.total_amount 
+FROM customers c 
+INNER JOIN orders o ON c.id = o.customer_id;`,
     schemas: [
       {
         name: 'Students',
@@ -592,13 +668,21 @@ JOIN orders b ON a.id = b.customer_id;`,
         (102, 2, 88);`,
     ],
     exercise: {
-      goal: 'Ghép tên sinh viên từ Students A với điểm số từ Scores B bằng INNER JOIN',
+      goal: 'Ghép tên sinh viên (student_name) với điểm số (score) bằng INNER JOIN',
       taskDescription:
-        'Ghép `tên sinh viên` (`A.student_name`) từ bảng `Students` (Bảng A) với `điểm số` (`B.score`) từ bảng `Scores` (Bảng B). Cột chung để nối là `A.id = B.student_id`. Hãy dùng `INNER JOIN`.',
+        `🎓 **Bối cảnh:** Trường đại học lưu hồ sơ sinh viên ở bảng \`Students\` và bảng điểm ở bảng \`Scores\`. Phòng Đào tạo cần ghép 2 bảng này để in phiếu điểm chính thức.
+
+🎯 **Yêu cầu cụ thể:**
+- Đặt bí danh cho 2 bảng: \`Students A\` và \`Scores B\` (dùng \`FROM Students A INNER JOIN Scores B\`).
+- Xác định điều kiện liên kết khóa ngoại: **\`ON A.id = B.student_id\`**.
+- Chỉ chọn ra đúng 2 cột hiển thị: tên sinh viên (**\`A.student_name\`**) và điểm số (**\`B.score\`**).
+
+💡 **Mẹo:** \`INNER JOIN\` chỉ giữ lại các dòng mà khóa chung xuất hiện đầy đủ ở cả hai bảng.`,
       starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT A.student_name, B.score FROM Students A INNER JOIN Scores B ON A.id = B.student_id;`,
       hints: [
-        'INNER JOIN Scores B ON A.id = B.student_id',
+        'Cấu trúc: SELECT A.student_name, B.score FROM Students A INNER JOIN Scores B ON A.id = B.student_id;',
+        'Hãy chú ý chỉ định rõ tên bảng hoặc bí danh trước tên cột để tránh trùng lặp.',
       ],
       explanation:
         'Chính xác! Học sinh Le Van Cuong (id=3) chưa có điểm nên không xuất hiện trong kết quả của INNER JOIN.',
@@ -627,12 +711,14 @@ JOIN orders b ON a.id = b.customer_id;`,
 ### 📖 Lý thuyết Cốt lõi
 Nếu bạn đã từng dùng hàm \`IF\` trong Excel hoặc lập trình, thì **\`CASE WHEN\`** chính là phiên bản SQL của nó. Nó cho phép bạn đánh giá các điều kiện (IF-THEN-ELSE) để tạo ra một cột dữ liệu hoàn toàn mới dựa trên các quy luật do bạn tự định nghĩa.
     `,
-    syntaxExample: `SELECT product_name, price,
+    syntaxExample: `-- Phân loại mức thu nhập nhân viên theo mức lương
+SELECT name, salary, 
   CASE 
-    WHEN price > 100 THEN 'High' 
-    ELSE 'Low' 
-  END AS price_category
-FROM products;`,
+    WHEN salary >= 3000 THEN 'Thu Nhập Cao' 
+    WHEN salary >= 1500 THEN 'Thu Nhập Trung Bình' 
+    ELSE 'Thu Nhập Khởi Điểm' 
+  END AS income_level 
+FROM employees;`,
     schemas: [
       {
         name: 'Customers',
@@ -657,13 +743,23 @@ FROM products;`,
         (4, 'Do Anh Dung', 2000);`,
     ],
     exercise: {
-      goal: 'Tạo cột Segment phân khúc: > 1000: VIP, >= 0: Normal, còn lại: Spam',
+      goal: 'Phân loại khách hàng vào cột Segment: > 1000 là \'VIP\', >= 0 là \'Normal\', còn lại là \'Spam\'',
       taskDescription:
-        "Team Marketing muốn chạy chiến dịch email. Dựa vào cột `points` trong bảng `Customers`, hãy tạo cột mới `Segment`: điểm > 1000: 'VIP', điểm từ 0 đến 1000: 'Normal', điểm < 0: 'Spam'. Trích xuất `customer_name, points, Segment`.",
+        `🏷️ **Bối cảnh:** Team Marketing muốn gửi email ưu đãi theo phân khúc khách hàng dựa trên điểm tích lũy (\`points\`).
+
+🎯 **Yêu cầu cụ thể:**
+- Truy vấn từ bảng khách hàng **\`Customers\`**.
+- Lấy 3 cột: **\`customer_name\`**, **\`points\`**, và cột phân loại mới đặt tên là **\`Segment\`**.
+- Cột \`Segment\` dùng \`CASE WHEN\` với quy tắc:
+  - \`WHEN points > 1000 THEN 'VIP'\`
+  - \`WHEN points >= 0 THEN 'Normal'\`
+  - \`ELSE 'Spam'\`
+  - Kết thúc bằng \`END AS Segment\`.`,
       starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT customer_name, points, CASE WHEN points > 1000 THEN 'VIP' WHEN points >= 0 THEN 'Normal' ELSE 'Spam' END AS Segment FROM Customers;`,
       hints: [
-        "CASE WHEN points > 1000 THEN 'VIP' WHEN points >= 0 THEN 'Normal' ELSE 'Spam' END AS Segment",
+        'Cấu trúc: CASE WHEN điều_kiện_1 THEN \'kết_quả_1\' WHEN ... ELSE \'kết_quả_cuối\' END AS Segment',
+        'Thứ tự xét điều kiện: points > 1000 trước, sau đó points >= 0, cuối cùng là ELSE \'Spam\'.',
       ],
       explanation:
         'Xuất sắc! Bạn đã làm chủ cấu trúc CASE WHEN để phân loại khách hàng một cách thông minh.',
@@ -705,20 +801,20 @@ Tính tổng số tiền mà **mỗi người dùng** đã chi tiêu. Sau đó, 
 - Còn lại: 'Thành viên Đồng'
 Chỉ xuất ra danh sách **Top 5 người dùng chi tiêu nhiều nhất**.
     `,
-    syntaxExample: `SELECT 
-    U.name, 
-    SUM(P.price) AS total_spent,
-    CASE
-        WHEN SUM(P.price) > 500 THEN 'Thành viên Vàng'
-        WHEN SUM(P.price) > 200 THEN 'Thành viên Bạc'
-        ELSE 'Thành viên Đồng'
-    END AS membership_tier
-FROM Users U
-JOIN Orders O ON U.id = O.user_id
-JOIN Products P ON O.product_id = P.id
-GROUP BY U.name
-ORDER BY total_spent DESC
-LIMIT 5;`,
+    syntaxExample: `-- Mẫu kết hợp JOIN 3 bảng + GROUP BY + CASE WHEN + ORDER BY + LIMIT:
+SELECT d.driver_name, 
+  SUM(p.amount) AS total_earned,
+  CASE 
+    WHEN SUM(p.amount) > 10000 THEN 'Hạng Kim Cương'
+    WHEN SUM(p.amount) > 5000 THEN 'Hạng Vàng'
+    ELSE 'Hạng Tiêu Chuẩn'
+  END AS driver_tier
+FROM drivers d
+JOIN trips t ON d.id = t.driver_id
+JOIN payments p ON t.id = p.trip_id
+GROUP BY d.driver_name
+ORDER BY total_earned DESC
+LIMIT 10;`,
     schemas: [
       {
         name: 'Users',
@@ -764,15 +860,26 @@ LIMIT 5;`,
         (8, 5, 102), (9, 5, 101);`,
     ],
     exercise: {
-      goal: 'Báo cáo Top 5 khách hàng chi tiêu nhiều nhất và phân loại thành viên',
+      goal: 'Báo cáo Top 5 khách hàng chi tiêu nhiều nhất kèm phân hạng thành viên',
       taskDescription:
-        'Nối 3 bảng `Users U`, `Orders O`, `Products P`, tính tổng chi tiêu `SUM(P.price) AS total_spent`, phân loại `membership_tier` (Vàng >500, Bạc >200, Đồng còn lại), gom nhóm theo `U.name`, sắp xếp `ORDER BY total_spent DESC LIMIT 5`.',
+        `🛒 **Bối cảnh:** Sàn thương mại điện tử cần bảng vinh danh Top 5 khách hàng chi tiêu khủng nhất mùa sale, đồng thời tự động trao danh hiệu thành viên tương ứng.
+
+🎯 **Yêu cầu cụ thể:**
+1. **JOIN 3 bảng:** Nối bảng \`Users U\` với \`Orders O\` qua \`U.id = O.user_id\`, sau đó nối tiếp với \`Products P\` qua \`O.product_id = P.id\`.
+2. **Gom nhóm:** Dùng \`GROUP BY U.name\` theo từng khách hàng.
+3. **Cột hiển thị:**
+   - \`U.name\` (Tên khách hàng).
+   - \`SUM(P.price) AS total_spent\` (Tổng tiền chi mua hàng).
+   - Cột phân hạng \`membership_tier\` bằng \`CASE WHEN\`:
+     - \`SUM(P.price) > 500\` -> \`'Thành viên Vàng'\`
+     - \`SUM(P.price) > 200\` -> \`'Thành viên Bạc'\`
+     - Còn lại -> \`'Thành viên Đồng'\`
+4. **Sắp xếp & Giới hạn:** \`ORDER BY total_spent DESC LIMIT 5\`.`,
       starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT U.name, SUM(P.price) AS total_spent, CASE WHEN SUM(P.price) > 500 THEN 'Thành viên Vàng' WHEN SUM(P.price) > 200 THEN 'Thành viên Bạc' ELSE 'Thành viên Đồng' END AS membership_tier FROM Users U JOIN Orders O ON U.id = O.user_id JOIN Products P ON O.product_id = P.id GROUP BY U.name ORDER BY total_spent DESC LIMIT 5;`,
       hints: [
-        'JOIN Orders O ON U.id = O.user_id',
-        'JOIN Products P ON O.product_id = P.id',
-        'GROUP BY U.name ORDER BY total_spent DESC LIMIT 5',
+        'Nối 3 bảng: FROM Users U JOIN Orders O ON U.id = O.user_id JOIN Products P ON O.product_id = P.id',
+        'Nhớ tính SUM(P.price) AS total_spent và gom nhóm GROUP BY U.name trước khi ORDER BY và LIMIT.',
       ],
       explanation:
         'VINH DANH BẬC THẦY KẾT NỐI! Bạn đã hoàn thành xuất sắc Mini-Project Giai đoạn 2 và sẵn sàng tiến vào Giai đoạn Nâng cao!',
@@ -798,10 +905,15 @@ Thỉnh thoảng, bạn cần lấy kết quả của một câu truy vấn này
 - **Subquery (Truy vấn lồng):** Là việc nhét một câu \`SELECT\` vào bên trong mệnh đề \`WHERE\` hoặc \`FROM\`. Nếu lồng 3-4 lớp, code sẽ như một mớ bòng bong (Spaghetti code).
 - **CTE (Common Table Expression - \`WITH\`):** Là "vị cứu tinh". Nó giúp bạn định nghĩa một (hoặc nhiều) "bảng tạm thời" ở ngay đầu file. Code sẽ đọc từ trên xuống dưới, cực kỳ rõ ràng, logic và dễ gỡ lỗi (debug).
     `,
-    syntaxExample: `WITH TopUsers AS (
-    SELECT id FROM users LIMIT 10
+    syntaxExample: `-- Định nghĩa CTE bảng tạm chứa các phòng ban công nghệ, sau đó lọc nhân viên
+WITH TechDepartments AS (
+  SELECT dept_id 
+  FROM departments 
+  WHERE field = 'Technology'
 )
-SELECT * FROM TopUsers;`,
+SELECT employee_name, salary 
+FROM employees 
+WHERE dept_id IN (SELECT dept_id FROM TechDepartments);`,
     schemas: [
       {
         name: 'Customers',
@@ -834,11 +946,19 @@ SELECT * FROM TopUsers;`,
     exercise: {
       goal: 'Dùng CTE Hanoi_Customers để tìm các đơn hàng của khách hàng ở Hà Nội',
       taskDescription:
-        "Tạo CTE `Hanoi_Customers` lấy `customer_id` của khách hàng có `city = 'Hanoi'`, sau đó truy vấn bảng `Orders` có `customer_id IN (SELECT customer_id FROM Hanoi_Customers)`.",
+        `🧹 **Bối cảnh:** Chi nhánh giao vận Hà Nội cần trích xuất toàn bộ đơn hàng của khách hàng cư trú tại Hà Nội để điều phối nhân viên bưu điện phát bưu phẩm.
+
+🎯 **Yêu cầu cụ thể:**
+1. Tạo bảng tạm (CTE) tên là **\`Hanoi_Customers\`**:
+   \`WITH Hanoi_Customers AS (SELECT customer_id FROM Customers WHERE city = 'Hanoi')\`
+2. Truy vấn toàn bộ cột (\`*\`) từ bảng **\`Orders\`**.
+3. Điều kiện lọc: Mã khách hàng phải nằm trong bảng tạm vừa tạo:
+   \`WHERE customer_id IN (SELECT customer_id FROM Hanoi_Customers)\`.`,
       starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `WITH Hanoi_Customers AS (SELECT customer_id FROM Customers WHERE city = 'Hanoi') SELECT * FROM Orders WHERE customer_id IN (SELECT customer_id FROM Hanoi_Customers);`,
       hints: [
-        'Dùng: WITH Hanoi_Customers AS (SELECT customer_id FROM Customers WHERE city = \'Hanoi\') SELECT * FROM Orders WHERE customer_id IN (SELECT customer_id FROM Hanoi_Customers);',
+        'Cú pháp CTE: WITH Tên_Bảng_Tạm AS (truy vấn con) SELECT * FROM bảng_chính WHERE ...;',
+        'Trong bài này: WITH Hanoi_Customers AS (SELECT customer_id FROM Customers WHERE city = \'Hanoi\') ...',
       ],
       explanation:
         'Tuyệt vời! CTE giúp code của bạn có cấu trúc module hóa, rõ ràng và dễ bảo trì.',
@@ -873,9 +993,13 @@ Các hàm xếp hạng phổ biến:
 - \`RANK()\`: Xếp hạng, nếu 2 người bằng điểm nhau cùng hạng 1, người tiếp theo sẽ là hạng 3 (nhảy cóc).
 - \`DENSE_RANK()\`: Giống \`RANK\`, nhưng người tiếp theo sẽ là hạng 2 (không nhảy cóc).
     `,
-    syntaxExample: `SELECT name, 
-       RANK() OVER(ORDER BY score DESC) as rank 
-FROM students;`,
+    syntaxExample: `-- Xếp hạng điểm số học sinh theo từng khối lớp bằng RANK() OVER(PARTITION BY...)
+SELECT student_name, grade_level, score,
+  RANK() OVER(
+    PARTITION BY grade_level 
+    ORDER BY score DESC
+  ) AS class_rank 
+FROM student_scores;`,
     schemas: [
       {
         name: 'Sales',
@@ -903,13 +1027,22 @@ FROM students;`,
         (5, 'Emma', 'B2B', 95000);`,
     ],
     exercise: {
-      goal: 'Xếp hạng nhân viên kinh doanh trong nội bộ từng phòng ban',
+      goal: 'Xếp hạng doanh thu nhân viên trong nội bộ từng phòng ban bằng RANK() OVER(...)',
       taskDescription:
-        'Trưởng phòng kinh doanh muốn trao thưởng cho nhân viên Sales xuất sắc nhất của TỪNG phòng ban. Dùng `PARTITION BY department` kết hợp `RANK()` xếp hạng doanh thu (`revenue`) giảm dần.',
+        `🏅 **Bối cảnh:** Công ty muốn trao giải thưởng "Nhân viên xuất sắc nhất tháng" cho từng phòng ban độc lập. Bạn cần tính thứ hạng doanh thu trong nội bộ mỗi phòng ban mà không làm mất đi thông tin từng nhân viên.
+
+🎯 **Yêu cầu cụ thể:**
+- Truy vấn từ bảng bán hàng **\`Sales\`**.
+- Chọn các cột: \`employee_name\`, \`department\`, \`revenue\`.
+- Tạo cột thứ hạng đặt tên là **\`dept_rank\`** bằng hàm cửa sổ:
+  \`RANK() OVER(PARTITION BY department ORDER BY revenue DESC) AS dept_rank\`.
+
+💡 **Mẹo:** \`PARTITION BY department\` giúp chia nhỏ dữ liệu theo từng phòng ban, sau đó \`ORDER BY revenue DESC\` sẽ xếp hạng từ 1, 2, 3... riêng biệt cho mỗi phòng ban đó.`,
       starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT employee_name, department, revenue, RANK() OVER(PARTITION BY department ORDER BY revenue DESC) as dept_rank FROM Sales;`,
       hints: [
-        'Cú pháp: RANK() OVER(PARTITION BY department ORDER BY revenue DESC) as dept_rank',
+        'Cấu trúc: RANK() OVER(PARTITION BY cột_nhóm ORDER BY cột_xếp_hạng DESC) AS tên_cột',
+        'Ở bài này, ta phân chia theo department và sắp xếp giảm dần theo revenue.',
       ],
       explanation:
         'Chính xác! Cửa sổ phân vùng (PARTITION BY) giúp bạn tính toán độc lập cho từng phòng ban mà không làm gộp dữ liệu.',
@@ -940,10 +1073,11 @@ Làm sao để so sánh doanh thu tháng này với tháng trước mà không c
 - **\`LAG(cột, n)\`**: Lấy giá trị của dòng **trước** đó \`n\` bước (Nhìn về quá khứ).
 - **\`LEAD(cột, n)\`**: Lấy giá trị của dòng **sau** đó \`n\` bước (Nhìn tới tương lai).
     `,
-    syntaxExample: `SELECT month, 
-       revenue,
-       LAG(revenue, 1) OVER(ORDER BY month) as prev_month_rev
-FROM Monthly_Sales;`,
+    syntaxExample: `-- So sánh số bước chân hôm nay với hôm qua bằng hàm LAG()
+SELECT log_date, steps_count,
+  LAG(steps_count, 1) OVER(ORDER BY log_date) AS yesterday_steps,
+  steps_count - LAG(steps_count, 1) OVER(ORDER BY log_date) AS step_difference
+FROM fitness_tracker;`,
     schemas: [
       {
         name: 'Revenue_Data',
@@ -967,13 +1101,22 @@ FROM Monthly_Sales;`,
         ('2026-05', 90000);`,
     ],
     exercise: {
-      goal: 'Tính doanh thu tháng trước và mức tăng trưởng so với tháng trước (MoM Growth)',
+      goal: 'Tính doanh thu tháng trước (prev_revenue) và mức chênh lệch tăng trưởng (growth_amount)',
       taskDescription:
-        'Tính doanh thu của tháng trước (`LAG(revenue, 1) OVER(ORDER BY month) AS prev_revenue`), sau đó tính mức chênh lệch `revenue - LAG(revenue, 1) OVER(ORDER BY month) AS growth_amount`.',
+        `⏳ **Bối cảnh:** Giám đốc tài chính (CFO) yêu cầu phân tích mức tăng trưởng doanh thu theo tháng (Month-over-Month Growth) để đánh giá tốc độ mở rộng kinh doanh.
+
+🎯 **Yêu cầu cụ thể:**
+- Truy vấn từ bảng **\`Revenue_Data\`**.
+- Lấy 2 cột gốc: **\`month\`** và **\`revenue\`**.
+- Tạo cột **\`prev_revenue\`** (doanh thu tháng liền kề trước đó):
+  \`LAG(revenue, 1) OVER(ORDER BY month) AS prev_revenue\`.
+- Tạo cột **\`growth_amount\`** (mức chênh lệch so với tháng trước):
+  \`revenue - LAG(revenue, 1) OVER(ORDER BY month) AS growth_amount\`.`,
       starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT month, revenue, LAG(revenue, 1) OVER(ORDER BY month) AS prev_revenue, revenue - LAG(revenue, 1) OVER(ORDER BY month) AS growth_amount FROM Revenue_Data;`,
       hints: [
-        'Dùng LAG(revenue, 1) OVER(ORDER BY month)',
+        'Dùng hàm LAG(revenue, 1) OVER(ORDER BY month) để lấy giá trị dòng trước đó.',
+        'Để tính growth_amount, lấy revenue trừ đi chính biểu thức LAG() đó.',
       ],
       explanation:
         'Rất xuất sắc! Bạn vừa tính toán chỉ số MoM Growth cốt lõi của mọi công ty công nghệ.',
@@ -1005,10 +1148,10 @@ Dữ liệu thực tế thường rất lộn xộn. Bạn cần các "dao mổ"
 - \`INSTR(cột, 'ký_tự')\`: Tìm vị trí đầu tiên của một ký tự trong chuỗi (Ví dụ: vị trí dấu \`@\` trong email).
 - Kết hợp \`SUBSTR(email, INSTR(email, '@') + 1)\` để lấy toàn bộ tên miền sau dấu \`@\`.
     `,
-    syntaxExample: `-- Trích xuất domain của email trong SQLite
+    syntaxExample: `-- Trích xuất tên đăng nhập (phần đứng TRƯỚC dấu @) từ cột email
 SELECT email, 
-       SUBSTR(email, INSTR(email, '@') + 1) AS email_domain
-FROM users;`,
+  SUBSTR(email, 1, INSTR(email, '@') - 1) AS username 
+FROM accounts;`,
     schemas: [
       {
         name: 'Users',
@@ -1033,13 +1176,22 @@ FROM users;`,
         (4, 'Pham Thi D', 'phanthid@gmail.com');`,
     ],
     exercise: {
-      goal: 'Trích xuất tên miền (domain) nằm ngay sau dấu @ từ cột email',
+      goal: 'Trích xuất tên miền (email_domain) đứng ngay sau ký tự @ từ cột email',
       taskDescription:
-        "Đội Marketing cần phân tích xem người dùng chủ yếu dùng Gmail, Yahoo hay Outlook. Hãy dùng `SUBSTR(email, INSTR(email, '@') + 1) AS email_domain` từ bảng `Users`.",
+        `🛠️ **Bối cảnh:** Bộ phận Kỹ thuật và Marketing cần thống kê tỷ lệ người dùng sử dụng các nhà cung cấp email (như gmail.com, outlook.com, icloud.com...) để tối ưu hóa tỷ lệ gửi thư thành công.
+
+🎯 **Yêu cầu cụ thể:**
+- Truy vấn từ bảng người dùng **\`Users\`**.
+- Chọn cột **\`email\`**.
+- Tạo cột thứ hai đặt tên là **\`email_domain\`** bằng cách phối hợp 2 hàm chuỗi trong SQLite:
+  1. \`INSTR(email, '@')\`: Tìm vị trí xuất hiện của dấu \`@\`.
+  2. \`SUBSTR(email, INSTR(email, '@') + 1)\`: Cắt chuỗi bắt đầu từ ký tự ngay sau dấu \`@\` cho đến hết.
+  3. Đặt bí danh: \`AS email_domain\`.`,
       starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT email, SUBSTR(email, INSTR(email, '@') + 1) AS email_domain FROM Users;`,
       hints: [
-        "SUBSTR(email, INSTR(email, '@') + 1) AS email_domain",
+        'Cấu trúc: SUBSTR(chuỗi, vị_trí_bắt_đầu)',
+        'Vị trí bắt đầu sau ký tự @ là: INSTR(email, \'@\') + 1',
       ],
       explanation:
         'Tuyệt vời! Bạn đã gọt giũa dữ liệu chuỗi thô thành các domain sạch sẽ cho đội Marketing.',
@@ -1083,21 +1235,20 @@ Bạn được tuyển dụng vào một quỹ phòng hộ (Hedge Fund). Sếp g
 3. Dùng hàm \`CASE WHEN\` tạo cột \`trend\`: Nếu giá tăng thì 'UP', giảm thì 'DOWN', bằng thì 'FLAT'.
 4. **Boss Level:** Để tính trung bình 7 ngày qua, dùng: \`AVG(close_price) OVER (ORDER BY trade_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS moving_avg_7d\`.
     `,
-    syntaxExample: `SELECT 
-    trade_date,
-    close_price,
-    LAG(close_price) OVER(ORDER BY trade_date) AS prev_price,
-    close_price - LAG(close_price) OVER(ORDER BY trade_date) AS price_change,
-    CASE 
-        WHEN close_price > LAG(close_price) OVER(ORDER BY trade_date) THEN 'UP'
-        WHEN close_price < LAG(close_price) OVER(ORDER BY trade_date) THEN 'DOWN'
-        ELSE 'FLAT'
-    END AS trend,
-    AVG(close_price) OVER(
-        ORDER BY trade_date 
-        ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
-    ) AS moving_avg_7d
-FROM Stock_Prices;`,
+    syntaxExample: `-- Mẫu phân tích chuỗi thời gian: tính chênh lệch, phân loại xu hướng và trung bình trượt 3 ngày:
+SELECT record_date, temperature,
+  LAG(temperature) OVER(ORDER BY record_date) AS prev_temp,
+  temperature - LAG(temperature) OVER(ORDER BY record_date) AS temp_change,
+  CASE 
+    WHEN temperature > LAG(temperature) OVER(ORDER BY record_date) THEN 'WARMER'
+    WHEN temperature < LAG(temperature) OVER(ORDER BY record_date) THEN 'COOLER'
+    ELSE 'SAME'
+  END AS weather_trend,
+  AVG(temperature) OVER(
+    ORDER BY record_date 
+    ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+  ) AS moving_avg_3d
+FROM daily_weather;`,
     schemas: [
       {
         name: 'Stock_Prices',
@@ -1124,14 +1275,25 @@ FROM Stock_Prices;`,
         ('2026-10-08', 170);`,
     ],
     exercise: {
-      goal: 'Báo cáo biến động giá, xu hướng và đường trung bình động 7 ngày',
+      goal: 'Xây dựng bảng phân tích biến động giá, xu hướng và đường trung bình động 7 ngày',
       taskDescription:
-        'Tính `prev_price`, `price_change`, phân loại `trend` (UP, DOWN, FLAT) và tính trung bình động 7 ngày `moving_avg_7d` bằng cú pháp `AVG(close_price) OVER(ORDER BY trade_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)`.',
+        `📈 **Bối cảnh:** Bạn là chuyên gia phân tích định lượng (Quantitative Analyst) tại một quỹ đầu tư tài chính. Bạn cần xây dựng bộ chỉ số kỹ thuật phục vụ thuật toán giao dịch tự động từ bảng dữ liệu lịch sử giá \`Stock_Prices\` gồm 2 cột \`trade_date\` và \`close_price\`.
+
+🎯 **Yêu cầu cụ thể:**
+Trích xuất các cột sau theo thứ tự:
+1. \`trade_date\`, \`close_price\` (Dữ liệu gốc).
+2. \`LAG(close_price) OVER(ORDER BY trade_date) AS prev_price\` (Giá đóng cửa phiên trước).
+3. \`close_price - LAG(close_price) OVER(ORDER BY trade_date) AS price_change\` (Mức biến động giá).
+4. Cột \`trend\` (Xu hướng giá): Dùng \`CASE WHEN\`:
+   - \`close_price > prev\` -> \`'UP'\`
+   - \`close_price < prev\` -> \`'DOWN'\`
+   - Còn lại -> \`'FLAT'\`
+5. \`AVG(close_price) OVER(ORDER BY trade_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS moving_avg_7d\` (Đường trung bình động 7 ngày).`,
       starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `SELECT trade_date, close_price, LAG(close_price) OVER(ORDER BY trade_date) AS prev_price, close_price - LAG(close_price) OVER(ORDER BY trade_date) AS price_change, CASE WHEN close_price > LAG(close_price) OVER(ORDER BY trade_date) THEN 'UP' WHEN close_price < LAG(close_price) OVER(ORDER BY trade_date) THEN 'DOWN' ELSE 'FLAT' END AS trend, AVG(close_price) OVER(ORDER BY trade_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS moving_avg_7d FROM Stock_Prices;`,
       hints: [
-        'Dùng LAG(close_price) OVER(ORDER BY trade_date)',
-        'Dùng AVG(close_price) OVER(ORDER BY trade_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS moving_avg_7d',
+        'Phân loại xu hướng: CASE WHEN close_price > LAG(close_price) OVER(...) THEN \'UP\' ... END AS trend',
+        'Tính trung bình động 7 ngày: AVG(close_price) OVER(ORDER BY trade_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS moving_avg_7d',
       ],
       explanation:
         'VINH DANH BẬC THẦY LOGIC! Bạn đã làm chủ siêu năng lực phân tích dữ liệu tài chính đỉnh cao của Giai đoạn 3!',
@@ -1160,12 +1322,13 @@ DML (Data Manipulation Language) là nhóm các câu lệnh dùng để thao tá
 
 🚨 **Nguyên tắc sống còn:** Luôn luôn, KHÔNG BAO GIỜ được quên mệnh đề \`WHERE\` khi dùng \`UPDATE\` hoặc \`DELETE\`. Nếu quên, bạn sẽ vô tình xóa hoặc sửa TẤT CẢ dữ liệu trong cơ sở dữ liệu của công ty!
     `,
-    syntaxExample: `-- Cập nhật lương phòng IT tăng 10%
-UPDATE Employees 
-SET salary = salary * 1.1 
-WHERE department = 'IT';
+    syntaxExample: `-- Giảm giá 15% cho toàn bộ sản phẩm thuộc danh mục 'Thời trang' đã qua mùa
+UPDATE Products 
+SET price = price * 0.85 
+WHERE category = 'Fashion';
 
-SELECT * FROM Employees;`,
+-- Truy vấn kiểm tra lại dữ liệu sau khi sửa đổi
+SELECT * FROM Products;`,
     schemas: [
       {
         name: 'Employees',
@@ -1191,14 +1354,23 @@ SELECT * FROM Employees;`,
         (3, 'David', 'IT', 2500);`,
     ],
     exercise: {
-      goal: 'Tăng lương 10% cho tất cả nhân viên thuộc phòng IT',
+      goal: 'Cập nhật tăng 10% lương cho nhân viên phòng IT và kiểm tra lại kết quả',
       taskDescription:
-        "Công ty vừa làm ăn có lãi. Hãy cập nhật (`UPDATE`) bảng `Employees`, tăng lương (`salary`) thêm 10% cho tất cả nhân viên thuộc phòng 'IT' (`department = 'IT'`), sau đó chạy `SELECT * FROM Employees;` để kiểm tra kết quả.",
+        `🛠️ **Bối cảnh:** Công ty vừa có một năm tài chính khởi sắc nhờ đóng góp to lớn của đội ngũ công nghệ. Hội đồng quản trị đã phê duyệt quyết định tăng 10% lương cơ bản cho toàn thể chuyên viên phòng Công nghệ thông tin (IT).
+
+🎯 **Yêu cầu cụ thể:**
+1. Thực hiện lệnh cập nhật dữ liệu **\`UPDATE\`** trên bảng **\`Employees\`**:
+   - Tăng lương 10%: \`SET salary = salary * 1.1\`.
+   - Điều kiện chỉ áp dụng cho phòng IT: \`WHERE department = 'IT'\`.
+2. Ngay sau lệnh UPDATE, chạy câu lệnh kiểm tra kết quả:
+   \`SELECT * FROM Employees;\`.
+
+💡 **Lưu ý:** Hai câu lệnh được ngăn cách bằng dấu chấm phẩy (\`;\`). Luôn có thói quen kiểm tra điều kiện WHERE trước khi chạy UPDATE để tránh sửa nhầm toàn bộ bảng!`,
       starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `UPDATE Employees SET salary = salary * 1.1 WHERE department = 'IT'; SELECT * FROM Employees;`,
       hints: [
-        "UPDATE Employees SET salary = salary * 1.1 WHERE department = 'IT';",
-        'Sau đó chạy: SELECT * FROM Employees;',
+        'Lệnh 1: UPDATE Employees SET salary = salary * 1.1 WHERE department = \'IT\';',
+        'Lệnh 2 (đặt ngay sau dấu chấm phẩy): SELECT * FROM Employees;',
       ],
       explanation:
         'Cảm ơn sếp! Phòng IT đã nhận được lương mới tăng 10% đúng chuẩn DML an toàn!',
@@ -1239,16 +1411,17 @@ Khi tạo bảng, bạn phải quy định:
 
 🔥 **Sức mạnh của \`CASCADE\`:** Nếu một "Tác giả" bị xóa, bạn có muốn tất cả "Sách" của họ tự động bị xóa theo không? Hãy thêm \`ON DELETE CASCADE\` vào Khóa ngoại!
     `,
-    syntaxExample: `CREATE TABLE Authors (
-    id INT PRIMARY KEY,
-    name VARCHAR(100)
+    syntaxExample: `-- Tạo bảng danh mục và bảng sản phẩm có liên kết ràng buộc khóa ngoại ON DELETE CASCADE
+CREATE TABLE Categories (
+  category_id INT PRIMARY KEY,
+  category_name VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE Books (
-    book_id INT PRIMARY KEY,
-    title VARCHAR(200),
-    author_id INT,
-    FOREIGN KEY (author_id) REFERENCES Authors(id) ON DELETE CASCADE
+CREATE TABLE Items (
+  item_id INT PRIMARY KEY,
+  item_name VARCHAR(100) NOT NULL,
+  category_id INT,
+  FOREIGN KEY (category_id) REFERENCES Categories(category_id) ON DELETE CASCADE
 );`,
     schemas: [
       {
@@ -1277,13 +1450,26 @@ CREATE TABLE Books (
       `CREATE TABLE SystemInit (id INT PRIMARY KEY);`,
     ],
     exercise: {
-      goal: 'Viết Script tạo bảng Authors và Books có ràng buộc ON DELETE CASCADE',
+      goal: 'Viết script tạo 2 bảng Authors và Books có ràng buộc khóa ngoại ON DELETE CASCADE',
       taskDescription:
-        "Tạo bảng `Authors` (`id INT PRIMARY KEY, name VARCHAR(100)`), và bảng `Books` (`book_id INT PRIMARY KEY, title VARCHAR(200), author_id INT, FOREIGN KEY (author_id) REFERENCES Authors(id) ON DELETE CASCADE`), sau đó kiểm tra bằng câu lệnh `SELECT name FROM sqlite_master WHERE type='table' AND name IN ('Authors', 'Books');`.",
+        `🏗️ **Bối cảnh:** Bạn là Kỹ sư Dữ liệu (Data Engineer) chịu trách nhiệm thiết kế cấu trúc CSDL cho nền tảng thư viện điện tử. Cần đảm bảo tính toàn vẹn dữ liệu: khi một tác giả bị xóa, toàn bộ tác phẩm của tác giả đó cũng tự động bị xóa theo.
+
+🎯 **Yêu cầu cụ thể:**
+1. Tạo bảng **\`Authors\`** với các cột:
+   - \`id INT PRIMARY KEY\`
+   - \`name VARCHAR(100)\`
+2. Tạo bảng **\`Books\`** với các cột:
+   - \`book_id INT PRIMARY KEY\`
+   - \`title VARCHAR(200)\`
+   - \`author_id INT\`
+   - Ràng buộc khóa ngoại: \`FOREIGN KEY (author_id) REFERENCES Authors(id) ON DELETE CASCADE\`
+3. Chạy lệnh xác minh các bảng đã tạo thành công:
+   \`SELECT name FROM sqlite_master WHERE type='table' AND name IN ('Authors', 'Books');\``,
       starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `CREATE TABLE Authors ( id INT PRIMARY KEY, name VARCHAR(100) ); CREATE TABLE Books ( book_id INT PRIMARY KEY, title VARCHAR(200), author_id INT, FOREIGN KEY (author_id) REFERENCES Authors(id) ON DELETE CASCADE ); SELECT name FROM sqlite_master WHERE type='table' AND name IN ('Authors', 'Books');`,
       hints: [
-        'FOREIGN KEY (author_id) REFERENCES Authors(id) ON DELETE CASCADE',
+        'Định nghĩa khóa ngoại ở cuối câu lệnh CREATE TABLE Books: FOREIGN KEY (author_id) REFERENCES Authors(id) ON DELETE CASCADE',
+        'Đừng quên câu lệnh kiểm tra cuối cùng: SELECT name FROM sqlite_master WHERE type=\'table\' AND name IN (\'Authors\', \'Books\');',
       ],
       explanation:
         'Chính xác! Bạn vừa kiến tạo nền móng CSDL vững chắc với toàn vẹn tham chiếu CASCADE.',
@@ -1318,13 +1504,13 @@ CREATE TABLE Books (
 - **VIEW (Bảng ảo):** Giả sử bảng \`Users\` chứa cả mật khẩu và số thẻ tín dụng. Bạn muốn cho team Marketing xem thông tin người dùng (tên, email) nhưng tuyệt đối không cho xem dữ liệu nhạy cảm. Hãy tạo một **\`VIEW\`**. Nó giống như một tấm gương phản chiếu chỉ những cột bạn cho phép.
 - **TRIGGER (Cò súng/Robot):** Là những đoạn code tự động chạy khi có sự kiện xảy ra. Ví dụ: Trigger tự động ghi log vào bảng kiểm toán mỗi khi có ai đó dùng lệnh \`UPDATE\` lương.
     `,
-    syntaxExample: `-- Tạo View bảo mật chỉ lấy thông tin công khai
-CREATE VIEW PublicUsers AS 
-SELECT id, name, email 
-FROM users;
+    syntaxExample: `-- Tạo View che giấu thông tin mức lương và số căn cước của nhân sự
+CREATE VIEW PublicStaff AS 
+SELECT employee_id, full_name, department, email 
+FROM company_staff;
 
--- Truy vấn từ View như một bảng bình thường
-SELECT * FROM PublicUsers;`,
+-- Truy vấn dữ liệu qua View như một bảng thực tế
+SELECT * FROM PublicStaff;`,
     schemas: [
       {
         name: 'Users',
@@ -1351,14 +1537,22 @@ SELECT * FROM PublicUsers;`,
         (2, 'Bob', 'bob@corp.com', 'hash_secret_456', '5500-6666-7777-8888');`,
     ],
     exercise: {
-      goal: 'Tạo View PublicUsers chỉ hiển thị id, name, email để bảo vệ dữ liệu khách hàng',
+      goal: 'Tạo View PublicUsers bảo mật chỉ hiển thị id, name, email từ bảng Users',
       taskDescription:
-        'Trưởng phòng Marketing xin quyền truy cập bảng Users. Hãy tạo một View tên là `PublicUsers` chỉ hiển thị 3 cột: `id`, `name`, và `email` từ bảng `Users`, bỏ qua mật khẩu và thẻ tín dụng. Sau đó chạy `SELECT * FROM PublicUsers;`.',
+        `🤖 **Bối cảnh:** Để tuân thủ quy định bảo mật an toàn thông tin cá nhân (GDPR), bộ phận Marketing không được phép nhìn thấy mật khẩu mã hóa (\`password_hash\`) và số thẻ tín dụng (\`credit_card\`) của khách hàng.
+
+🎯 **Yêu cầu cụ thể:**
+1. Tạo một khung nhìn ảo (View) có tên là **\`PublicUsers\`**:
+   \`CREATE VIEW PublicUsers AS SELECT id, name, email FROM Users;\`
+2. Thực hiện câu lệnh truy vấn từ View vừa tạo để kiểm tra dữ liệu hiển thị:
+   \`SELECT * FROM PublicUsers;\`.
+
+💡 **Mẹo:** View hoạt động như một bảng ảo không tốn dung lượng lưu trữ thực tế, giúp phân quyền và che chắn các trường dữ liệu nhạy cảm cực kỳ hiệu quả.`,
       starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `CREATE VIEW PublicUsers AS SELECT id, name, email FROM Users; SELECT * FROM PublicUsers;`,
       hints: [
-        'CREATE VIEW PublicUsers AS SELECT id, name, email FROM Users;',
-        'SELECT * FROM PublicUsers;',
+        'Cấu trúc tạo View: CREATE VIEW Tên_View AS SELECT cột_1, cột_2 FROM Bảng;',
+        'Sau khi tạo View, viết tiếp câu lệnh SELECT * FROM PublicUsers; để kiểm tra kết quả.',
       ],
       explanation:
         'Rất xuất sắc! View PublicUsers đã bảo vệ an toàn tuyệt đối các thông tin nhạy cảm của khách hàng.',
@@ -1397,8 +1591,11 @@ Nếu cuốn sách có trang Mục lục (Index) chứa các từ khóa và số
 
 ⚖️ *Đánh đổi: Tạo Index tốn dung lượng ổ cứng và làm chậm quá trình INSERT/UPDATE (vì mỗi lần thêm dữ liệu mới, hệ thống phải cập nhật lại Mục lục).*
     `,
-    syntaxExample: `-- Tạo Index trên cột email
-CREATE INDEX idx_user_email ON users(email);`,
+    syntaxExample: `-- Tạo Index (chỉ mục) trên cột order_date để tăng tốc độ tìm kiếm đơn hàng theo ngày
+CREATE INDEX idx_order_date ON Orders(order_date);
+
+-- Kiểm tra danh sách các Index hiện có trong hệ thống
+SELECT name FROM sqlite_master WHERE type='index';`,
     schemas: [
       {
         name: 'Customers',
@@ -1421,14 +1618,22 @@ CREATE INDEX idx_user_email ON users(email);`,
         (2, 'Tran Thi B', '0987654321');`,
     ],
     exercise: {
-      goal: 'Tạo một Index tên idx_phone trên cột phone của bảng Customers',
+      goal: 'Tạo chỉ mục idx_phone trên cột phone của bảng Customers để tối ưu tốc độ tìm kiếm',
       taskDescription:
-        "Hệ thống báo cáo có truy vấn tìm kiếm người dùng theo số điện thoại đang chạy mất 10 giây khiến App bị lag: `SELECT * FROM Customers WHERE phone = '0987654321';`. Hãy tạo một Index tên `idx_phone` trên cột `phone` của bảng `Customers` để giải cứu hệ thống: `CREATE INDEX idx_phone ON Customers(phone);` sau đó chạy `SELECT name FROM sqlite_master WHERE type='index' AND name='idx_phone';`.",
+        `⚡ **Bối cảnh:** Tổng đài CSKH phản ánh ứng dụng tra cứu số điện thoại khách hàng thường xuyên bị chậm và treo khi lượng dữ liệu phình to lên hàng triệu dòng.
+
+🎯 **Yêu cầu cụ thể:**
+1. Tạo một chỉ mục (Index) có tên là **\`idx_phone\`** trên cột **\`phone\`** của bảng **\`Customers\`**:
+   \`CREATE INDEX idx_phone ON Customers(phone);\`
+2. Chạy câu lệnh kiểm tra sự tồn tại của Index vừa tạo trong danh mục hệ thống SQLite:
+   \`SELECT name FROM sqlite_master WHERE type='index' AND name='idx_phone';\`.
+
+💡 **Mẹo:** Index hoạt động giống như mục lục của một cuốn sách giáo khoa, giúp CSDL tìm đến thẳng trang chứa thông tin thay vì phải đọc quét từng trang một (Full Table Scan).`,
       starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `CREATE INDEX idx_phone ON Customers(phone); SELECT name FROM sqlite_master WHERE type='index' AND name='idx_phone';`,
       hints: [
-        'CREATE INDEX idx_phone ON Customers(phone);',
-        "SELECT name FROM sqlite_master WHERE type='index' AND name='idx_phone';",
+        'Cú pháp tạo Index: CREATE INDEX tên_index ON tên_bảng(tên_cột);',
+        'Ở bài này: CREATE INDEX idx_phone ON Customers(phone);',
       ],
       explanation:
         'Hệ thống đang chạy lại truy vấn... Thời gian phản hồi: 0.05 giây! Chúc mừng bạn đã giải cứu hệ thống thành công! 🚀',
@@ -1470,34 +1675,29 @@ Bạn vừa trúng tuyển vị trí Data Engineer tại một Startup công ngh
 4. Tối ưu hóa: Tạo một **Index** trên cột \`status\` của bảng \`Rides\` vì team vận hành thường xuyên lọc các chuyến xe bị 'canceled'.
 5. Khởi tạo: \`INSERT\` 1 dòng dữ liệu mẫu vào bảng \`Riders\`.
     `,
-    syntaxExample: `-- Script hoàn chỉnh cho dự án tốt nghiệp:
-CREATE TABLE Riders (
-    id INT PRIMARY KEY,
-    name VARCHAR(100),
-    phone VARCHAR(20) UNIQUE
+    syntaxExample: `-- Mẫu kiến trúc DDL hoàn chỉnh cho nền tảng giao hàng (Food Delivery):
+CREATE TABLE Restaurants (
+  id INT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  address VARCHAR(200)
 );
 
-CREATE TABLE Drivers (
-    id INT PRIMARY KEY,
-    name VARCHAR(100),
-    license_plate VARCHAR(20)
+CREATE TABLE Couriers (
+  id INT PRIMARY KEY,
+  courier_name VARCHAR(100) NOT NULL,
+  vehicle_plate VARCHAR(20) UNIQUE
 );
 
-CREATE TABLE Rides (
-    id INT PRIMARY KEY,
-    rider_id INT,
-    driver_id INT,
-    status VARCHAR(50),
-    FOREIGN KEY (rider_id) REFERENCES Riders(id),
-    FOREIGN KEY (driver_id) REFERENCES Drivers(id)
+CREATE TABLE Deliveries (
+  id INT PRIMARY KEY,
+  restaurant_id INT,
+  courier_id INT,
+  status VARCHAR(30),
+  FOREIGN KEY (restaurant_id) REFERENCES Restaurants(id),
+  FOREIGN KEY (courier_id) REFERENCES Couriers(id)
 );
 
-CREATE INDEX idx_rides_status ON Rides(status);
-
-INSERT INTO Riders (id, name, phone) 
-VALUES (1, 'Nguyen Van Khach', '0912345678');
-
-SELECT name FROM sqlite_master WHERE type IN ('table', 'index');`,
+CREATE INDEX idx_delivery_status ON Deliveries(status);`,
     schemas: [
       {
         name: 'Riders',
@@ -1536,15 +1736,22 @@ SELECT name FROM sqlite_master WHERE type IN ('table', 'index');`,
       `CREATE TABLE InitApp (id INT PRIMARY KEY);`,
     ],
     exercise: {
-      goal: 'Dựng toàn bộ lược đồ CSDL App Đặt xe theo đúng 5 yêu cầu kỹ thuật',
+      goal: 'Dựng trọn vẹn lược đồ CSDL chuẩn cho App Đặt xe công nghệ (Ride-Hailing)',
       taskDescription:
-        'Viết toàn bộ script DDL tạo bảng `Riders`, `Drivers`, `Rides` (có 2 khóa ngoại), tạo Index `idx_rides_status ON Rides(status)`, chèn 1 dòng mẫu vào `Riders`, và kiểm tra qua `SELECT name FROM sqlite_master WHERE type IN (\'table\', \'index\');`.',
+        `🚖 **ĐỒ ÁN TỐT NGHIỆP THÁM TỬ DỮ LIỆU CẤP CAO:**
+Chúc mừng bạn đã đi đến chặng cuối cùng của học viện! Là Kiến trúc sư Dữ liệu Trưởng, bạn được giao trọng trách thiết kế nền tảng CSDL cho ứng dụng gọi xe công nghệ mới.
+
+🎯 **5 Tiêu chuẩn Kỹ thuật bắt buộc phải hoàn thành trong 1 Script:**
+1. Tạo bảng hành khách **\`Riders\`**: \`id INT PRIMARY KEY\`, \`name VARCHAR(100)\`, \`phone VARCHAR(20) UNIQUE\`.
+2. Tạo bảng tài xế **\`Drivers\`**: \`id INT PRIMARY KEY\`, \`name VARCHAR(100)\`, \`license_plate VARCHAR(20)\`.
+3. Tạo bảng chuyến đi **\`Rides\`**: \`id INT PRIMARY KEY\`, \`rider_id INT\`, \`driver_id INT\`, \`status VARCHAR(50)\`, có 2 khóa ngoại liên kết tới \`Riders(id)\` và \`Drivers(id)\`.
+4. Tạo chỉ mục **\`idx_rides_status\`** trên cột \`status\` của bảng \`Rides\`.
+5. Thêm 1 dòng mẫu vào bảng Riders: \`INSERT INTO Riders (id, name, phone) VALUES (1, 'Nguyen Van Khach', '0912345678');\` và kiểm tra qua \`SELECT name FROM sqlite_master WHERE type IN ('table', 'index');\`.`,
       starterQuery: '-- Viết code của bạn ở đây:\n',
       expectedQuery: `CREATE TABLE Riders ( id INT PRIMARY KEY, name VARCHAR(100), phone VARCHAR(20) UNIQUE ); CREATE TABLE Drivers ( id INT PRIMARY KEY, name VARCHAR(100), license_plate VARCHAR(20) ); CREATE TABLE Rides ( id INT PRIMARY KEY, rider_id INT, driver_id INT, status VARCHAR(50), FOREIGN KEY (rider_id) REFERENCES Riders(id), FOREIGN KEY (driver_id) REFERENCES Drivers(id) ); CREATE INDEX idx_rides_status ON Rides(status); INSERT INTO Riders (id, name, phone) VALUES (1, 'Nguyen Van Khach', '0912345678'); SELECT name FROM sqlite_master WHERE type IN ('table', 'index');`,
       hints: [
-        'FOREIGN KEY (rider_id) REFERENCES Riders(id)',
-        'FOREIGN KEY (driver_id) REFERENCES Drivers(id)',
-        'CREATE INDEX idx_rides_status ON Rides(status);',
+        'Lần lượt tạo 3 bảng: Riders -> Drivers -> Rides (vì Rides chứa khóa ngoại của 2 bảng kia).',
+        'Nhớ tạo Index: CREATE INDEX idx_rides_status ON Rides(status); sau đó INSERT mẫu và kiểm tra qua sqlite_master.',
       ],
       explanation:
         'VINH DANH CHỨNG NHẬN SQL MASTER! Bạn đã kiến tạo thành công toàn bộ hệ thống cơ sở dữ liệu thực chiến và hoàn thành trọn vẹn lộ trình 4 giai đoạn!',

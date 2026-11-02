@@ -240,18 +240,6 @@ class AuthService {
    * ĐĂNG NHẬP CHÍNH THỨC VỚI GOOGLE QUA SUPABASE OAUTH
    */
   public async signInWithGoogleOAuth(): Promise<void> {
-    if (isSupabaseConfigured()) {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin,
-        },
-      });
-      if (error) throw error;
-      return;
-    }
-
-    // Fallback simulation
     await this.signInWithGoogle();
   }
 
